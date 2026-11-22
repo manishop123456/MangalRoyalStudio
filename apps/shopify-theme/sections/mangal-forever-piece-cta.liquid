@@ -1,0 +1,976 @@
+<section id="mangal-forever-{{ section.id }}" class="mangal-forever-cta">
+  <div class="mfc-inner">
+    {% if section.settings.heading != blank %}
+      <h2 class="mfc-heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+
+    {% if section.settings.description != blank %}
+      <div class="mfc-description">{{ section.settings.description }}</div>
+    {% endif %}
+
+    {% if section.settings.show_buttons %}
+      <div class="mfc-actions">
+        {% if section.settings.primary_label != blank %}
+          <a
+            class="mfc-button mfc-button--primary"
+            href="{{ section.settings.primary_link | default: '#' }}"
+          >
+            {{ section.settings.primary_label }}
+          </a>
+        {% endif %}
+
+        {% if section.settings.secondary_label != blank %}
+          <a
+            class="mfc-button mfc-button--secondary"
+            href="{{ section.settings.secondary_link | default: '#' }}"
+          >
+            {{ section.settings.secondary_label }}
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+
+  <style>
+    #mangal-forever-{{ section.id }} {
+      --mfc-bg: {{ section.settings.background_color }};
+      --mfc-heading: {{ section.settings.heading_color }};
+      --mfc-text: {{ section.settings.description_color }};
+      --mfc-primary-bg: {{ section.settings.primary_button_background }};
+      --mfc-primary-text: {{ section.settings.primary_button_text }};
+      --mfc-secondary-bg: {{ section.settings.secondary_button_background }};
+      --mfc-secondary-text: {{ section.settings.secondary_button_text }};
+      --mfc-secondary-border: {{ section.settings.secondary_button_border }};
+
+      width: 100%;
+      background: var(--mfc-bg);
+      padding-top: {{ section.settings.desktop_padding_top }}px;
+      padding-bottom: {{ section.settings.desktop_padding_bottom }}px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    #mangal-forever-{{ section.id }},
+    #mangal-forever-{{ section.id }} *,
+    #mangal-forever-{{ section.id }} *::before,
+    #mangal-forever-{{ section.id }} *::after {
+      box-sizing: border-box;
+    }
+
+    #mangal-forever-{{ section.id }} .mfc-inner {
+      width: min(
+        {{ section.settings.desktop_max_width }}px,
+        calc(100% - {{ section.settings.desktop_side_padding }}px * 2)
+      );
+      margin: 0 auto;
+      text-align: {{ section.settings.desktop_alignment }};
+    }
+
+    #mangal-forever-{{ section.id }} .mfc-heading {
+      margin: 0;
+      color: var(--mfc-heading);
+      font-family: {{ section.settings.desktop_heading_font }}, Georgia, serif;
+      font-size: {{ section.settings.desktop_heading_size }}px;
+      line-height: {{ section.settings.desktop_heading_line_height }};
+      font-weight: {{ section.settings.desktop_heading_weight }};
+      letter-spacing: {{ section.settings.desktop_heading_letter_spacing }}px;
+    }
+
+    #mangal-forever-{{ section.id }} .mfc-description {
+      max-width: {{ section.settings.desktop_description_width }}px;
+      margin:
+        {{ section.settings.desktop_description_top_spacing }}px
+        auto
+        0;
+      color: var(--mfc-text);
+      font-family: {{ section.settings.desktop_body_font }}, Arial, sans-serif;
+      font-size: {{ section.settings.desktop_description_size }}px;
+      line-height: {{ section.settings.desktop_description_line_height }};
+      font-weight: {{ section.settings.desktop_description_weight }};
+      letter-spacing: {{ section.settings.desktop_description_letter_spacing }}px;
+    }
+
+    #mangal-forever-{{ section.id }} .mfc-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: {{ section.settings.desktop_button_gap }}px;
+      margin-top: {{ section.settings.desktop_buttons_top_spacing }}px;
+    }
+
+    #mangal-forever-{{ section.id }} .mfc-button {
+      min-width: {{ section.settings.desktop_button_min_width }}px;
+      min-height: {{ section.settings.desktop_button_height }}px;
+      padding:
+        0
+        {{ section.settings.desktop_button_horizontal_padding }}px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      white-space: nowrap;
+      font-family: {{ section.settings.desktop_button_font }}, Arial, sans-serif;
+      font-size: {{ section.settings.desktop_button_size }}px;
+      line-height: 1;
+      font-weight: {{ section.settings.desktop_button_weight }};
+      letter-spacing: {{ section.settings.desktop_button_letter_spacing }}px;
+      text-transform: {{ section.settings.button_text_transform }};
+      border-radius: {{ section.settings.desktop_button_radius }}px;
+      transition:
+        background-color .2s ease,
+        color .2s ease,
+        border-color .2s ease,
+        transform .2s ease;
+    }
+
+    #mangal-forever-{{ section.id }} .mfc-button:hover {
+      transform: translateY(-1px);
+    }
+
+    #mangal-forever-{{ section.id }} .mfc-button--primary {
+      background: var(--mfc-primary-bg);
+      color: var(--mfc-primary-text);
+      border: {{ section.settings.desktop_primary_border_width }}px solid var(--mfc-primary-bg);
+    }
+
+    #mangal-forever-{{ section.id }} .mfc-button--primary:hover {
+      background: var(--mfc-primary-text);
+      color: var(--mfc-primary-bg);
+      border-color: var(--mfc-primary-text);
+    }
+
+    #mangal-forever-{{ section.id }} .mfc-button--secondary {
+      background: var(--mfc-secondary-bg);
+      color: var(--mfc-secondary-text);
+      border: {{ section.settings.desktop_secondary_border_width }}px solid var(--mfc-secondary-border);
+    }
+
+    #mangal-forever-{{ section.id }} .mfc-button--secondary:hover {
+      background: var(--mfc-secondary-text);
+      color: var(--mfc-secondary-bg);
+      border-color: var(--mfc-secondary-text);
+    }
+
+    @media screen and (max-width: 749px) {
+      #mangal-forever-{{ section.id }} {
+        padding-top: {{ section.settings.mobile_padding_top }}px;
+        padding-bottom: {{ section.settings.mobile_padding_bottom }}px;
+      }
+
+      #mangal-forever-{{ section.id }} .mfc-inner {
+        width: calc(100% - {{ section.settings.mobile_side_padding }}px * 2);
+        max-width: none;
+        text-align: {{ section.settings.mobile_alignment }};
+      }
+
+      #mangal-forever-{{ section.id }} .mfc-heading {
+        font-family: {{ section.settings.mobile_heading_font }}, Georgia, serif;
+        font-size: {{ section.settings.mobile_heading_size }}px;
+        line-height: {{ section.settings.mobile_heading_line_height }};
+        font-weight: {{ section.settings.mobile_heading_weight }};
+        letter-spacing: {{ section.settings.mobile_heading_letter_spacing }}px;
+      }
+
+      #mangal-forever-{{ section.id }} .mfc-description {
+        max-width: {{ section.settings.mobile_description_width }}px;
+        margin-top: {{ section.settings.mobile_description_top_spacing }}px;
+        font-family: {{ section.settings.mobile_body_font }}, Arial, sans-serif;
+        font-size: {{ section.settings.mobile_description_size }}px;
+        line-height: {{ section.settings.mobile_description_line_height }};
+        font-weight: {{ section.settings.mobile_description_weight }};
+        letter-spacing: {{ section.settings.mobile_description_letter_spacing }}px;
+      }
+
+      #mangal-forever-{{ section.id }} .mfc-actions {
+        flex-direction: {{ section.settings.mobile_button_direction }};
+        gap: {{ section.settings.mobile_button_gap }}px;
+        margin-top: {{ section.settings.mobile_buttons_top_spacing }}px;
+      }
+
+      #mangal-forever-{{ section.id }} .mfc-button {
+        width: {{ section.settings.mobile_button_width }}%;
+        min-width: 0;
+        min-height: {{ section.settings.mobile_button_height }}px;
+        padding-left: {{ section.settings.mobile_button_horizontal_padding }}px;
+        padding-right: {{ section.settings.mobile_button_horizontal_padding }}px;
+        font-family: {{ section.settings.mobile_button_font }}, Arial, sans-serif;
+        font-size: {{ section.settings.mobile_button_size }}px;
+        font-weight: {{ section.settings.mobile_button_weight }};
+        letter-spacing: {{ section.settings.mobile_button_letter_spacing }}px;
+        border-radius: {{ section.settings.mobile_button_radius }}px;
+      }
+
+      #mangal-forever-{{ section.id }} .mfc-button--primary {
+        border-width: {{ section.settings.mobile_primary_border_width }}px;
+      }
+
+      #mangal-forever-{{ section.id }} .mfc-button--secondary {
+        border-width: {{ section.settings.mobile_secondary_border_width }}px;
+      }
+    }
+  </style>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+  </style>
+</section>
+
+{% schema %}
+{
+  "name": "Forever Piece CTA",
+  "tag": "section",
+  "class": "mangal-forever-cta-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Ready to find your forever piece?"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Explore our collections of certified lab-grown diamond jewellery crafted with five decades of expertise."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_buttons",
+      "label": "Show buttons",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "primary_label",
+      "label": "Primary button label",
+      "default": "SHOP COLLECTIONS"
+    },
+    {
+      "type": "url",
+      "id": "primary_link",
+      "label": "Primary button link"
+    },
+    {
+      "type": "text",
+      "id": "secondary_label",
+      "label": "Secondary button label",
+      "default": "GET AT HOME SERVICE"
+    },
+    {
+      "type": "url",
+      "id": "secondary_link",
+      "label": "Secondary button link"
+    },
+
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#FBE8DB"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#302326"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description color",
+      "default": "#5F5555"
+    },
+    {
+      "type": "color",
+      "id": "primary_button_background",
+      "label": "Primary button background",
+      "default": "#170A09"
+    },
+    {
+      "type": "color",
+      "id": "primary_button_text",
+      "label": "Primary button text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "secondary_button_background",
+      "label": "Secondary button background",
+      "default": "#FBE8DB"
+    },
+    {
+      "type": "color",
+      "id": "secondary_button_text",
+      "label": "Secondary button text",
+      "default": "#514343"
+    },
+    {
+      "type": "color",
+      "id": "secondary_button_border",
+      "label": "Secondary button border",
+      "default": "#8B7770"
+    },
+
+    {
+      "type": "header",
+      "content": "Desktop layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_max_width",
+      "label": "Maximum content width",
+      "min": 700,
+      "max": 1400,
+      "step": 20,
+      "unit": "px",
+      "default": 1000
+    },
+    {
+      "type": "range",
+      "id": "desktop_side_padding",
+      "label": "Side padding",
+      "min": 16,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_top",
+      "label": "Top padding",
+      "min": 20,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_bottom",
+      "label": "Bottom padding",
+      "min": 20,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "select",
+      "id": "desktop_alignment",
+      "label": "Content alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+
+    {
+      "type": "header",
+      "content": "Desktop typography"
+    },
+    {
+      "type": "select",
+      "id": "desktop_heading_font",
+      "label": "Heading font",
+      "options": [
+        { "value": "Cormorant Garamond", "label": "Cormorant Garamond" },
+        { "value": "Playfair Display", "label": "Playfair Display" },
+        { "value": "Georgia", "label": "Georgia" }
+      ],
+      "default": "Cormorant Garamond"
+    },
+    {
+      "type": "range",
+      "id": "desktop_heading_size",
+      "label": "Heading size",
+      "min": 20,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "select",
+      "id": "desktop_heading_line_height",
+      "label": "Heading line height",
+      "options": [
+        { "value": "1", "label": "Compact" },
+        { "value": "1.1", "label": "Normal" },
+        { "value": "1.2", "label": "Relaxed" }
+      ],
+      "default": "1.1"
+    },
+    {
+      "type": "select",
+      "id": "desktop_heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "range",
+      "id": "desktop_heading_letter_spacing",
+      "label": "Heading letter spacing",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "desktop_body_font",
+      "label": "Description font",
+      "options": [
+        { "value": "DM Sans", "label": "DM Sans" },
+        { "value": "Montserrat", "label": "Montserrat" },
+        { "value": "Arial", "label": "Arial" }
+      ],
+      "default": "DM Sans"
+    },
+    {
+      "type": "range",
+      "id": "desktop_description_size",
+      "label": "Description size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "desktop_description_line_height",
+      "label": "Description line height",
+      "options": [
+        { "value": "1.2", "label": "Compact" },
+        { "value": "1.4", "label": "Tight" },
+        { "value": "1.5", "label": "Normal" },
+        { "value": "1.6", "label": "Relaxed" },
+        { "value": "1.8", "label": "Loose" }
+      ],
+      "default": "1.5"
+    },
+    {
+      "type": "select",
+      "id": "desktop_description_weight",
+      "label": "Description weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "desktop_description_letter_spacing",
+      "label": "Description letter spacing",
+      "min": 0,
+      "max": 2,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "desktop_description_width",
+      "label": "Description maximum width",
+      "min": 400,
+      "max": 900,
+      "step": 20,
+      "unit": "px",
+      "default": 700
+    },
+    {
+      "type": "range",
+      "id": "desktop_description_top_spacing",
+      "label": "Description top spacing",
+      "min": 4,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+
+    {
+      "type": "header",
+      "content": "Desktop buttons"
+    },
+    {
+      "type": "select",
+      "id": "desktop_button_font",
+      "label": "Button font",
+      "options": [
+        { "value": "DM Sans", "label": "DM Sans" },
+        { "value": "Montserrat", "label": "Montserrat" },
+        { "value": "Arial", "label": "Arial" }
+      ],
+      "default": "DM Sans"
+    },
+    {
+      "type": "range",
+      "id": "desktop_button_size",
+      "label": "Button text size",
+      "min": 9,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "select",
+      "id": "desktop_button_weight",
+      "label": "Button text weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "range",
+      "id": "desktop_button_letter_spacing",
+      "label": "Button letter spacing",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "desktop_button_min_width",
+      "label": "Button minimum width",
+      "min": 100,
+      "max": 220,
+      "step": 5,
+      "unit": "px",
+      "default": 135
+    },
+    {
+      "type": "range",
+      "id": "desktop_button_height",
+      "label": "Button height",
+      "min": 30,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 34
+    },
+    {
+      "type": "range",
+      "id": "desktop_button_horizontal_padding",
+      "label": "Button horizontal padding",
+      "min": 10,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "desktop_button_gap",
+      "label": "Button gap",
+      "min": 4,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "desktop_buttons_top_spacing",
+      "label": "Buttons top spacing",
+      "min": 12,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "desktop_button_radius",
+      "label": "Button corner radius",
+      "min": 0,
+      "max": 12,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "desktop_primary_border_width",
+      "label": "Primary border width",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "desktop_secondary_border_width",
+      "label": "Secondary border width",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "select",
+      "id": "button_text_transform",
+      "label": "Button text case",
+      "options": [
+        { "value": "none", "label": "Normal" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "uppercase"
+    },
+
+    {
+      "type": "header",
+      "content": "Mobile layout"
+    },
+    {
+      "type": "range",
+      "id": "mobile_side_padding",
+      "label": "Side padding",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Top padding",
+      "min": 18,
+      "max": 70,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Bottom padding",
+      "min": 18,
+      "max": 70,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "select",
+      "id": "mobile_alignment",
+      "label": "Content alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+
+    {
+      "type": "header",
+      "content": "Mobile typography"
+    },
+    {
+      "type": "select",
+      "id": "mobile_heading_font",
+      "label": "Heading font",
+      "options": [
+        { "value": "Cormorant Garamond", "label": "Cormorant Garamond" },
+        { "value": "Playfair Display", "label": "Playfair Display" },
+        { "value": "Georgia", "label": "Georgia" }
+      ],
+      "default": "Cormorant Garamond"
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_size",
+      "label": "Heading size",
+      "min": 18,
+      "max": 36,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "mobile_heading_line_height",
+      "label": "Heading line height",
+      "options": [
+        { "value": "1", "label": "Compact" },
+        { "value": "1.1", "label": "Normal" },
+        { "value": "1.2", "label": "Relaxed" }
+      ],
+      "default": "1.1"
+    },
+    {
+      "type": "select",
+      "id": "mobile_heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_letter_spacing",
+      "label": "Heading letter spacing",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "mobile_body_font",
+      "label": "Description font",
+      "options": [
+        { "value": "DM Sans", "label": "DM Sans" },
+        { "value": "Montserrat", "label": "Montserrat" },
+        { "value": "Arial", "label": "Arial" }
+      ],
+      "default": "DM Sans"
+    },
+    {
+      "type": "range",
+      "id": "mobile_description_size",
+      "label": "Description size",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "mobile_description_line_height",
+      "label": "Description line height",
+      "options": [
+        { "value": "1.2", "label": "Compact" },
+        { "value": "1.4", "label": "Tight" },
+        { "value": "1.5", "label": "Normal" },
+        { "value": "1.6", "label": "Relaxed" },
+        { "value": "1.8", "label": "Loose" }
+      ],
+      "default": "1.5"
+    },
+    {
+      "type": "select",
+      "id": "mobile_description_weight",
+      "label": "Description weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "mobile_description_letter_spacing",
+      "label": "Description letter spacing",
+      "min": 0,
+      "max": 2,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_description_width",
+      "label": "Description maximum width",
+      "min": 240,
+      "max": 700,
+      "step": 20,
+      "unit": "px",
+      "default": 340
+    },
+    {
+      "type": "range",
+      "id": "mobile_description_top_spacing",
+      "label": "Description top spacing",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+
+    {
+      "type": "header",
+      "content": "Mobile buttons"
+    },
+    {
+      "type": "select",
+      "id": "mobile_button_font",
+      "label": "Button font",
+      "options": [
+        { "value": "DM Sans", "label": "DM Sans" },
+        { "value": "Montserrat", "label": "Montserrat" },
+        { "value": "Arial", "label": "Arial" }
+      ],
+      "default": "DM Sans"
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_size",
+      "label": "Button text size",
+      "min": 9,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "select",
+      "id": "mobile_button_weight",
+      "label": "Button text weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_letter_spacing",
+      "label": "Button letter spacing",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_width",
+      "label": "Button width",
+      "min": 60,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_height",
+      "label": "Button height",
+      "min": 30,
+      "max": 58,
+      "step": 2,
+      "unit": "px",
+      "default": 38
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_horizontal_padding",
+      "label": "Button horizontal padding",
+      "min": 10,
+      "max": 34,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_gap",
+      "label": "Button gap",
+      "min": 6,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "mobile_buttons_top_spacing",
+      "label": "Buttons top spacing",
+      "min": 10,
+      "max": 36,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "select",
+      "id": "mobile_button_direction",
+      "label": "Button layout",
+      "options": [
+        { "value": "row", "label": "Side by side" },
+        { "value": "column", "label": "Stacked" }
+      ],
+      "default": "row"
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_radius",
+      "label": "Button corner radius",
+      "min": 0,
+      "max": 12,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_primary_border_width",
+      "label": "Primary border width",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "mobile_secondary_border_width",
+      "label": "Secondary border width",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    }
+  ],
+  "presets": [
+    {
+      "name": "Forever Piece CTA"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,86 @@
+{% comment %}
+  Renders a Jewellery Price Breakup & Specification Accordion inside main-product.liquid.
+  Reads from `product.metafields.custom.price_breakup.value` (synced by our Custom Backend)
+  or dynamically hydrates from the backend storefront bridge if configured.
+{% endcomment %}
+{%- assign breakup = product.metafields.custom.price_breakup.value -%}
+<details class="pp-accordion" id="mrs-price-breakup-{{ product.id }}" data-product-handle="{{ product.handle }}" data-variant-sku="{{ current_variant.sku }}">
+  <summary>Price Breakup &amp; Specifications</summary>
+  <div class="pp-accordion-content">
+    <div class="mrs-breakup-table" data-breakup-container>
+      {%- if breakup != blank -%}
+        <div class="mrs-breakup-row">
+          <span>Metal ({{ breakup.metalPurity | default: gold_value }})</span>
+          <strong>{{ breakup.metalValueFormatted | default: 'Included' }}</strong>
+        </div>
+        <div class="mrs-breakup-row">
+          <span>Lab-Grown Diamonds ({{ breakup.diamondSummary | default: diamond_value }})</span>
+          <strong>{{ breakup.diamondValueFormatted | default: 'Included' }}</strong>
+        </div>
+        <div class="mrs-breakup-row">
+          <span>Making Charges</span>
+          <strong>{{ breakup.makingChargesFormatted | default: 'Included' }}</strong>
+        </div>
+        <div class="mrs-breakup-row">
+          <span>GST ({{ breakup.gstRatePercent | default: 3 }}%)</span>
+          <strong>{{ breakup.gstAmountFormatted | default: 'Included' }}</strong>
+        </div>
+        <div class="mrs-breakup-row mrs-breakup-row--total">
+          <span>Final Price (Incl. Taxes)</span>
+          <strong data-breakup-total>{{ current_variant.price | money }}</strong>
+        </div>
+      {%- else -%}
+        <div class="mrs-breakup-row">
+          <span>Metal Specification</span>
+          <strong>{{ gold_value | escape }}</strong>
+        </div>
+        <div class="mrs-breakup-row">
+          <span>Diamond Specification</span>
+          <strong>{{ diamond_value | escape }}</strong>
+        </div>
+        <div class="mrs-breakup-row">
+          <span>Certification</span>
+          <strong>IGI Certified Authentic</strong>
+        </div>
+        <div class="mrs-breakup-row mrs-breakup-row--total">
+          <span>Total Price (Incl. 3% GST)</span>
+          <strong data-breakup-total>{{ current_variant.price | money }}</strong>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</details>
+
+<style>
+  .mrs-breakup-table {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 4px;
+  }
+  .mrs-breakup-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    line-height: 1.4;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed #E6E0DE;
+    color: #777070;
+  }
+  .mrs-breakup-row strong {
+    color: #2D2021;
+    font-weight: 500;
+  }
+  .mrs-breakup-row--total {
+    border-bottom: 0;
+    padding-top: 4px;
+    color: #2D2021;
+    font-weight: 600;
+  }
+  .mrs-breakup-row--total strong {
+    color: #8E1230;
+    font-weight: 600;
+  }
+</style>
+

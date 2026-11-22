@@ -1,0 +1,86 @@
+services:
+  mrs_api:
+    build:
+      context: /srv/mangal-royal-studio/app
+      dockerfile: /srv/mangal-royal-studio/deployment/Dockerfile
+      target: api
+    image: mrs-api:staging
+    container_name: mrs_api
+    restart: unless-stopped
+    env_file:
+      - /srv/mangal-royal-studio/deployment/.env.app
+    volumes:
+      - /srv/mangal-royal-studio/product-assets:/srv/mangal-royal-studio/product-assets:ro
+    ports:
+      - "127.0.0.1:4000:4000"
+    networks:
+      - mrs_internal_net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:4000/api/v1/health >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  mrs_storefront:
+    build:
+      context: /srv/mangal-royal-studio/app
+      dockerfile: /srv/mangal-royal-studio/deployment/Dockerfile
+      target: storefront
+      args:
+        NEXT_PUBLIC_API_URL: ''
+        NEXT_PUBLIC_STOREFRONT_API_URL: /api/v1
+        NEXT_PUBLIC_API_BASE_URL: /api/v1
+    image: mrs-storefront:staging
+    container_name: mrs_storefront
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: ''
+      NEXT_PUBLIC_STOREFRONT_API_URL: /api/v1
+      NEXT_PUBLIC_API_BASE_URL: /api/v1
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      mrs_api:
+        condition: service_healthy
+    networks:
+      - mrs_internal_net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:3000/ >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  mrs_admin:
+    build:
+      context: /srv/mangal-royal-studio/app
+      dockerfile: /srv/mangal-royal-studio/deployment/Dockerfile
+      target: admin
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:4000
+        NEXT_PUBLIC_ADMIN_API_URL: http://localhost:4000
+        NEXT_PUBLIC_API_BASE_URL: http://localhost:4000
+    image: mrs-admin:staging
+    container_name: mrs_admin
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://localhost:4000
+      NEXT_PUBLIC_ADMIN_API_URL: http://localhost:4000
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:4000
+    ports:
+      - "127.0.0.1:3001:3001"
+    depends_on:
+      mrs_api:
+        condition: service_healthy
+    networks:
+      - mrs_internal_net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:3001/ >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+networks:
+  mrs_internal_net:
+    external: true

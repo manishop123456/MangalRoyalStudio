@@ -1,0 +1,190 @@
+<section id="mrs-order-tracking-{{ section.id }}" class="mrs-order-tracking">
+  <div class="mrs-ot-container">
+    <header class="mrs-ot-header">
+      <p class="mrs-ot-eyebrow">{{ section.settings.eyebrow }}</p>
+      <h1 class="mrs-ot-title">{{ section.settings.heading }}</h1>
+      <p class="mrs-ot-subtitle">{{ section.settings.subtitle }}</p>
+    </header>
+
+    <form class="mrs-ot-form" data-ot-form>
+      <div class="mrs-ot-field">
+        <label for="ot-order-id">Order Number or AWB Code</label>
+        <input id="ot-order-id" name="orderId" type="text" required placeholder="e.g. MRS-1042 or AWB8849201" />
+      </div>
+      <div class="mrs-ot-field">
+        <label for="ot-contact">Email Address or Phone</label>
+        <input id="ot-contact" name="contact" type="text" required placeholder="your@email.com" />
+      </div>
+      <button type="submit" class="mrs-ot-btn">Track Shipment</button>
+    </form>
+
+    <div class="mrs-ot-result" data-ot-result hidden></div>
+  </div>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Great+Vibes&family=DM+Sans:wght@400;500;600&display=swap');
+
+    #mrs-order-tracking-{{ section.id }} {
+      background: #FFFFFF;
+      color: #190303;
+      padding: 64px 24px 88px;
+    }
+    #mrs-order-tracking-{{ section.id }} .mrs-ot-container {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    #mrs-order-tracking-{{ section.id }} .mrs-ot-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    #mrs-order-tracking-{{ section.id }} .mrs-ot-eyebrow {
+      font-family: 'Battlemade', 'Great Vibes', cursive;
+      font-size: 44px;
+      color: #7D132A;
+      margin: 0 0 4px;
+    }
+    #mrs-order-tracking-{{ section.id }} .mrs-ot-title {
+      font-family: 'Begum', 'Cormorant Garamond', Georgia, serif;
+      font-size: 38px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin: 0 0 10px;
+    }
+    #mrs-order-tracking-{{ section.id }} .mrs-ot-subtitle {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: #6B5B5B;
+      margin: 0;
+    }
+    #mrs-order-tracking-{{ section.id }} .mrs-ot-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 14px;
+      align-items: end;
+      padding: 28px;
+      background: #FBE8DB;
+      border: 1px solid #E7D1C4;
+    }
+    #mrs-order-tracking-{{ section.id }} .mrs-ot-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    #mrs-order-tracking-{{ section.id }} .mrs-ot-field label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #302326;
+    }
+    #mrs-order-tracking-{{ section.id }} .mrs-ot-field input {
+      height: 44px;
+      padding: 0 14px;
+      border: 1px solid #D9C3B5;
+      background: #FFFFFF;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      color: #190303;
+    }
+    #mrs-order-tracking-{{ section.id }} .mrs-ot-btn {
+      height: 44px;
+      padding: 0 28px;
+      background: #7D132A;
+      color: #FFFFFF;
+      border: 0;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+    }
+    #mrs-order-tracking-{{ section.id }} .mrs-ot-result {
+      margin-top: 28px;
+      padding: 24px;
+      border: 1px solid #E6E0DE;
+      background: #FFFFFF;
+      font-family: 'DM Sans', sans-serif;
+    }
+    @media screen and (max-width: 749px) {
+      #mrs-order-tracking-{{ section.id }} .mrs-ot-form {
+        grid-template-columns: 1fr;
+        padding: 20px;
+      }
+    }
+  </style>
+
+  <script>
+    (function () {
+      var root = document.getElementById('mrs-order-tracking-{{ section.id }}');
+      if (!root) return;
+      var form = root.querySelector('[data-ot-form]');
+      var resultBox = root.querySelector('[data-ot-result]');
+      var apiBase = window.MRS_API_URL || '{{ section.settings.api_base_url }}';
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var orderId = form.elements.orderId.value.trim();
+        var contact = form.elements.contact.value.trim();
+        if (!orderId) return;
+
+        resultBox.hidden = false;
+        resultBox.innerHTML = '<p>Checking insured shipment status for <strong>' + orderId + '</strong>...</p>';
+
+        fetch(apiBase + '/api/public/orders/track?query=' + encodeURIComponent(orderId) + '&contact=' + encodeURIComponent(contact))
+          .then(function (r) { return r.json(); })
+          .then(function (res) {
+            if (!res || !res.data) throw new Error('Order not found');
+            var d = res.data;
+            resultBox.innerHTML =
+              '<h3 style="margin:0 0 8px;color:#7D132A;">Order ' + d.orderNumber + ' — ' + d.status + '</h3>' +
+              '<p style="margin:0 0 6px;font-size:13px;"><strong>Courier:</strong> ' + (d.courierName || 'Insured Jewellery Logistics') + ' &bull; <strong>AWB:</strong> ' + (d.awbCode || 'Pending Assignment') + '</p>' +
+              '<p style="margin:0;font-size:13px;color:#5F5555;">' + (d.latestMilestone || 'Your piece is undergoing final quality & IGI verification.') + '</p>';
+          })
+          .catch(function () {
+            resultBox.innerHTML =
+              '<p style="margin:0;font-size:13px;color:#302326;">We could not find an active shipment matching <strong>' + orderId + '</strong> yet. Please check your order confirmation email or contact our concierge.</p>';
+          });
+      });
+    })();
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "MRS Order Tracking",
+  "tag": "section",
+  "class": "mrs-order-tracking-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Insured Delivery"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Track Your Order"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Enter your Mangal Royal Studio order number or Shiprocket AWB code below."
+    },
+    {
+      "type": "text",
+      "id": "api_base_url",
+      "label": "Backend API Base URL",
+      "default": "http://localhost:4000"
+    }
+  ],
+  "presets": [
+    {
+      "name": "MRS Order Tracking"
+    }
+  ]
+}
+{% endschema %}
+

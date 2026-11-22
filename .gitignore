@@ -1,0 +1,63 @@
+node_modules/
+.next/
+out/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+.cache/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.vscode/
+.idea/
+.vercel/
+.turbo/
+**/.data/
+**/.uploads/
+product-assets-inbox/
+processed-product-assets/
+
+# Private commercial pricing/catalogue imports - never commit or serve
+private-imports/
+*.xlsx
+# Generated sample workbook used by importer tests (synthetic data) stays tracked
+!samples/MANGAL JEWELLERY.xlsx
+
+# Database dumps and backups: never in Git (store under ~/MRS-Secure-Backups or the VPS backup dir)
+backups/
+*.dump
+*.backup
+*.bak
+*.sql.gz
+*.sql.zip
+*.pgdump
+*.tar.gz
+*.tgz
+
+# Keys, certificates and credential exports
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+id_rsa*
+id_ed25519*
+*credentials*.json
+*.secret
+rzp-key*.csv
+
+# Alternate Next.js build directories (e.g. verification builds next to `next dev`)
+.next-*/
+
+# Release evidence: contains pricing audits, staging infrastructure details, screenshots and contact emails
+MRS_AUDIT_EVIDENCE/
+
+# Internal supplier / asset spreadsheets at the repository root (commercial data)
+/*.csv

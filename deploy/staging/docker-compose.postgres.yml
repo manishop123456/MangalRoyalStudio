@@ -1,0 +1,26 @@
+services:
+  postgres:
+    image: postgres:18
+    container_name: mrs_postgres
+    restart: unless-stopped
+    env_file:
+      - .env.db
+    environment:
+      PGDATA: /var/lib/postgresql/18/docker
+    volumes:
+      - mrs_postgres_18_data:/var/lib/postgresql
+    networks:
+      - mrs_internal_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  mrs_postgres_18_data:
+    name: mrs_postgres_18_data
+
+networks:
+  mrs_internal_net:
+    external: true

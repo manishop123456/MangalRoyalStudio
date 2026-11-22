@@ -1,0 +1,18 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-wishlist",
+      "settings": {
+        "eyebrow": "Curated by you",
+        "heading": "My Wishlist",
+        "empty_heading": "Your wishlist is currently empty",
+        "empty_text": "Save your favourite certified lab-grown diamond jewellery pieces to revisit them anytime.",
+        "cta_label": "Explore Collections"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
+

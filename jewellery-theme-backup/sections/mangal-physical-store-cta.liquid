@@ -1,0 +1,993 @@
+<section id="mangal-store-cta-{{ section.id }}" class="mangal-store-cta">
+  <div class="msc-inner">
+    <div class="msc-copy">
+      {% if section.settings.heading != blank %}
+        <h2 class="msc-heading">{{ section.settings.heading }}</h2>
+      {% endif %}
+
+      {% if section.settings.script_text != blank %}
+        <div class="msc-script">{{ section.settings.script_text }}</div>
+      {% endif %}
+    </div>
+
+    {% if section.settings.show_button and section.settings.button_label != blank %}
+      <div class="msc-action">
+        <a
+          class="msc-button"
+          href="{{ section.settings.button_link | default: '#' }}"
+        >
+          {{ section.settings.button_label }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+  <style>
+    #mangal-store-cta-{{ section.id }} {
+      --msc-background: {{ section.settings.background_color }};
+      --msc-heading: {{ section.settings.heading_color }};
+      --msc-script: {{ section.settings.script_color }};
+      --msc-button-bg: {{ section.settings.button_background }};
+      --msc-button-text: {{ section.settings.button_text_color }};
+      --msc-button-border: {{ section.settings.button_border_color }};
+
+      width: 100%;
+      background: var(--msc-background);
+      border-top: {{ section.settings.desktop_top_border_width }}px solid {{ section.settings.top_border_color }};
+      border-bottom: {{ section.settings.desktop_bottom_border_width }}px solid {{ section.settings.bottom_border_color }};
+      padding-top: {{ section.settings.desktop_padding_top }}px;
+      padding-bottom: {{ section.settings.desktop_padding_bottom }}px;
+      overflow: hidden;
+    }
+
+    #mangal-store-cta-{{ section.id }},
+    #mangal-store-cta-{{ section.id }} *,
+    #mangal-store-cta-{{ section.id }} *::before,
+    #mangal-store-cta-{{ section.id }} *::after {
+      box-sizing: border-box;
+    }
+
+    #mangal-store-cta-{{ section.id }} .msc-inner {
+      width: min(
+        {{ section.settings.desktop_max_width }}px,
+        calc(100% - {{ section.settings.desktop_side_padding }}px * 2)
+      );
+      min-height: {{ section.settings.desktop_min_height }}px;
+      margin: 0 auto;
+      display: flex;
+      align-items: {{ section.settings.desktop_vertical_alignment }};
+      justify-content: space-between;
+      gap: {{ section.settings.desktop_content_gap }}px;
+    }
+
+    #mangal-store-cta-{{ section.id }} .msc-copy {
+      flex: 1 1 auto;
+      min-width: 0;
+      text-align: {{ section.settings.desktop_text_alignment }};
+    }
+
+    #mangal-store-cta-{{ section.id }} .msc-heading {
+      margin: 0;
+      color: var(--msc-heading);
+      font-family: {{ section.settings.desktop_heading_font }}, Georgia, serif;
+      font-size: {{ section.settings.desktop_heading_size }}px;
+      line-height: {{ section.settings.desktop_heading_line_height }};
+      font-weight: {{ section.settings.desktop_heading_weight }};
+      letter-spacing: {{ section.settings.desktop_heading_letter_spacing }}px;
+    }
+
+    #mangal-store-cta-{{ section.id }} .msc-script {
+      margin-top: {{ section.settings.desktop_script_top_spacing }}px;
+      color: var(--msc-script);
+      font-family: {{ section.settings.desktop_script_font }}, cursive;
+      font-size: {{ section.settings.desktop_script_size }}px;
+      line-height: {{ section.settings.desktop_script_line_height }};
+      font-weight: {{ section.settings.desktop_script_weight }};
+      letter-spacing: {{ section.settings.desktop_script_letter_spacing }}px;
+    }
+
+    #mangal-store-cta-{{ section.id }} .msc-action {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: {{ section.settings.desktop_button_alignment }};
+    }
+
+    #mangal-store-cta-{{ section.id }} .msc-button {
+      min-width: {{ section.settings.desktop_button_min_width }}px;
+      min-height: {{ section.settings.desktop_button_height }}px;
+      padding-left: {{ section.settings.desktop_button_horizontal_padding }}px;
+      padding-right: {{ section.settings.desktop_button_horizontal_padding }}px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--msc-button-bg);
+      color: var(--msc-button-text);
+      border: {{ section.settings.desktop_button_border_width }}px solid var(--msc-button-border);
+      border-radius: {{ section.settings.desktop_button_radius }}px;
+      font-family: {{ section.settings.desktop_button_font }}, Arial, sans-serif;
+      font-size: {{ section.settings.desktop_button_size }}px;
+      line-height: 1;
+      font-weight: {{ section.settings.desktop_button_weight }};
+      letter-spacing: {{ section.settings.desktop_button_letter_spacing }}px;
+      text-transform: {{ section.settings.button_text_transform }};
+      text-decoration: none;
+      white-space: nowrap;
+      transition:
+        background-color .2s ease,
+        color .2s ease,
+        border-color .2s ease,
+        transform .2s ease;
+    }
+
+    #mangal-store-cta-{{ section.id }} .msc-button:hover {
+      background: var(--msc-button-text);
+      color: var(--msc-button-bg);
+      border-color: var(--msc-button-text);
+      transform: translateY(-1px);
+    }
+
+    @media screen and (max-width: 749px) {
+      #mangal-store-cta-{{ section.id }} {
+        border-top-width: {{ section.settings.mobile_top_border_width }}px;
+        border-bottom-width: {{ section.settings.mobile_bottom_border_width }}px;
+        padding-top: {{ section.settings.mobile_padding_top }}px;
+        padding-bottom: {{ section.settings.mobile_padding_bottom }}px;
+      }
+
+      #mangal-store-cta-{{ section.id }} .msc-inner {
+        width: calc(100% - {{ section.settings.mobile_side_padding }}px * 2);
+        max-width: none;
+        min-height: {{ section.settings.mobile_min_height }}px;
+        flex-direction: {{ section.settings.mobile_layout_direction }};
+        align-items: {{ section.settings.mobile_vertical_alignment }};
+        justify-content: {{ section.settings.mobile_content_justification }};
+        gap: {{ section.settings.mobile_content_gap }}px;
+      }
+
+      #mangal-store-cta-{{ section.id }} .msc-copy {
+        width: 100%;
+        text-align: {{ section.settings.mobile_text_alignment }};
+      }
+
+      #mangal-store-cta-{{ section.id }} .msc-heading {
+        font-family: {{ section.settings.mobile_heading_font }}, Georgia, serif;
+        font-size: {{ section.settings.mobile_heading_size }}px;
+        line-height: {{ section.settings.mobile_heading_line_height }};
+        font-weight: {{ section.settings.mobile_heading_weight }};
+        letter-spacing: {{ section.settings.mobile_heading_letter_spacing }}px;
+      }
+
+      #mangal-store-cta-{{ section.id }} .msc-script {
+        margin-top: {{ section.settings.mobile_script_top_spacing }}px;
+        font-family: {{ section.settings.mobile_script_font }}, cursive;
+        font-size: {{ section.settings.mobile_script_size }}px;
+        line-height: {{ section.settings.mobile_script_line_height }};
+        font-weight: {{ section.settings.mobile_script_weight }};
+        letter-spacing: {{ section.settings.mobile_script_letter_spacing }}px;
+      }
+
+      #mangal-store-cta-{{ section.id }} .msc-action {
+        width: 100%;
+        justify-content: {{ section.settings.mobile_button_alignment }};
+      }
+
+      #mangal-store-cta-{{ section.id }} .msc-button {
+        width: {{ section.settings.mobile_button_width }}%;
+        min-width: 0;
+        min-height: {{ section.settings.mobile_button_height }}px;
+        padding-left: {{ section.settings.mobile_button_horizontal_padding }}px;
+        padding-right: {{ section.settings.mobile_button_horizontal_padding }}px;
+        border-width: {{ section.settings.mobile_button_border_width }}px;
+        border-radius: {{ section.settings.mobile_button_radius }}px;
+        font-family: {{ section.settings.mobile_button_font }}, Arial, sans-serif;
+        font-size: {{ section.settings.mobile_button_size }}px;
+        font-weight: {{ section.settings.mobile_button_weight }};
+        letter-spacing: {{ section.settings.mobile_button_letter_spacing }}px;
+      }
+    }
+  </style>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Parisienne&family=Playfair+Display:wght@400;500;600;700&display=swap');
+  </style>
+</section>
+
+{% schema %}
+{
+  "name": "Physical Store CTA",
+  "tag": "section",
+  "class": "mangal-physical-store-cta-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Main heading",
+      "default": "Loved it online? Now you can find it in our physical store."
+    },
+    {
+      "type": "text",
+      "id": "script_text",
+      "label": "Script line",
+      "default": "visit our store !"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_button",
+      "label": "Show button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "GET STORE LOCATION"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#FBE8DB"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#302326"
+    },
+    {
+      "type": "color",
+      "id": "script_color",
+      "label": "Script color",
+      "default": "#302326"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Button background",
+      "default": "#8E1230"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button border",
+      "default": "#8E1230"
+    },
+    {
+      "type": "color",
+      "id": "top_border_color",
+      "label": "Top border color",
+      "default": "#E7D1C4"
+    },
+    {
+      "type": "color",
+      "id": "bottom_border_color",
+      "label": "Bottom border color",
+      "default": "#E7D1C4"
+    },
+
+    {
+      "type": "header",
+      "content": "Desktop layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_max_width",
+      "label": "Maximum content width",
+      "min": 700,
+      "max": 1400,
+      "step": 20,
+      "unit": "px",
+      "default": 1160
+    },
+    {
+      "type": "range",
+      "id": "desktop_side_padding",
+      "label": "Side padding",
+      "min": 16,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 38
+    },
+    {
+      "type": "range",
+      "id": "desktop_min_height",
+      "label": "Minimum section content height",
+      "min": 80,
+      "max": 220,
+      "step": 5,
+      "unit": "px",
+      "default": 145
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_top",
+      "label": "Top padding",
+      "min": 10,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_bottom",
+      "label": "Bottom padding",
+      "min": 10,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "desktop_content_gap",
+      "label": "Content to button gap",
+      "min": 20,
+      "max": 160,
+      "step": 5,
+      "unit": "px",
+      "default": 70
+    },
+    {
+      "type": "select",
+      "id": "desktop_vertical_alignment",
+      "label": "Vertical alignment",
+      "options": [
+        { "value": "flex-start", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "flex-end", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "desktop_text_alignment",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "desktop_button_alignment",
+      "label": "Button alignment",
+      "options": [
+        { "value": "flex-start", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "flex-end", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "desktop_top_border_width",
+      "label": "Top border width",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "desktop_bottom_border_width",
+      "label": "Bottom border width",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+
+    {
+      "type": "header",
+      "content": "Desktop typography"
+    },
+    {
+      "type": "select",
+      "id": "desktop_heading_font",
+      "label": "Heading font",
+      "options": [
+        { "value": "Cormorant Garamond", "label": "Cormorant Garamond" },
+        { "value": "Playfair Display", "label": "Playfair Display" },
+        { "value": "Georgia", "label": "Georgia" }
+      ],
+      "default": "Cormorant Garamond"
+    },
+    {
+      "type": "range",
+      "id": "desktop_heading_size",
+      "label": "Heading size",
+      "min": 20,
+      "max": 52,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "select",
+      "id": "desktop_heading_line_height",
+      "label": "Heading line height",
+      "options": [
+        { "value": "1", "label": "Compact" },
+        { "value": "1.1", "label": "Normal" },
+        { "value": "1.2", "label": "Relaxed" }
+      ],
+      "default": "1.1"
+    },
+    {
+      "type": "select",
+      "id": "desktop_heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "range",
+      "id": "desktop_heading_letter_spacing",
+      "label": "Heading letter spacing",
+      "min": -2,
+      "max": 2,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "desktop_script_font",
+      "label": "Script font",
+      "options": [
+        { "value": "Allura", "label": "Allura" },
+        { "value": "Parisienne", "label": "Parisienne" },
+        { "value": "Georgia", "label": "Georgia" }
+      ],
+      "default": "Allura"
+    },
+    {
+      "type": "range",
+      "id": "desktop_script_size",
+      "label": "Script size",
+      "min": 24,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 42
+    },
+    {
+      "type": "select",
+      "id": "desktop_script_line_height",
+      "label": "Script line height",
+      "options": [
+        { "value": "0.9", "label": "Compact" },
+        { "value": "1", "label": "Normal" },
+        { "value": "1.1", "label": "Relaxed" }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "select",
+      "id": "desktop_script_weight",
+      "label": "Script weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "desktop_script_letter_spacing",
+      "label": "Script letter spacing",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "desktop_script_top_spacing",
+      "label": "Script top spacing",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+
+    {
+      "type": "header",
+      "content": "Desktop button"
+    },
+    {
+      "type": "select",
+      "id": "desktop_button_font",
+      "label": "Button font",
+      "options": [
+        { "value": "DM Sans", "label": "DM Sans" },
+        { "value": "Montserrat", "label": "Montserrat" },
+        { "value": "Arial", "label": "Arial" }
+      ],
+      "default": "DM Sans"
+    },
+    {
+      "type": "range",
+      "id": "desktop_button_size",
+      "label": "Button text size",
+      "min": 8,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 9
+    },
+    {
+      "type": "select",
+      "id": "desktop_button_weight",
+      "label": "Button text weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "range",
+      "id": "desktop_button_letter_spacing",
+      "label": "Button letter spacing",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "desktop_button_min_width",
+      "label": "Button minimum width",
+      "min": 110,
+      "max": 220,
+      "step": 5,
+      "unit": "px",
+      "default": 150
+    },
+    {
+      "type": "range",
+      "id": "desktop_button_height",
+      "label": "Button height",
+      "min": 28,
+      "max": 54,
+      "step": 2,
+      "unit": "px",
+      "default": 34
+    },
+    {
+      "type": "range",
+      "id": "desktop_button_horizontal_padding",
+      "label": "Button horizontal padding",
+      "min": 10,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "desktop_button_border_width",
+      "label": "Button border width",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "desktop_button_radius",
+      "label": "Button corner radius",
+      "min": 0,
+      "max": 12,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "button_text_transform",
+      "label": "Button text case",
+      "options": [
+        { "value": "none", "label": "Normal" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "uppercase"
+    },
+
+    {
+      "type": "header",
+      "content": "Mobile layout"
+    },
+    {
+      "type": "range",
+      "id": "mobile_side_padding",
+      "label": "Side padding",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "mobile_min_height",
+      "label": "Minimum content height",
+      "min": 180,
+      "max": 360,
+      "step": 10,
+      "unit": "px",
+      "default": 230
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Top padding",
+      "min": 18,
+      "max": 70,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Bottom padding",
+      "min": 18,
+      "max": 70,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "mobile_content_gap",
+      "label": "Text to button gap",
+      "min": 14,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout_direction",
+      "label": "Mobile layout",
+      "options": [
+        { "value": "column", "label": "Stacked" },
+        { "value": "column-reverse", "label": "Reversed" }
+      ],
+      "default": "column"
+    },
+    {
+      "type": "select",
+      "id": "mobile_vertical_alignment",
+      "label": "Vertical alignment",
+      "options": [
+        { "value": "flex-start", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "flex-end", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "mobile_content_justification",
+      "label": "Content distribution",
+      "options": [
+        { "value": "flex-start", "label": "Start" },
+        { "value": "center", "label": "Center" },
+        { "value": "space-between", "label": "Space between" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "mobile_text_alignment",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "mobile_button_alignment",
+      "label": "Button alignment",
+      "options": [
+        { "value": "flex-start", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "flex-end", "label": "Right" }
+      ],
+      "default": "flex-start"
+    },
+    {
+      "type": "range",
+      "id": "mobile_top_border_width",
+      "label": "Top border width",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "mobile_bottom_border_width",
+      "label": "Bottom border width",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+
+    {
+      "type": "header",
+      "content": "Mobile typography"
+    },
+    {
+      "type": "select",
+      "id": "mobile_heading_font",
+      "label": "Heading font",
+      "options": [
+        { "value": "Cormorant Garamond", "label": "Cormorant Garamond" },
+        { "value": "Playfair Display", "label": "Playfair Display" },
+        { "value": "Georgia", "label": "Georgia" }
+      ],
+      "default": "Cormorant Garamond"
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_size",
+      "label": "Heading size",
+      "min": 18,
+      "max": 36,
+      "step": 2,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "select",
+      "id": "mobile_heading_line_height",
+      "label": "Heading line height",
+      "options": [
+        { "value": "1", "label": "Compact" },
+        { "value": "1.1", "label": "Normal" },
+        { "value": "1.2", "label": "Relaxed" }
+      ],
+      "default": "1.1"
+    },
+    {
+      "type": "select",
+      "id": "mobile_heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_letter_spacing",
+      "label": "Heading letter spacing",
+      "min": -2,
+      "max": 2,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "mobile_script_font",
+      "label": "Script font",
+      "options": [
+        { "value": "Allura", "label": "Allura" },
+        { "value": "Parisienne", "label": "Parisienne" },
+        { "value": "Georgia", "label": "Georgia" }
+      ],
+      "default": "Allura"
+    },
+    {
+      "type": "range",
+      "id": "mobile_script_size",
+      "label": "Script size",
+      "min": 22,
+      "max": 52,
+      "step": 2,
+      "unit": "px",
+      "default": 34
+    },
+    {
+      "type": "select",
+      "id": "mobile_script_line_height",
+      "label": "Script line height",
+      "options": [
+        { "value": "0.9", "label": "Compact" },
+        { "value": "1", "label": "Normal" },
+        { "value": "1.1", "label": "Relaxed" }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "select",
+      "id": "mobile_script_weight",
+      "label": "Script weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "mobile_script_letter_spacing",
+      "label": "Script letter spacing",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_script_top_spacing",
+      "label": "Script top spacing",
+      "min": 0,
+      "max": 16,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+
+    {
+      "type": "header",
+      "content": "Mobile button"
+    },
+    {
+      "type": "select",
+      "id": "mobile_button_font",
+      "label": "Button font",
+      "options": [
+        { "value": "DM Sans", "label": "DM Sans" },
+        { "value": "Montserrat", "label": "Montserrat" },
+        { "value": "Arial", "label": "Arial" }
+      ],
+      "default": "DM Sans"
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_size",
+      "label": "Button text size",
+      "min": 8,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 9
+    },
+    {
+      "type": "select",
+      "id": "mobile_button_weight",
+      "label": "Button text weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_letter_spacing",
+      "label": "Button letter spacing",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_width",
+      "label": "Button width",
+      "min": 60,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_height",
+      "label": "Button height",
+      "min": 30,
+      "max": 58,
+      "step": 2,
+      "unit": "px",
+      "default": 38
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_horizontal_padding",
+      "label": "Button horizontal padding",
+      "min": 10,
+      "max": 34,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_border_width",
+      "label": "Button border width",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_radius",
+      "label": "Button corner radius",
+      "min": 0,
+      "max": 12,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Physical Store CTA"
+    }
+  ]
+}
+{% endschema %}

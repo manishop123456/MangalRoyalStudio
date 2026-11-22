@@ -1,0 +1,17 @@
+{
+  "sections": {
+    "main": {
+      "type": "order-tracking",
+      "settings": {
+        "eyebrow": "Insured Delivery",
+        "heading": "Track Your Order",
+        "subtitle": "Enter your Mangal Royal Studio order number or Shiprocket AWB code below.",
+        "api_base_url": "http://localhost:4000"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
+

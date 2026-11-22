@@ -1,0 +1,2147 @@
+{% liquid
+  assign section_id = 'legacy-jewellery-' | append: section.id
+%}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Allura&family=Bodoni+Moda:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&family=Montserrat:wght@400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+  /* =========================================================
+     VARIABLES
+  ========================================================= */
+
+  #{{ section_id }} {
+    --lj-background: {{ section.settings.background_color }};
+    --lj-eyebrow-color: {{ section.settings.eyebrow_color }};
+    --lj-heading-color: {{ section.settings.heading_color }};
+    --lj-body-color: {{ section.settings.body_color }};
+    --lj-quote-color: {{ section.settings.quote_color }};
+    --lj-image-border: {{ section.settings.image_border_color }};
+
+    /* Desktop */
+    --lj-desktop-max-width: {{ section.settings.desktop_max_width }}px;
+
+    --lj-desktop-padding-top: {{ section.settings.desktop_padding_top }}px;
+    --lj-desktop-padding-bottom: {{ section.settings.desktop_padding_bottom }}px;
+    --lj-desktop-padding-left: {{ section.settings.desktop_padding_left }}px;
+    --lj-desktop-padding-right: {{ section.settings.desktop_padding_right }}px;
+
+    --lj-desktop-column-gap: {{ section.settings.desktop_column_gap }}px;
+
+    --lj-desktop-image-area-width: {{ section.settings.desktop_image_area_width }}%;
+    --lj-desktop-content-width: {{ section.settings.desktop_content_width }}%;
+
+    --lj-desktop-content-offset: {{ section.settings.desktop_content_offset }}px;
+
+    --lj-desktop-back-width: {{ section.settings.desktop_back_image_width }}px;
+    --lj-desktop-back-height: {{ section.settings.desktop_back_image_height }}px;
+
+    --lj-desktop-front-width: {{ section.settings.desktop_front_image_width }}px;
+    --lj-desktop-front-height: {{ section.settings.desktop_front_image_height }}px;
+
+    --lj-desktop-back-top: {{ section.settings.desktop_back_image_top }}px;
+    --lj-desktop-back-left: {{ section.settings.desktop_back_image_left }}px;
+
+    --lj-desktop-front-top: {{ section.settings.desktop_front_image_top }}px;
+    --lj-desktop-front-left: {{ section.settings.desktop_front_image_left }}px;
+
+    --lj-desktop-image-border-width: {{ section.settings.desktop_image_border_width }}px;
+
+    --lj-desktop-eyebrow-size: {{ section.settings.desktop_eyebrow_size }}px;
+    --lj-desktop-heading-size: {{ section.settings.desktop_heading_size }}px;
+    --lj-desktop-body-size: {{ section.settings.desktop_body_size }}px;
+    --lj-desktop-quote-size: {{ section.settings.desktop_quote_size }}px;
+
+    --lj-desktop-eyebrow-line-height: {{ section.settings.desktop_eyebrow_line_height }};
+    --lj-desktop-heading-line-height: {{ section.settings.desktop_heading_line_height }};
+    --lj-desktop-body-line-height: {{ section.settings.desktop_body_line_height }};
+    --lj-desktop-quote-line-height: {{ section.settings.desktop_quote_line_height }};
+
+    --lj-desktop-eyebrow-margin: {{ section.settings.desktop_eyebrow_margin }}px;
+    --lj-desktop-heading-margin: {{ section.settings.desktop_heading_margin }}px;
+    --lj-desktop-paragraph-gap: {{ section.settings.desktop_paragraph_gap }}px;
+    --lj-desktop-quote-margin: {{ section.settings.desktop_quote_margin }}px;
+
+    /* Mobile */
+    --lj-mobile-padding-top: {{ section.settings.mobile_padding_top }}px;
+    --lj-mobile-padding-bottom: {{ section.settings.mobile_padding_bottom }}px;
+    --lj-mobile-padding-left: {{ section.settings.mobile_padding_left }}px;
+    --lj-mobile-padding-right: {{ section.settings.mobile_padding_right }}px;
+
+    --lj-mobile-image-gap: {{ section.settings.mobile_image_gap }}px;
+
+    --lj-mobile-back-width: {{ section.settings.mobile_back_image_width }}px;
+    --lj-mobile-back-height: {{ section.settings.mobile_back_image_height }}px;
+
+    --lj-mobile-front-width: {{ section.settings.mobile_front_image_width }}px;
+    --lj-mobile-front-height: {{ section.settings.mobile_front_image_height }}px;
+
+    --lj-mobile-back-top: {{ section.settings.mobile_back_image_top }}px;
+    --lj-mobile-back-left: {{ section.settings.mobile_back_image_left }}px;
+
+    --lj-mobile-front-top: {{ section.settings.mobile_front_image_top }}px;
+    --lj-mobile-front-left: {{ section.settings.mobile_front_image_left }}px;
+
+    --lj-mobile-image-border-width: {{ section.settings.mobile_image_border_width }}px;
+
+    --lj-mobile-eyebrow-size: {{ section.settings.mobile_eyebrow_size }}px;
+    --lj-mobile-heading-size: {{ section.settings.mobile_heading_size }}px;
+    --lj-mobile-body-size: {{ section.settings.mobile_body_size }}px;
+    --lj-mobile-quote-size: {{ section.settings.mobile_quote_size }}px;
+
+    --lj-mobile-eyebrow-line-height: {{ section.settings.mobile_eyebrow_line_height }};
+    --lj-mobile-heading-line-height: {{ section.settings.mobile_heading_line_height }};
+    --lj-mobile-body-line-height: {{ section.settings.mobile_body_line_height }};
+    --lj-mobile-quote-line-height: {{ section.settings.mobile_quote_line_height }};
+
+    --lj-mobile-eyebrow-margin: {{ section.settings.mobile_eyebrow_margin }}px;
+    --lj-mobile-heading-margin: {{ section.settings.mobile_heading_margin }}px;
+    --lj-mobile-paragraph-gap: {{ section.settings.mobile_paragraph_gap }}px;
+    --lj-mobile-quote-margin: {{ section.settings.mobile_quote_margin }}px;
+  }
+
+
+  /* =========================================================
+     RESET / ROOT
+  ========================================================= */
+
+  #{{ section_id }} {
+    width: 100%;
+    max-width: 100%;
+    background: var(--lj-background);
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  #{{ section_id }} *,
+  #{{ section_id }} *::before,
+  #{{ section_id }} *::after {
+    box-sizing: border-box;
+  }
+
+
+  /* =========================================================
+     DESKTOP CONTAINER
+  ========================================================= */
+
+  #{{ section_id }} .lj-container {
+    width: 100%;
+    max-width: var(--lj-desktop-max-width);
+
+    margin: 0 auto;
+
+    padding-top: var(--lj-desktop-padding-top);
+    padding-bottom: var(--lj-desktop-padding-bottom);
+    padding-left: var(--lj-desktop-padding-left);
+    padding-right: var(--lj-desktop-padding-right);
+  }
+
+
+  /* =========================================================
+     DESKTOP GRID
+  ========================================================= */
+
+  #{{ section_id }} .lj-grid {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+
+    gap: var(--lj-desktop-column-gap);
+  }
+
+
+  /* =========================================================
+     DESKTOP IMAGE COLUMN
+  ========================================================= */
+
+  #{{ section_id }} .lj-image-column {
+    position: relative;
+
+    width: var(--lj-desktop-image-area-width);
+    flex: 0 0 var(--lj-desktop-image-area-width);
+
+    height: max(
+      var(--lj-desktop-back-height),
+      calc(
+        var(--lj-desktop-front-top) +
+        var(--lj-desktop-front-height)
+      )
+    );
+
+    min-height: 500px;
+
+    overflow: visible;
+  }
+
+
+  /* =========================================================
+     DESKTOP IMAGE STAGE
+  ========================================================= */
+
+  #{{ section_id }} .lj-image-stage {
+    position: relative;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: visible;
+  }
+
+
+  /* =========================================================
+     COMMON IMAGE
+  ========================================================= */
+
+  #{{ section_id }} .lj-image {
+    position: absolute;
+
+    display: block;
+
+    object-fit: cover;
+    object-position: center center;
+
+    background: #f5f5f5;
+
+    border-style: solid;
+    border-color: var(--lj-image-border);
+    border-width: var(--lj-desktop-image-border-width);
+
+    margin: 0;
+    padding: 0;
+  }
+
+
+  /* =========================================================
+     DESKTOP BACK IMAGE
+  ========================================================= */
+
+  #{{ section_id }} .lj-back-image {
+    width: var(--lj-desktop-back-width);
+    height: var(--lj-desktop-back-height);
+
+    top: var(--lj-desktop-back-top);
+    left: var(--lj-desktop-back-left);
+
+    z-index: 1;
+  }
+
+
+  /* =========================================================
+     DESKTOP FRONT IMAGE
+  ========================================================= */
+
+  #{{ section_id }} .lj-front-image {
+    width: var(--lj-desktop-front-width);
+    height: var(--lj-desktop-front-height);
+
+    top: var(--lj-desktop-front-top);
+    left: var(--lj-desktop-front-left);
+
+    z-index: 2;
+  }
+
+
+  /* =========================================================
+     PLACEHOLDERS
+  ========================================================= */
+
+  #{{ section_id }} .lj-image-placeholder {
+    position: absolute;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #eeeeee;
+    color: #777777;
+
+    text-align: center;
+
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+
+    border-style: solid;
+    border-color: var(--lj-image-border);
+    border-width: var(--lj-desktop-image-border-width);
+
+    overflow: hidden;
+  }
+
+  #{{ section_id }} .lj-back-placeholder {
+    width: var(--lj-desktop-back-width);
+    height: var(--lj-desktop-back-height);
+
+    top: var(--lj-desktop-back-top);
+    left: var(--lj-desktop-back-left);
+
+    z-index: 1;
+  }
+
+  #{{ section_id }} .lj-front-placeholder {
+    width: var(--lj-desktop-front-width);
+    height: var(--lj-desktop-front-height);
+
+    top: var(--lj-desktop-front-top);
+    left: var(--lj-desktop-front-left);
+
+    z-index: 2;
+  }
+
+
+  /* =========================================================
+     DESKTOP CONTENT
+  ========================================================= */
+
+  #{{ section_id }} .lj-content {
+    width: var(--lj-desktop-content-width);
+    flex: 0 0 var(--lj-desktop-content-width);
+
+    padding-top: var(--lj-desktop-content-offset);
+
+    min-width: 0;
+  }
+
+
+  /* =========================================================
+     EYEBROW
+  ========================================================= */
+
+  #{{ section_id }} .lj-eyebrow {
+    margin: 0 0 var(--lj-desktop-eyebrow-margin);
+
+    color: var(--lj-eyebrow-color);
+
+    font-family: 'Allura', cursive;
+
+    font-size: var(--lj-desktop-eyebrow-size);
+    line-height: var(--lj-desktop-eyebrow-line-height);
+
+    font-weight: 400;
+
+    letter-spacing: {{ section.settings.eyebrow_letter_spacing }}px;
+  }
+
+
+  /* =========================================================
+     HEADING
+  ========================================================= */
+
+  #{{ section_id }} .lj-heading {
+    margin: 0 0 var(--lj-desktop-heading-margin);
+
+    color: var(--lj-heading-color);
+
+    font-family: '{{ section.settings.heading_font }}', serif;
+
+    font-size: var(--lj-desktop-heading-size);
+    line-height: var(--lj-desktop-heading-line-height);
+
+    font-weight: {{ section.settings.heading_weight }};
+
+    letter-spacing: {{ section.settings.heading_letter_spacing }}px;
+
+    text-transform: {{ section.settings.heading_transform }};
+
+    word-break: normal;
+    overflow-wrap: normal;
+  }
+
+
+  /* =========================================================
+     BODY
+  ========================================================= */
+
+  #{{ section_id }} .lj-body {
+    color: var(--lj-body-color);
+
+    font-family: '{{ section.settings.body_font }}', sans-serif;
+
+    font-size: var(--lj-desktop-body-size);
+    line-height: var(--lj-desktop-body-line-height);
+
+    font-weight: {{ section.settings.body_weight }};
+
+    letter-spacing: {{ section.settings.body_letter_spacing }}px;
+  }
+
+  #{{ section_id }} .lj-body p {
+    margin: 0 0 var(--lj-desktop-paragraph-gap);
+  }
+
+  #{{ section_id }} .lj-body p:last-child {
+    margin-bottom: 0;
+  }
+
+
+  /* =========================================================
+     QUOTE
+  ========================================================= */
+
+  #{{ section_id }} .lj-quote {
+    margin: var(--lj-desktop-quote-margin) 0 0;
+
+    color: var(--lj-quote-color);
+
+    font-family: '{{ section.settings.quote_font }}', serif;
+
+    font-size: var(--lj-desktop-quote-size);
+    line-height: var(--lj-desktop-quote-line-height);
+
+    font-weight: {{ section.settings.quote_weight }};
+
+    letter-spacing: {{ section.settings.quote_letter_spacing }}px;
+  }
+
+
+  /* =========================================================
+     MOBILE
+     
+     IMPORTANT:
+     Completely different layout.
+     
+     Image stage is a separate physical block.
+     Content comes AFTER it in normal document flow.
+  ========================================================= */
+
+  @media screen and (max-width: 749px) {
+
+    #{{ section_id }} {
+      width: 100%;
+      max-width: 100%;
+
+      overflow-x: hidden;
+      overflow-y: visible;
+
+      position: relative;
+
+      isolation: isolate;
+    }
+
+
+    /* -------------------------------------------------------
+       MOBILE CONTAINER
+    ------------------------------------------------------- */
+
+    #{{ section_id }} .lj-container {
+      width: 100%;
+      max-width: 100%;
+
+      margin: 0;
+
+      padding-top: var(--lj-mobile-padding-top);
+      padding-bottom: var(--lj-mobile-padding-bottom);
+      padding-left: var(--lj-mobile-padding-left);
+      padding-right: var(--lj-mobile-padding-right);
+
+      overflow: visible;
+    }
+
+
+    /* -------------------------------------------------------
+       MOBILE GRID
+    ------------------------------------------------------- */
+
+    #{{ section_id }} .lj-grid {
+      display: flex;
+
+      flex-direction: column;
+
+      align-items: stretch;
+      justify-content: flex-start;
+
+      width: 100%;
+      max-width: 100%;
+
+      gap: 0;
+
+      margin: 0;
+      padding: 0;
+    }
+
+
+    /* =======================================================
+       MOBILE IMAGE COLUMN
+       
+       THIS IS THE CRITICAL FIX.
+       
+       The column has a real height.
+       The image stage lives INSIDE it.
+       Content comes after this block.
+    ======================================================= */
+
+    #{{ section_id }} .lj-image-column {
+      position: relative;
+
+      display: block;
+
+      width: 100%;
+      max-width: 100%;
+
+      /*
+        420px is the mobile composition area.
+
+        Images may overlap each other inside this area,
+        but cannot affect the content block below.
+      */
+      height: 420px;
+      min-height: 420px;
+
+      flex: 0 0 420px;
+
+      margin: 0 0 var(--lj-mobile-image-gap);
+
+      padding: 0;
+
+      overflow: visible;
+
+      order: 1;
+
+      isolation: isolate;
+    }
+
+
+    /* =======================================================
+       MOBILE IMAGE STAGE
+    ======================================================= */
+
+    #{{ section_id }} .lj-image-stage {
+      position: relative;
+
+      display: block;
+
+      width: 100%;
+      height: 420px;
+
+      margin: 0;
+      padding: 0;
+
+      overflow: visible;
+    }
+
+
+    /* =======================================================
+       MOBILE COMMON IMAGE
+    ======================================================= */
+
+    #{{ section_id }} .lj-image {
+      position: absolute;
+
+      display: block;
+
+      object-fit: cover;
+      object-position: center center;
+
+      margin: 0;
+      padding: 0;
+
+      border-style: solid;
+      border-color: var(--lj-image-border);
+
+      border-width: var(--lj-mobile-image-border-width);
+
+      max-width: none;
+    }
+
+
+    /* =======================================================
+       MOBILE BACK IMAGE
+       
+       Responsive width prevents horizontal overflow.
+    ======================================================= */
+
+    #{{ section_id }} .lj-back-image {
+      top: 0;
+      left: 0;
+
+      width: min(
+        var(--lj-mobile-back-width),
+        calc(100% - 35px)
+      );
+
+      max-width: calc(100% - 35px);
+
+      height: var(--lj-mobile-back-height);
+
+      z-index: 1;
+    }
+
+
+    /* =======================================================
+       MOBILE FRONT IMAGE
+       
+       Always stays inside the image stage.
+    ======================================================= */
+
+    #{{ section_id }} .lj-front-image {
+      top: 155px;
+      left: 45px;
+
+      width: min(
+        var(--lj-mobile-front-width),
+        calc(100% - 45px)
+      );
+
+      max-width: calc(100% - 45px);
+
+      height: var(--lj-mobile-front-height);
+
+      z-index: 2;
+    }
+
+
+    /* =======================================================
+       MOBILE BACK PLACEHOLDER
+    ======================================================= */
+
+    #{{ section_id }} .lj-back-placeholder {
+      top: 0;
+      left: 0;
+
+      width: min(
+        var(--lj-mobile-back-width),
+        calc(100% - 35px)
+      );
+
+      max-width: calc(100% - 35px);
+
+      height: var(--lj-mobile-back-height);
+
+      border-width: var(--lj-mobile-image-border-width);
+
+      z-index: 1;
+    }
+
+
+    /* =======================================================
+       MOBILE FRONT PLACEHOLDER
+    ======================================================= */
+
+    #{{ section_id }} .lj-front-placeholder {
+      top: 155px;
+      left: 45px;
+
+      width: min(
+        var(--lj-mobile-front-width),
+        calc(100% - 45px)
+      );
+
+      max-width: calc(100% - 45px);
+
+      height: var(--lj-mobile-front-height);
+
+      border-width: var(--lj-mobile-image-border-width);
+
+      z-index: 2;
+    }
+
+
+    /* =======================================================
+       MOBILE CONTENT
+       
+       NO absolute position.
+       NO negative margin.
+       NO transform.
+       
+       It exists AFTER the image column.
+    ======================================================= */
+
+    #{{ section_id }} .lj-content {
+      position: relative;
+
+      display: block;
+
+      width: 100%;
+      max-width: 100%;
+
+      height: auto;
+      min-height: 0;
+
+      margin: 0;
+      padding: 0;
+
+      flex: 0 0 auto;
+
+      order: 2;
+
+      clear: both;
+
+      float: none;
+
+      transform: none;
+
+      overflow: visible;
+
+      text-align: {{ section.settings.mobile_text_alignment }};
+
+      z-index: 10;
+    }
+
+
+    /* =======================================================
+       MOBILE EYEBROW
+    ======================================================= */
+
+    #{{ section_id }} .lj-eyebrow {
+      display: block;
+
+      width: 100%;
+      max-width: 100%;
+
+      margin-top: 0;
+      margin-right: 0;
+      margin-bottom: var(--lj-mobile-eyebrow-margin);
+      margin-left: 0;
+
+      padding: 0;
+
+      color: var(--lj-eyebrow-color);
+
+      font-family: 'Allura', cursive;
+
+      font-size: var(--lj-mobile-eyebrow-size);
+      line-height: var(--lj-mobile-eyebrow-line-height);
+
+      font-weight: 400;
+
+      letter-spacing: {{ section.settings.eyebrow_letter_spacing }}px;
+
+      white-space: normal;
+
+      overflow: visible;
+    }
+
+
+    /* =======================================================
+       MOBILE HEADING
+    ======================================================= */
+
+    #{{ section_id }} .lj-heading {
+      display: block;
+
+      width: 100%;
+      max-width: 100%;
+
+      margin-top: 0;
+      margin-right: 0;
+      margin-bottom: var(--lj-mobile-heading-margin);
+      margin-left: 0;
+
+      padding: 0;
+
+      color: var(--lj-heading-color);
+
+      font-family: '{{ section.settings.heading_font }}', serif;
+
+      font-size: var(--lj-mobile-heading-size);
+      line-height: var(--lj-mobile-heading-line-height);
+
+      font-weight: {{ section.settings.heading_weight }};
+
+      letter-spacing: {{ section.settings.heading_letter_spacing }}px;
+
+      text-transform: {{ section.settings.heading_transform }};
+
+      white-space: normal;
+
+      word-break: normal;
+
+      overflow-wrap: normal;
+
+      hyphens: none;
+    }
+
+
+    /* =======================================================
+       MOBILE BODY
+    ======================================================= */
+
+    #{{ section_id }} .lj-body {
+      display: block;
+
+      width: 100%;
+      max-width: 100%;
+
+      margin: 0;
+      padding: 0;
+
+      color: var(--lj-body-color);
+
+      font-family: '{{ section.settings.body_font }}', sans-serif;
+
+      font-size: var(--lj-mobile-body-size);
+      line-height: var(--lj-mobile-body-line-height);
+
+      font-weight: {{ section.settings.body_weight }};
+
+      letter-spacing: {{ section.settings.body_letter_spacing }}px;
+
+      overflow: visible;
+    }
+
+
+    #{{ section_id }} .lj-body p {
+      display: block;
+
+      width: 100%;
+      max-width: 100%;
+
+      margin-top: 0;
+      margin-right: 0;
+      margin-bottom: var(--lj-mobile-paragraph-gap);
+      margin-left: 0;
+
+      padding: 0;
+
+      overflow-wrap: break-word;
+      word-break: normal;
+    }
+
+
+    #{{ section_id }} .lj-body p:last-child {
+      margin-bottom: 0;
+    }
+
+
+    /* =======================================================
+       MOBILE QUOTE
+    ======================================================= */
+
+    #{{ section_id }} .lj-quote {
+      display: block;
+
+      width: 100%;
+      max-width: 100%;
+
+      margin-top: var(--lj-mobile-quote-margin);
+      margin-right: 0;
+      margin-bottom: 0;
+      margin-left: 0;
+
+      padding: 0;
+
+      color: var(--lj-quote-color);
+
+      font-family: '{{ section.settings.quote_font }}', serif;
+
+      font-size: var(--lj-mobile-quote-size);
+      line-height: var(--lj-mobile-quote-line-height);
+
+      font-weight: {{ section.settings.quote_weight }};
+
+      letter-spacing: {{ section.settings.quote_letter_spacing }}px;
+
+      overflow-wrap: break-word;
+    }
+
+
+    /* =======================================================
+       TABLET / LARGE MOBILE
+       480px - 749px
+    ======================================================= */
+
+    @media screen and (min-width: 480px) and (max-width: 749px) {
+
+      #{{ section_id }} .lj-image-column {
+        height: 430px;
+        min-height: 430px;
+        flex-basis: 430px;
+      }
+
+      #{{ section_id }} .lj-image-stage {
+        height: 430px;
+      }
+
+      #{{ section_id }} .lj-back-image,
+      #{{ section_id }} .lj-back-placeholder {
+        width: min(
+          var(--lj-mobile-back-width),
+          78%
+        );
+
+        max-width: 78%;
+
+        height: 210px;
+      }
+
+      #{{ section_id }} .lj-front-image,
+      #{{ section_id }} .lj-front-placeholder {
+        top: 160px;
+        left: 45px;
+
+        width: min(
+          var(--lj-mobile-front-width),
+          calc(100% - 45px)
+        );
+
+        max-width: calc(100% - 45px);
+
+        height: 220px;
+      }
+
+      #{{ section_id }} .lj-heading {
+        font-size: var(--lj-mobile-heading-size);
+        line-height: var(--lj-mobile-heading-line-height);
+      }
+    }
+
+
+    /* =======================================================
+       NORMAL PHONE
+       375px - 479px
+    ======================================================= */
+
+    @media screen and (min-width: 375px) and (max-width: 479px) {
+
+      #{{ section_id }} .lj-image-column {
+        height: 395px;
+        min-height: 395px;
+        flex-basis: 395px;
+      }
+
+      #{{ section_id }} .lj-image-stage {
+        height: 395px;
+      }
+
+      #{{ section_id }} .lj-back-image,
+      #{{ section_id }} .lj-back-placeholder {
+        width: calc(100% - 35px);
+        max-width: calc(100% - 35px);
+
+        height: 190px;
+      }
+
+      #{{ section_id }} .lj-front-image,
+      #{{ section_id }} .lj-front-placeholder {
+        top: 145px;
+        left: 40px;
+
+        width: calc(100% - 40px);
+        max-width: calc(100% - 40px);
+
+        height: 205px;
+      }
+
+      #{{ section_id }} .lj-eyebrow {
+        font-size: 25px;
+        line-height: 1;
+      }
+
+      #{{ section_id }} .lj-heading {
+        font-size: 32px;
+        line-height: 0.9;
+        letter-spacing: -0.2px;
+      }
+
+      #{{ section_id }} .lj-body {
+        font-size: 14px;
+        line-height: 1.55;
+      }
+
+      #{{ section_id }} .lj-quote {
+        font-size: 18px;
+        line-height: 1.2;
+      }
+    }
+
+
+    /* =======================================================
+       SMALL PHONE
+       320px - 374px
+    ======================================================= */
+
+    @media screen and (max-width: 374px) {
+
+      #{{ section_id }} .lj-container {
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+
+      #{{ section_id }} .lj-image-column {
+        height: 350px;
+        min-height: 350px;
+        flex-basis: 350px;
+
+        margin-bottom: 35px;
+      }
+
+      #{{ section_id }} .lj-image-stage {
+        height: 350px;
+      }
+
+      #{{ section_id }} .lj-back-image,
+      #{{ section_id }} .lj-back-placeholder {
+        top: 0;
+        left: 0;
+
+        width: calc(100% - 25px);
+        max-width: calc(100% - 25px);
+
+        height: 165px;
+      }
+
+      #{{ section_id }} .lj-front-image,
+      #{{ section_id }} .lj-front-placeholder {
+        top: 130px;
+        left: 30px;
+
+        width: calc(100% - 30px);
+        max-width: calc(100% - 30px);
+
+        height: 185px;
+      }
+
+      #{{ section_id }} .lj-eyebrow {
+        font-size: 23px;
+        line-height: 1;
+      }
+
+      #{{ section_id }} .lj-heading {
+        font-size: 29px;
+        line-height: 0.9;
+        letter-spacing: -0.2px;
+      }
+
+      #{{ section_id }} .lj-body {
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      #{{ section_id }} .lj-quote {
+        font-size: 18px;
+        line-height: 1.2;
+      }
+    }
+
+
+    /* =======================================================
+       VERY SMALL PHONE
+       BELOW 320px
+    ======================================================= */
+
+    @media screen and (max-width: 319px) {
+
+      #{{ section_id }} .lj-container {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      #{{ section_id }} .lj-image-column {
+        height: 320px;
+        min-height: 320px;
+        flex-basis: 320px;
+
+        margin-bottom: 30px;
+      }
+
+      #{{ section_id }} .lj-image-stage {
+        height: 320px;
+      }
+
+      #{{ section_id }} .lj-back-image,
+      #{{ section_id }} .lj-back-placeholder {
+        width: calc(100% - 20px);
+        max-width: calc(100% - 20px);
+
+        height: 150px;
+      }
+
+      #{{ section_id }} .lj-front-image,
+      #{{ section_id }} .lj-front-placeholder {
+        top: 120px;
+        left: 20px;
+
+        width: calc(100% - 20px);
+        max-width: calc(100% - 20px);
+
+        height: 170px;
+      }
+
+      #{{ section_id }} .lj-eyebrow {
+        font-size: 21px;
+      }
+
+      #{{ section_id }} .lj-heading {
+        font-size: 27px;
+        line-height: 0.9;
+      }
+
+      #{{ section_id }} .lj-body {
+        font-size: 13px;
+        line-height: 1.5;
+      }
+    }
+  }
+</style>
+
+
+<section
+  id="{{ section_id }}"
+  class="legacy-jewellery-editorial"
+  aria-label="{{ section.settings.accessibility_label | escape }}"
+>
+
+  <div class="lj-container">
+
+    <div class="lj-grid">
+
+      <!-- =====================================================
+           IMAGE COLUMN
+      ====================================================== -->
+
+      <div class="lj-image-column">
+
+        <div class="lj-image-stage">
+
+          {% if section.settings.back_image != blank %}
+
+            <img
+              class="lj-image lj-back-image"
+              src="{{ section.settings.back_image | image_url: width: 1200 }}"
+              srcset="
+                {{ section.settings.back_image | image_url: width: 500 }} 500w,
+                {{ section.settings.back_image | image_url: width: 750 }} 750w,
+                {{ section.settings.back_image | image_url: width: 1000 }} 1000w,
+                {{ section.settings.back_image | image_url: width: 1200 }} 1200w
+              "
+              sizes="(min-width: 750px) 50vw, 90vw"
+              alt="{{ section.settings.back_image.alt | escape }}"
+              loading="{{ section.settings.image_loading }}"
+            >
+
+          {% else %}
+
+            <div class="lj-image-placeholder lj-back-placeholder">
+              Add back image
+            </div>
+
+          {% endif %}
+
+
+          {% if section.settings.front_image != blank %}
+
+            <img
+              class="lj-image lj-front-image"
+              src="{{ section.settings.front_image | image_url: width: 1200 }}"
+              srcset="
+                {{ section.settings.front_image | image_url: width: 500 }} 500w,
+                {{ section.settings.front_image | image_url: width: 750 }} 750w,
+                {{ section.settings.front_image | image_url: width: 1000 }} 1000w,
+                {{ section.settings.front_image | image_url: width: 1200 }} 1200w
+              "
+              sizes="(min-width: 750px) 50vw, 90vw"
+              alt="{{ section.settings.front_image.alt | escape }}"
+              loading="{{ section.settings.image_loading }}"
+            >
+
+          {% else %}
+
+            <div class="lj-image-placeholder lj-front-placeholder">
+              Add front image
+            </div>
+
+          {% endif %}
+
+        </div>
+
+      </div>
+
+
+      <!-- =====================================================
+           CONTENT COLUMN
+      ====================================================== -->
+
+      <div class="lj-content">
+
+        {% if section.settings.eyebrow != blank %}
+
+          <div class="lj-eyebrow">
+            {{ section.settings.eyebrow }}
+          </div>
+
+        {% endif %}
+
+
+        {% if section.settings.heading != blank %}
+
+          <h2 class="lj-heading">
+            {{ section.settings.heading | newline_to_br }}
+          </h2>
+
+        {% endif %}
+
+
+        {% if section.settings.body_text != blank %}
+
+          <div class="lj-body">
+            {{ section.settings.body_text }}
+          </div>
+
+        {% endif %}
+
+
+        {% if section.settings.quote != blank %}
+
+          <div class="lj-quote">
+            {{ section.settings.quote | newline_to_br }}
+          </div>
+
+        {% endif %}
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+{% schema %}
+{
+  "name": "Jewellery Editorial",
+  "tag": "section",
+  "class": "section-legacy-jewellery-editorial",
+  "settings": [
+
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "accessibility_label",
+      "label": "Accessibility label",
+      "default": "Legacy jewellery house editorial section"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "The conscious choice"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "A LEGACY\nJEWELLERY HOUSE\nREIMAGINED FOR TODAY."
+    },
+    {
+      "type": "richtext",
+      "id": "body_text",
+      "label": "Body content",
+      "default": "<p>In 1975, Mangal Royal Jewels was founded on two things that cannot be bought — trust and craftsmanship. For decades, families across generations have walked through our doors and left carrying more than jewellery. They carried a piece of an institution that truly understood what fine jewellery means: not just the weight of gold or the clarity of stone, but the weight of emotion and the clarity of occasion.</p><p>Mangal Royal Studio is the next chapter of this story. Born from the same house, informed by the same values — but designed for a new generation of discerning, conscious and deeply personal luxury.</p><p>Every piece at Mangal Royal Studio is designed to celebrate emotions, milestones and everyday luxury in a way that feels timeless yet deeply relevant to who you are today.</p>"
+    },
+    {
+      "type": "textarea",
+      "id": "quote",
+      "label": "Closing quote",
+      "default": "\"Luxury today is not just about what you wear.\nIt's about the choices you make.\""
+    },
+
+
+    {
+      "type": "header",
+      "content": "Images"
+    },
+    {
+      "type": "image_picker",
+      "id": "back_image",
+      "label": "Back image"
+    },
+    {
+      "type": "image_picker",
+      "id": "front_image",
+      "label": "Front image"
+    },
+    {
+      "type": "select",
+      "id": "image_loading",
+      "label": "Image loading",
+      "options": [
+        {
+          "value": "lazy",
+          "label": "Lazy"
+        },
+        {
+          "value": "eager",
+          "label": "Eager"
+        }
+      ],
+      "default": "lazy"
+    },
+
+
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "select",
+      "id": "heading_font",
+      "label": "Heading font",
+      "options": [
+        {
+          "value": "Cormorant Garamond",
+          "label": "Cormorant Garamond"
+        },
+        {
+          "value": "Bodoni Moda",
+          "label": "Bodoni Moda"
+        },
+        {
+          "value": "Playfair Display",
+          "label": "Playfair Display"
+        }
+      ],
+      "default": "Cormorant Garamond"
+    },
+    {
+      "type": "select",
+      "id": "body_font",
+      "label": "Body font",
+      "options": [
+        {
+          "value": "DM Sans",
+          "label": "DM Sans"
+        },
+        {
+          "value": "Montserrat",
+          "label": "Montserrat"
+        }
+      ],
+      "default": "DM Sans"
+    },
+    {
+      "type": "select",
+      "id": "quote_font",
+      "label": "Quote font",
+      "options": [
+        {
+          "value": "Cormorant Garamond",
+          "label": "Cormorant Garamond"
+        },
+        {
+          "value": "Bodoni Moda",
+          "label": "Bodoni Moda"
+        },
+        {
+          "value": "Playfair Display",
+          "label": "Playfair Display"
+        }
+      ],
+      "default": "Cormorant Garamond"
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "select",
+      "id": "body_weight",
+      "label": "Body weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "quote_weight",
+      "label": "Quote weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "select",
+      "id": "heading_transform",
+      "label": "Heading transform",
+      "options": [
+        {
+          "value": "uppercase",
+          "label": "Uppercase"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ],
+      "default": "uppercase"
+    },
+
+
+    {
+      "type": "header",
+      "content": "Desktop layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_max_width",
+      "label": "Maximum width",
+      "min": 900,
+      "max": 1600,
+      "step": 10,
+      "unit": "px",
+      "default": 1280
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_left",
+      "label": "Left padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_right",
+      "label": "Right padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "desktop_column_gap",
+      "label": "Column gap",
+      "min": 20,
+      "max": 160,
+      "step": 5,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "desktop_image_area_width",
+      "label": "Image area width",
+      "min": 40,
+      "max": 65,
+      "step": 1,
+      "unit": "%",
+      "default": 52
+    },
+    {
+      "type": "range",
+      "id": "desktop_content_width",
+      "label": "Content width",
+      "min": 30,
+      "max": 55,
+      "step": 1,
+      "unit": "%",
+      "default": 43
+    },
+    {
+      "type": "range",
+      "id": "desktop_content_offset",
+      "label": "Content vertical offset",
+      "min": -100,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    },
+
+
+    {
+      "type": "header",
+      "content": "Desktop images"
+    },
+    {
+      "type": "range",
+      "id": "desktop_back_image_width",
+      "label": "Back image width",
+      "min": 200,
+      "max": 600,
+      "step": 10,
+      "unit": "px",
+      "default": 390
+    },
+    {
+      "type": "range",
+      "id": "desktop_back_image_height",
+      "label": "Back image height",
+      "min": 200,
+      "max": 600,
+      "step": 10,
+      "unit": "px",
+      "default": 290
+    },
+    {
+      "type": "range",
+      "id": "desktop_front_image_width",
+      "label": "Front image width",
+      "min": 200,
+      "max": 650,
+      "step": 10,
+      "unit": "px",
+      "default": 390
+    },
+    {
+      "type": "range",
+      "id": "desktop_front_image_height",
+      "label": "Front image height",
+      "min": 200,
+      "max": 650,
+      "step": 10,
+      "unit": "px",
+      "default": 300
+    },
+    {
+      "type": "range",
+      "id": "desktop_back_image_top",
+      "label": "Back image top position",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "desktop_back_image_left",
+      "label": "Back image left position",
+      "min": 0,
+      "max": 300,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "desktop_front_image_top",
+      "label": "Front image top position",
+      "min": 100,
+      "max": 400,
+      "step": 5,
+      "unit": "px",
+      "default": 275
+    },
+    {
+      "type": "range",
+      "id": "desktop_front_image_left",
+      "label": "Front image left position",
+      "min": 0,
+      "max": 400,
+      "step": 5,
+      "unit": "px",
+      "default": 130
+    },
+    {
+      "type": "range",
+      "id": "desktop_image_border_width",
+      "label": "Image border width",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+
+
+    {
+      "type": "header",
+      "content": "Desktop typography"
+    },
+    {
+      "type": "range",
+      "id": "desktop_eyebrow_size",
+      "label": "Eyebrow size",
+      "min": 18,
+      "max": 55,
+      "step": 1,
+      "unit": "px",
+      "default": 31
+    },
+    {
+      "type": "range",
+      "id": "desktop_heading_size",
+      "label": "Heading size",
+      "min": 28,
+      "max": 70,
+      "step": 1,
+      "unit": "px",
+      "default": 43
+    },
+    {
+      "type": "range",
+      "id": "desktop_body_size",
+      "label": "Body size",
+      "min": 11,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "desktop_quote_size",
+      "label": "Quote size",
+      "min": 16,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 21
+    },
+    {
+      "type": "range",
+      "id": "desktop_eyebrow_line_height",
+      "label": "Eyebrow line height",
+      "min": 0.8,
+      "max": 2.0,
+      "step": 0.1,
+      "default": 1.0
+    },
+    {
+      "type": "range",
+      "id": "desktop_heading_line_height",
+      "label": "Heading line height",
+      "min": 0.8,
+      "max": 1.5,
+      "step": 0.1,
+      "default": 0.9
+    },
+    {
+      "type": "range",
+      "id": "desktop_body_line_height",
+      "label": "Body line height",
+      "min": 1.0,
+      "max": 2.2,
+      "step": 0.1,
+      "default": 1.6
+    },
+    {
+      "type": "range",
+      "id": "desktop_quote_line_height",
+      "label": "Quote line height",
+      "min": 1.0,
+      "max": 2.0,
+      "step": 0.1,
+      "default": 1.2
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_letter_spacing",
+      "label": "Eyebrow letter spacing",
+      "min": -2.0,
+      "max": 4.0,
+      "step": 0.1,
+      "unit": "px",
+      "default": 0.0
+    },
+    {
+      "type": "range",
+      "id": "heading_letter_spacing",
+      "label": "Heading letter spacing",
+      "min": -2.0,
+      "max": 3.0,
+      "step": 0.1,
+      "unit": "px",
+      "default": 0.0
+    },
+    {
+      "type": "range",
+      "id": "body_letter_spacing",
+      "label": "Body letter spacing",
+      "min": -1.0,
+      "max": 3.0,
+      "step": 0.1,
+      "unit": "px",
+      "default": 0.0
+    },
+    {
+      "type": "range",
+      "id": "quote_letter_spacing",
+      "label": "Quote letter spacing",
+      "min": -1.0,
+      "max": 3.0,
+      "step": 0.1,
+      "unit": "px",
+      "default": 0.0
+    },
+
+
+    {
+      "type": "header",
+      "content": "Desktop spacing"
+    },
+    {
+      "type": "range",
+      "id": "desktop_eyebrow_margin",
+      "label": "Eyebrow bottom spacing",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "desktop_heading_margin",
+      "label": "Heading bottom spacing",
+      "min": 0,
+      "max": 70,
+      "step": 1,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "desktop_paragraph_gap",
+      "label": "Paragraph spacing",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "desktop_quote_margin",
+      "label": "Quote top spacing",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+
+
+    {
+      "type": "header",
+      "content": "Mobile layout"
+    },
+    {
+      "type": "select",
+      "id": "mobile_text_alignment",
+      "label": "Mobile text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "mobile_image_order",
+      "label": "Mobile image order",
+      "options": [
+        {
+          "value": "1",
+          "label": "Image first"
+        },
+        {
+          "value": "2",
+          "label": "Image second"
+        }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "select",
+      "id": "mobile_content_order",
+      "label": "Mobile content order",
+      "options": [
+        {
+          "value": "1",
+          "label": "Content first"
+        },
+        {
+          "value": "2",
+          "label": "Content second"
+        }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "default": 35
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "default": 35
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_left",
+      "label": "Left padding",
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_right",
+      "label": "Right padding",
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_image_gap",
+      "label": "Image/content gap",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 45
+    },
+
+
+    {
+      "type": "header",
+      "content": "Mobile images"
+    },
+    {
+      "type": "range",
+      "id": "mobile_back_image_width",
+      "label": "Back image width",
+      "min": 150,
+      "max": 500,
+      "step": 10,
+      "unit": "px",
+      "default": 280
+    },
+    {
+      "type": "range",
+      "id": "mobile_back_image_height",
+      "label": "Back image height",
+      "min": 150,
+      "max": 500,
+      "step": 10,
+      "unit": "px",
+      "default": 210
+    },
+    {
+      "type": "range",
+      "id": "mobile_front_image_width",
+      "label": "Front image width",
+      "min": 150,
+      "max": 500,
+      "step": 10,
+      "unit": "px",
+      "default": 280
+    },
+    {
+      "type": "range",
+      "id": "mobile_front_image_height",
+      "label": "Front image height",
+      "min": 150,
+      "max": 500,
+      "step": 10,
+      "unit": "px",
+      "default": 220
+    },
+    {
+      "type": "range",
+      "id": "mobile_back_image_top",
+      "label": "Back image top position",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_back_image_left",
+      "label": "Back image left position",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_front_image_top",
+      "label": "Front image top position",
+      "min": 80,
+      "max": 300,
+      "step": 5,
+      "unit": "px",
+      "default": 190
+    },
+    {
+      "type": "range",
+      "id": "mobile_front_image_left",
+      "label": "Front image left position",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "default": 65
+    },
+    {
+      "type": "range",
+      "id": "mobile_image_border_width",
+      "label": "Image border width",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+
+
+    {
+      "type": "header",
+      "content": "Mobile typography"
+    },
+    {
+      "type": "range",
+      "id": "mobile_eyebrow_size",
+      "label": "Eyebrow size",
+      "min": 18,
+      "max": 45,
+      "step": 1,
+      "unit": "px",
+      "default": 27
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_size",
+      "label": "Heading size",
+      "min": 25,
+      "max": 55,
+      "step": 1,
+      "unit": "px",
+      "default": 34
+    },
+    {
+      "type": "range",
+      "id": "mobile_body_size",
+      "label": "Body size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "mobile_quote_size",
+      "label": "Quote size",
+      "min": 16,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 19
+    },
+    {
+      "type": "range",
+      "id": "mobile_eyebrow_line_height",
+      "label": "Eyebrow line height",
+      "min": 0.8,
+      "max": 2.0,
+      "step": 0.1,
+      "default": 1.0
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_line_height",
+      "label": "Heading line height",
+      "min": 0.8,
+      "max": 1.5,
+      "step": 0.1,
+      "default": 0.9
+    },
+    {
+      "type": "range",
+      "id": "mobile_body_line_height",
+      "label": "Body line height",
+      "min": 1.0,
+      "max": 2.2,
+      "step": 0.1,
+      "default": 1.6
+    },
+    {
+      "type": "range",
+      "id": "mobile_quote_line_height",
+      "label": "Quote line height",
+      "min": 1.0,
+      "max": 2.0,
+      "step": 0.1,
+      "default": 1.2
+    },
+
+
+    {
+      "type": "header",
+      "content": "Mobile spacing"
+    },
+    {
+      "type": "range",
+      "id": "mobile_eyebrow_margin",
+      "label": "Eyebrow bottom spacing",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_margin",
+      "label": "Heading bottom spacing",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "mobile_paragraph_gap",
+      "label": "Paragraph spacing",
+      "min": 0,
+      "max": 45,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "mobile_quote_margin",
+      "label": "Quote top spacing",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+
+
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#F7E0D0"
+    },
+    {
+      "type": "color",
+      "id": "eyebrow_color",
+      "label": "Eyebrow color",
+      "default": "#8C2034"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#280F0F"
+    },
+    {
+      "type": "color",
+      "id": "body_color",
+      "label": "Body color",
+      "default": "#382B2A"
+    },
+    {
+      "type": "color",
+      "id": "quote_color",
+      "label": "Quote color",
+      "default": "#281514"
+    },
+    {
+      "type": "color",
+      "id": "image_border_color",
+      "label": "Image border color",
+      "default": "#F7E0D0"
+    }
+
+  ],
+  "presets": [
+    {
+      "name": "Jewellery Editorial"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,452 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+
+:root {
+  --mrs-burgundy: #7D132A;
+  --mrs-burgundy-dark: #5B0D1E;
+  --mrs-espresso: #190303;
+  --mrs-champagne: #FBE8DB;
+  --mrs-blush: #FFF9F5;
+  --mrs-ivory: #FAF6F2;
+  --mrs-gold: #C89B57;
+  --mrs-gold-soft: #F3E5CE;
+  --mrs-border: #E8D9CE;
+  --mrs-muted: #6E5858;
+  --mrs-success: #1B6E44;
+  --mrs-success-bg: #E7F6EE;
+  --mrs-warning: #9A5B13;
+  --mrs-warning-bg: #FEF3E2;
+  --mrs-danger: #A61B2B;
+  --mrs-danger-bg: #FDECEC;
+  --font-heading: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  background-color: var(--mrs-ivory);
+  color: var(--mrs-espresso);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+.mrs-serif {
+  font-family: var(--font-heading);
+  letter-spacing: 0.01em;
+}
+
+/* Shell Layout */
+.mrs-admin-shell {
+  display: grid;
+  grid-template-columns: 272px 1fr;
+  min-height: 100vh;
+}
+
+.mrs-mobile-nav-toggle {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(251, 232, 219, 0.28);
+  background: rgba(251, 232, 219, 0.1);
+  color: #FBE8DB;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Sidebar */
+.mrs-sidebar {
+  background: linear-gradient(180deg, #190303 0%, #2B070E 55%, #430A16 100%);
+  color: #FBE8DB;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid rgba(251, 232, 219, 0.14);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.mrs-brand-header {
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid rgba(251, 232, 219, 0.12);
+}
+
+.mrs-brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #E3B978;
+  margin-bottom: 4px;
+}
+
+.mrs-brand-title {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.15;
+}
+
+.mrs-brand-subtitle {
+  font-size: 11.5px;
+  color: rgba(251, 232, 219, 0.72);
+  margin-top: 4px;
+}
+
+.mrs-nav-section-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(251, 232, 219, 0.5);
+  padding: 14px 20px 6px;
+  font-weight: 600;
+}
+
+.mrs-nav-list {
+  list-style: none;
+  padding: 0 10px;
+}
+
+.mrs-nav-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: rgba(251, 232, 219, 0.82);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.16s ease;
+  margin-bottom: 2px;
+}
+
+.mrs-nav-btn:hover {
+  background: rgba(251, 232, 219, 0.1);
+  color: #FFFFFF;
+}
+
+.mrs-nav-btn.active {
+  background: #7D132A;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  border-left: 3px solid #E3B978;
+}
+
+.mrs-nav-pill {
+  font-size: 10.5px;
+  padding: 1px 7px;
+  border-radius: 99px;
+  background: rgba(251, 232, 219, 0.15);
+  color: #FBE8DB;
+}
+
+/* Main Workspace */
+.mrs-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.mrs-topbar {
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--mrs-border);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.mrs-placeholder-banner {
+  background: linear-gradient(90deg, #7D132A 0%, #4E0B1A 100%);
+  color: #FBE8DB;
+  padding: 9px 28px;
+  font-size: 12.5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.mrs-content {
+  padding: 24px 28px 48px;
+  max-width: 1520px;
+  width: 100%;
+}
+
+/* Cards & Grids */
+.mrs-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.mrs-card {
+  background: #FFFFFF;
+  border: 1px solid var(--mrs-border);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(25, 3, 3, 0.03);
+}
+
+.mrs-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.mrs-card-title {
+  font-family: var(--font-heading);
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--mrs-espresso);
+}
+
+.mrs-kpi-label {
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--mrs-muted);
+  font-weight: 600;
+}
+
+.mrs-kpi-value {
+  font-family: var(--font-heading);
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--mrs-burgundy);
+  margin: 4px 0;
+}
+
+.mrs-kpi-sub {
+  font-size: 12px;
+  color: var(--mrs-muted);
+}
+
+/* Tables */
+.mrs-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.mrs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.mrs-table th {
+  text-align: left;
+  padding: 11px 12px;
+  background: var(--mrs-blush);
+  color: var(--mrs-espresso);
+  font-weight: 600;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--mrs-border);
+  white-space: nowrap;
+}
+
+.mrs-table td {
+  padding: 12px;
+  border-bottom: 1px solid #F1E7DF;
+  vertical-align: middle;
+}
+
+.mrs-table tr:hover td {
+  background: #FFFDFB;
+}
+
+/* Badges */
+.mrs-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.mrs-badge-success {
+  background: var(--mrs-success-bg);
+  color: var(--mrs-success);
+}
+
+.mrs-badge-warning {
+  background: var(--mrs-warning-bg);
+  color: var(--mrs-warning);
+}
+
+.mrs-badge-danger {
+  background: var(--mrs-danger-bg);
+  color: var(--mrs-danger);
+}
+
+.mrs-badge-burgundy {
+  background: #FBE8DB;
+  color: #7D132A;
+}
+
+/* Buttons & Inputs */
+.mrs-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 15px;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.16s ease;
+  white-space: nowrap;
+}
+
+.mrs-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mrs-btn-primary {
+  background: var(--mrs-burgundy);
+  color: #FFFFFF;
+}
+
+.mrs-btn-primary:hover:not(:disabled) {
+  background: var(--mrs-burgundy-dark);
+}
+
+.mrs-btn-secondary {
+  background: #FFFFFF;
+  color: var(--mrs-espresso);
+  border-color: var(--mrs-border);
+}
+
+.mrs-btn-secondary:hover:not(:disabled) {
+  background: var(--mrs-blush);
+  border-color: var(--mrs-burgundy);
+}
+
+.mrs-btn-gold {
+  background: #C89B57;
+  color: #190303;
+}
+
+.mrs-input,
+.mrs-select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--mrs-border);
+  background: #FFFFFF;
+  color: var(--mrs-espresso);
+  font-family: var(--font-body);
+  font-size: 13px;
+  outline: none;
+}
+
+.mrs-input:focus,
+.mrs-select:focus {
+  border-color: var(--mrs-burgundy);
+  box-shadow: 0 0 0 2px rgba(125, 19, 42, 0.12);
+}
+
+.mrs-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 18px;
+}
+
+.mrs-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+
+.mrs-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mrs-espresso);
+}
+
+/* Responsive Overrides (must follow base .mrs-sidebar/.mrs-content rules in CSS cascade) */
+@media (max-width: 960px) {
+  .mrs-admin-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .mrs-sidebar {
+    position: relative;
+    top: auto;
+    height: auto;
+    overflow-y: visible;
+    border-right: none;
+    border-bottom: 1px solid rgba(251, 232, 219, 0.14);
+  }
+
+  .mrs-mobile-nav-toggle {
+    display: inline-flex;
+  }
+
+  .mrs-sidebar-nav-collapsible {
+    display: none;
+  }
+
+  .mrs-sidebar-nav-collapsible.open {
+    display: block;
+  }
+
+  .mrs-topbar {
+    padding: 12px 16px;
+  }
+
+  .mrs-placeholder-banner {
+    padding: 8px 16px;
+  }
+
+  .mrs-content {
+    padding: 16px 16px 36px;
+  }
+}
+

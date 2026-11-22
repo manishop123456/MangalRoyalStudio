@@ -1,0 +1,855 @@
+{% comment %}
+  ============================================================================
+  UNIVERSAL PRODUCT CARD  —  snippets/card-product.liquid
+  ============================================================================
+  Fully self-contained. Has NO dependency on any section.
+  Works inside: grid, flex, native Shopify slider, Swiper, Embla, Flickity,
+  Splide, or any custom carousel. Just drop it in a slide/grid item.
+
+  Usage (minimum):
+    {% render 'card-product', card_product: product %}
+
+  Usage (full):
+    {% render 'card-product',
+      card_product: product,
+      section_id: section.id,
+      index: forloop.index,
+      skip_card_styles: card_styles_rendered,
+      image_ratio: 'portrait',
+      show_title: true,
+      show_price: true,
+      show_compare_price: true,
+      show_sale_percent: true,
+      show_vendor: false,
+      show_rating: false,
+      show_wishlist: true,
+      show_cart: true,
+      show_buy_button: true,
+      show_badge: true,
+      show_hover_image: true,
+      wishlist_position: 'meta',
+      badge_position: 'top-right',
+      badge_bg: '#7D132A',
+      badge_color: '#FFFFFF',
+      badge_radius: 0,
+      card_radius: 0,
+      image_radius: 0,
+      card_shadow: false,
+      buy_bg: '#7D132A',
+      buy_bg_hover: '#5E0E20',
+      buy_color: '#FFFFFF',
+      text_color: '#190303',
+      title_size: 14,
+      price_size: 16,
+      button_size: 14,
+      buy_height: 30,
+      custom_badge: 'BEST SELLER'
+    %}
+
+  IMPORTANT: pass `skip_card_styles: true` for every card after the first one
+  in a loop so the CSS/JS is printed only once per page.
+  ============================================================================
+{% endcomment %}
+
+{%- liquid
+  assign p = card_product
+
+  # ---------- defaults (so the snippet is 100% independent) ----------
+  if show_title == nil
+    assign show_title = true
+  endif
+  if show_price == nil
+    assign show_price = true
+  endif
+  if show_compare_price == nil
+    assign show_compare_price = true
+  endif
+  if show_sale_percent == nil
+    assign show_sale_percent = false
+  endif
+  if show_wishlist == nil
+    assign show_wishlist = true
+  endif
+  if show_cart == nil
+    assign show_cart = true
+  endif
+  if show_buy_button == nil
+    assign show_buy_button = true
+  endif
+  if show_badge == nil
+    assign show_badge = true
+  endif
+  if show_hover_image == nil
+    assign show_hover_image = true
+  endif
+  if show_vendor == nil
+    assign show_vendor = false
+  endif
+  if show_rating == nil
+    assign show_rating = false
+  endif
+
+  if image_ratio == nil or image_ratio == blank
+    assign image_ratio = 'portrait'
+  endif
+  if wishlist_position == nil or wishlist_position == blank
+    assign wishlist_position = 'meta'
+  endif
+  if badge_position == nil or badge_position == blank
+    assign badge_position = 'top-right'
+  endif
+
+  assign badge_bg = badge_bg | default: '#7D132A'
+  assign badge_color = badge_color | default: '#FFFFFF'
+  assign badge_radius = badge_radius | default: 0
+  assign card_radius = card_radius | default: 0
+  assign image_radius = image_radius | default: 0
+  assign buy_bg = buy_bg | default: '#7D132A'
+  assign buy_bg_hover = buy_bg_hover | default: '#5E0E20'
+  assign buy_color = buy_color | default: '#FFFFFF'
+  assign text_color = text_color | default: '#190303'
+  assign title_size = title_size | default: 14
+  assign price_size = price_size | default: 16
+  assign button_size = button_size | default: 14
+  assign buy_height = buy_height | default: 30
+  assign section_id = section_id | default: 'pc'
+
+  # ---------- image aspect ratio ----------
+  case image_ratio
+    when 'square'
+      assign ratio_css = '1 / 1'
+    when 'portrait'
+      assign ratio_css = '285 / 397'
+    when 'tall'
+      assign ratio_css = '3 / 4.6'
+    when 'landscape'
+      assign ratio_css = '4 / 3'
+    when 'adapt'
+      assign ratio_css = ''
+    else
+      assign ratio_css = '285 / 397'
+  endcase
+-%}
+
+{%- comment -%} ---------- Inline SVG icons (defined once, reused below) ---------- {%- endcomment -%}
+{%- capture pc_icon_cart -%}
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <path d="M2.6 4.9h2.1l1.4 9.6a1.6 1.6 0 0 0 1.6 1.4h8.9a1.6 1.6 0 0 0 1.6-1.3l1.2-6.5H6.1"/>
+    <circle cx="9.3" cy="19.3" r="1.5"/>
+    <circle cx="17.3" cy="19.3" r="1.5"/>
+    <path d="M9.7 11.2h6.4"/>
+  </svg>
+{%- endcapture -%}
+{%- capture pc_icon_heart -%}
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path class="pc-heart-line" d="M12 20.6 4.3 13a4.7 4.7 0 0 1 0-6.7 4.7 4.7 0 0 1 6.7 0l1 1 1-1a4.7 4.7 0 0 1 6.7 0 4.7 4.7 0 0 1 0 6.7Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+    <path class="pc-heart-fill" d="M12 20.6 4.3 13a4.7 4.7 0 0 1 0-6.7 4.7 4.7 0 0 1 6.7 0l1 1 1-1a4.7 4.7 0 0 1 6.7 0 4.7 4.7 0 0 1 0 6.7Z" fill="currentColor"/>
+  </svg>
+{%- endcapture -%}
+
+{%- comment -%} ======================= STYLES + JS (once per page) ======================= {%- endcomment -%}
+{%- unless skip_card_styles -%}
+  {% style %}
+    .pc-card{
+      --pc-ink:#190303;
+      --pc-muted:#6B5B5B;
+      --pc-line:#E7E1E1;
+      --pc-ratio:285 / 397;
+      --pc-inset:7.37%;
+      --pc-gap:15px;
+      --pc-radius:0px;
+      --pc-img-radius:0px;
+      --pc-title:14px;
+      --pc-price:16px;
+      --pc-btn:14px;
+      --pc-buy-h:30px;
+      --pc-buy-bg:#7D132A;
+      --pc-buy-bg-hover:#5E0E20;
+      --pc-buy-color:#fff;
+      --pc-badge-bg:#7D132A;
+      --pc-badge-color:#fff;
+      --pc-badge-radius:0px;
+      --pc-ease:cubic-bezier(.22,.61,.36,1);
+
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      width:100%;
+      height:100%;
+      min-width:0;
+      color:var(--pc-ink);
+      border-radius:var(--pc-radius);
+      background:transparent;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .pc-card *,.pc-card *::before,.pc-card *::after{box-sizing:border-box;}
+    .pc-card--shadow{
+      box-shadow:0 1px 2px rgba(25,3,3,.04);
+      transition:box-shadow .45s var(--pc-ease),transform .45s var(--pc-ease);
+    }
+    .pc-card--shadow:hover{box-shadow:0 18px 40px -18px rgba(25,3,3,.22);}
+
+    /* ---------- MEDIA ---------- */
+    .pc-card__media{
+      position:relative;
+      display:block;
+      width:100%;
+      aspect-ratio:var(--pc-ratio);
+      overflow:hidden;
+      border-radius:var(--pc-img-radius);
+      background:#F6F3F1;
+      isolation:isolate;
+    }
+    .pc-card__media--adapt{aspect-ratio:auto;}
+    .pc-card__img{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center;
+      display:block;
+      transition:transform .9s var(--pc-ease),opacity .5s var(--pc-ease);
+      will-change:transform;
+    }
+    .pc-card__img--alt{opacity:0;}
+    @media (hover:hover){
+      .pc-card:hover .pc-card__img--main{transform:scale(1.055);}
+      .pc-card:hover .pc-card__img--alt{opacity:1;transform:scale(1.055);}
+      .pc-card:hover .pc-card__img--main.pc-has-alt{opacity:0;}
+    }
+    .pc-card__placeholder{width:100%;height:100%;background:#F1ECEA;}
+    .pc-card__placeholder svg{width:100%;height:100%;display:block;}
+
+    /* ---------- BADGE ---------- */
+    .pc-card__badges{
+      position:absolute;
+      z-index:2;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:6px;
+      pointer-events:none;
+      padding:10px;
+    }
+    .pc-card__badges--top-right{top:0;right:0;align-items:flex-end;}
+    .pc-card__badges--top-left{top:0;left:0;align-items:flex-start;}
+    .pc-card__badges--bottom-right{bottom:0;right:0;align-items:flex-end;}
+    .pc-card__badges--bottom-left{bottom:0;left:0;align-items:flex-start;}
+    .pc-badge{
+      display:inline-block;
+      padding:5px 10px;
+      font-size:10px;
+      line-height:1;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      background:var(--pc-badge-bg);
+      color:var(--pc-badge-color);
+      border-radius:var(--pc-badge-radius);
+      white-space:nowrap;
+    }
+    .pc-badge--soldout{background:#3A3232;}
+    .pc-badge--sale{background:var(--pc-badge-bg);}
+
+    /* ---------- FLOATING WISHLIST (optional position) ---------- */
+    .pc-wish--float{
+      position:absolute;
+      top:10px;
+      right:10px;
+      z-index:3;
+      width:34px;
+      height:34px;
+      border-radius:50%;
+      background:rgba(255,255,255,.9);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      opacity:0;
+      transform:translateY(-4px);
+      transition:opacity .35s var(--pc-ease),transform .35s var(--pc-ease);
+    }
+    .pc-card:hover .pc-wish--float,
+    .pc-wish--float:focus-visible,
+    .pc-wish--float.is-active{opacity:1;transform:translateY(0);}
+
+    /* ---------- INFO ---------- */
+    .pc-card__info{
+      display:flex;
+      flex-direction:column;
+      gap:var(--pc-gap);
+      padding:22px var(--pc-inset) 0;
+      flex:1 1 auto;
+    }
+    .pc-card__vendor{
+      font-size:11px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--pc-muted);
+    }
+    .pc-card__title{
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      font-size:var(--pc-title);
+      line-height:18px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      font-weight:400;
+      color:var(--pc-ink);
+      text-decoration:none;
+      margin:0;
+      transition:color .3s var(--pc-ease);
+      min-height:36px;
+    }
+    .pc-card__title:hover{color:var(--pc-buy-bg);}
+
+    .pc-card__meta{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-top:-4px;
+    }
+    .pc-card__price{
+      display:flex;
+      align-items:baseline;
+      gap:8px;
+      flex-wrap:wrap;
+      min-width:0;
+    }
+    .pc-price{
+      font-size:var(--pc-price);
+      line-height:22px;
+      letter-spacing:.12em;
+      color:var(--pc-ink);
+      white-space:nowrap;
+    }
+    .pc-price--compare{
+      font-size:calc(var(--pc-price) - 3px);
+      color:var(--pc-muted);
+      text-decoration:line-through;
+      letter-spacing:.08em;
+    }
+    .pc-price--save{
+      font-size:11px;
+      letter-spacing:.08em;
+      color:var(--pc-buy-bg);
+      white-space:nowrap;
+    }
+
+    /* ---------- ICON BUTTONS ---------- */
+    .pc-card__actions{display:flex;align-items:center;gap:14px;flex:0 0 auto;}
+    .pc-icon-btn{
+      appearance:none;
+      -webkit-appearance:none;
+      background:none;
+      border:0;
+      padding:0;
+      margin:0;
+      cursor:pointer;
+      color:var(--pc-ink);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:26px;
+      height:26px;
+      text-decoration:none;
+      transition:color .3s var(--pc-ease),transform .3s var(--pc-ease),opacity .3s var(--pc-ease);
+    }
+    .pc-icon-btn svg{width:22px;height:22px;display:block;overflow:visible;}
+    .pc-icon-btn:hover{color:var(--pc-buy-bg);transform:translateY(-2px);}
+    .pc-icon-btn:focus-visible{outline:2px solid var(--pc-buy-bg);outline-offset:3px;border-radius:2px;}
+    .pc-icon-btn[disabled]{opacity:.35;cursor:not-allowed;transform:none;}
+    .pc-icon-btn.is-loading{opacity:.45;pointer-events:none;}
+    .pc-wish .pc-heart-fill{opacity:0;transition:opacity .3s var(--pc-ease);}
+    .pc-wish.is-active{color:var(--pc-buy-bg);}
+    .pc-wish.is-active .pc-heart-fill{opacity:1;}
+    .pc-wish.is-active .pc-heart-line{opacity:0;}
+
+    /* ---------- BUY NOW ---------- */
+    .pc-buy{
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:100%;
+      min-height:var(--pc-buy-h);
+      padding:2px 22px;
+      gap:10px;
+      border:0;
+      cursor:pointer;
+      overflow:hidden;
+      isolation:isolate;
+      background:var(--pc-buy-bg);
+      color:var(--pc-buy-color);
+      font-size:var(--pc-btn);
+      line-height:25px;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      text-align:center;
+      text-decoration:none;
+      appearance:none;
+      -webkit-appearance:none;
+      transition:color .35s var(--pc-ease);
+    }
+    .pc-buy::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:-1;
+      background:var(--pc-buy-bg-hover);
+      transform:scaleX(0);
+      transform-origin:left center;
+      transition:transform .45s var(--pc-ease);
+    }
+    .pc-buy:hover::before,
+    .pc-buy:focus-visible::before{transform:scaleX(1);}
+    .pc-buy:focus-visible{outline:2px solid var(--pc-ink);outline-offset:2px;}
+    .pc-buy[disabled]{opacity:.5;cursor:not-allowed;}
+    .pc-buy[disabled]::before{transform:scaleX(0);}
+    .pc-buy.is-loading{color:transparent;pointer-events:none;}
+    .pc-buy.is-loading::after{
+      content:"";
+      position:absolute;
+      top:50%;left:50%;
+      width:14px;height:14px;
+      margin:-7px 0 0 -7px;
+      border:2px solid rgba(255,255,255,.4);
+      border-top-color:#fff;
+      border-radius:50%;
+      animation:pc-spin .7s linear infinite;
+    }
+    @keyframes pc-spin{to{transform:rotate(360deg);}}
+
+    .pc-card__rating{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--pc-muted);}
+    .pc-card__rating-stars{color:#C9A227;letter-spacing:1px;}
+    .pc-visually-hidden{
+      position:absolute!important;
+      width:1px;height:1px;
+      margin:-1px;padding:0;border:0;
+      overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);
+      white-space:nowrap;
+    }
+
+    /* ---------- RESPONSIVE ---------- */
+    @media screen and (max-width:989px){
+      .pc-card{--pc-title:13px;--pc-price:15px;--pc-btn:13px;--pc-gap:12px;}
+      .pc-card__info{padding-top:18px;}
+    }
+    @media screen and (max-width:749px){
+      .pc-card{--pc-title:12px;--pc-price:14px;--pc-btn:12px;--pc-gap:10px;--pc-buy-h:34px;--pc-inset:0px;}
+      .pc-card__title{line-height:16px;min-height:32px;}
+      .pc-price{line-height:20px;}
+      .pc-card__info{padding-top:14px;}
+      .pc-card__actions{gap:12px;}
+      .pc-icon-btn{width:24px;height:24px;}
+      .pc-icon-btn svg{width:20px;height:20px;}
+      .pc-wish--float{opacity:1;transform:none;width:30px;height:30px;}
+    }
+    @media (prefers-reduced-motion:reduce){
+      .pc-card__img,.pc-buy::before,.pc-icon-btn,.pc-wish--float{transition:none;}
+      .pc-card:hover .pc-card__img--main{transform:none;}
+    }
+  {% endstyle %}
+
+  <script>
+    (function () {
+      if (window.__pcProductCardInit) return;
+      window.__pcProductCardInit = true;
+
+      var ROOT = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
+      var WISH_KEY = 'pc:wishlist';
+
+      function readWishlist() {
+        try { return JSON.parse(localStorage.getItem(WISH_KEY) || '[]'); } catch (e) { return []; }
+      }
+      function writeWishlist(list) {
+        try { localStorage.setItem(WISH_KEY, JSON.stringify(list)); } catch (e) {}
+      }
+
+      function getCartUi() {
+        return document.querySelector('cart-drawer') || document.querySelector('cart-notification');
+      }
+
+      function sectionsToRender(ui) {
+        try {
+          if (ui && typeof ui.getSectionsToRender === 'function') {
+            return ui.getSectionsToRender().map(function (s) { return s.id; });
+          }
+        } catch (e) {}
+        return [];
+      }
+
+      function refreshCartBubbles() {
+        try {
+          document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
+          if (typeof window.publish === 'function' && window.PUB_SUB_EVENTS) {
+            window.publish(window.PUB_SUB_EVENTS.cartUpdate, { source: 'pc-product-card' });
+          }
+        } catch (e) {}
+      }
+
+      class PcProductCard extends HTMLElement {
+        connectedCallback() {
+          this.productId = this.dataset.productId;
+          this.handle = this.dataset.productHandle;
+          this.variantId = this.dataset.variantId;
+          this.addBtn = this.querySelector('[data-pc-add]');
+          this.buyBtn = this.querySelector('[data-pc-buy]');
+          this.wishBtns = this.querySelectorAll('[data-pc-wish]');
+
+          if (this.addBtn && this.addBtn.tagName === 'BUTTON') {
+            this.addBtn.addEventListener('click', this.onAdd.bind(this));
+          }
+          if (this.buyBtn && this.buyBtn.tagName === 'BUTTON') {
+            this.buyBtn.addEventListener('click', this.onBuy.bind(this));
+          }
+          this.wishBtns.forEach(function (b) {
+            b.addEventListener('click', this.onWish.bind(this));
+          }, this);
+
+          this.syncWishlist();
+        }
+
+        /* ---------------- WISHLIST ---------------- */
+        syncWishlist() {
+          var active = readWishlist().indexOf(String(this.productId)) > -1;
+          this.wishBtns.forEach(function (b) {
+            b.classList.toggle('is-active', active);
+            b.setAttribute('aria-pressed', active ? 'true' : 'false');
+          });
+        }
+
+        onWish(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          var id = String(this.productId);
+          var list = readWishlist();
+          var i = list.indexOf(id);
+          var added = i === -1;
+          if (added) { list.push(id); } else { list.splice(i, 1); }
+          writeWishlist(list);
+          this.syncWishlist();
+
+          var detail = { productId: id, handle: this.handle, variantId: this.variantId, added: added };
+
+          /* App bridges — every call is guarded, so nothing throws if the app is not installed */
+          try { if (window.wishlistKing && window.wishlistKing.wishlist) { added ? window.wishlistKing.wishlist.addItem({ product_id: id, variant_id: this.variantId }) : window.wishlistKing.wishlist.removeItem({ product_id: id, variant_id: this.variantId }); } } catch (e) {}
+          try { if (window._swat && typeof window._swat.addToWishlist === 'function' && added) { window._swat.addToWishlist({ empi: id, epi: this.variantId, du: window.location.origin + '/products/' + this.handle }); } } catch (e) {}
+          try { document.dispatchEvent(new CustomEvent('pc:wishlist:toggle', { detail: detail, bubbles: true })); } catch (e) {}
+        }
+
+        /* ---------------- CART ---------------- */
+        onAdd(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.addToCart(this.addBtn, false);
+        }
+
+        onBuy(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.addToCart(this.buyBtn, true);
+        }
+
+        addToCart(button, checkout) {
+          if (!this.variantId) { window.location.href = ROOT + 'products/' + this.handle; return; }
+          var ui = getCartUi();
+          var body = {
+            items: [{ id: Number(this.variantId), quantity: 1 }]
+          };
+          var ids = checkout ? [] : sectionsToRender(ui);
+          if (ids.length) {
+            body.sections = ids.join(',');
+            body.sections_url = window.location.pathname;
+          }
+
+          button.classList.add('is-loading');
+          button.setAttribute('aria-busy', 'true');
+
+          fetch(ROOT + 'cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify(body)
+          })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+              if (data.status) { throw new Error(data.description || data.message); }
+              if (checkout) { window.location.href = ROOT + 'checkout'; return; }
+              if (ui && typeof ui.renderContents === 'function' && data.sections) {
+                if (ui.classList.contains('is-empty')) ui.classList.remove('is-empty');
+                ui.renderContents(data);
+                if (typeof ui.open === 'function') ui.open();
+              }
+              refreshCartBubbles();
+              try { document.dispatchEvent(new CustomEvent('pc:cart:added', { detail: data, bubbles: true })); } catch (e) {}
+            })
+            .catch(function (err) {
+              console.warn('[card-product] add to cart failed:', err);
+              window.location.href = ROOT + 'products/' + (this.handle || '');
+            }.bind(this))
+            .finally(function () {
+              button.classList.remove('is-loading');
+              button.removeAttribute('aria-busy');
+            });
+        }
+      }
+
+      if (!customElements.get('pc-product-card')) {
+        customElements.define('pc-product-card', PcProductCard);
+      }
+    })();
+  </script>
+{%- endunless -%}
+
+{%- comment -%} ============================ MARKUP ============================ {%- endcomment -%}
+{%- if p != blank and p != empty -%}
+  {%- liquid
+    assign variant = p.selected_or_first_available_variant
+    assign has_options = false
+    if p.variants.size > 1 or p.has_only_default_variant == false
+      assign has_options = true
+    endif
+    assign on_sale = false
+    if p.compare_at_price > p.price and p.available
+      assign on_sale = true
+    endif
+    assign alt_media = p.media[1]
+    assign uid = section_id | append: '-' | append: p.id
+  -%}
+
+  <pc-product-card
+    class="pc-card{% if card_shadow %} pc-card--shadow{% endif %}"
+    data-product-id="{{ p.id }}"
+    data-product-handle="{{ p.handle }}"
+    data-variant-id="{{ variant.id }}"
+    style="
+      --pc-ratio: {{ ratio_css | default: '285 / 397' }};
+      --pc-radius: {{ card_radius }}px;
+      --pc-img-radius: {{ image_radius }}px;
+      --pc-title: {{ title_size }}px;
+      --pc-price: {{ price_size }}px;
+      --pc-btn: {{ button_size }}px;
+      --pc-buy-h: {{ buy_height }}px;
+      --pc-buy-bg: {{ buy_bg }};
+      --pc-buy-bg-hover: {{ buy_bg_hover }};
+      --pc-buy-color: {{ buy_color }};
+      --pc-ink: {{ text_color }};
+      --pc-badge-bg: {{ badge_bg }};
+      --pc-badge-color: {{ badge_color }};
+      --pc-badge-radius: {{ badge_radius }}px;
+    "
+  >
+    {%- comment -%} ---------- IMAGE ---------- {%- endcomment -%}
+    <a
+      class="pc-card__media{% if image_ratio == 'adapt' %} pc-card__media--adapt{% endif %}"
+      href="{{ p.url }}"
+      aria-label="{{ p.title | escape }}"
+      tabindex="-1"
+    >
+      {%- if p.featured_media -%}
+        <img
+          class="pc-card__img pc-card__img--main{% if alt_media and show_hover_image %} pc-has-alt{% endif %}"
+          src="{{ p.featured_media | image_url: width: 600 }}"
+          srcset="
+            {{ p.featured_media | image_url: width: 285 }} 285w,
+            {{ p.featured_media | image_url: width: 400 }} 400w,
+            {{ p.featured_media | image_url: width: 570 }} 570w,
+            {{ p.featured_media | image_url: width: 760 }} 760w,
+            {{ p.featured_media | image_url: width: 1000 }} 1000w
+          "
+          sizes="(min-width: 990px) 285px, (min-width: 750px) 33vw, 46vw"
+          alt="{{ p.featured_media.alt | default: p.title | escape }}"
+          width="{{ p.featured_media.width }}"
+          height="{{ p.featured_media.height }}"
+          {% if index and index <= 4 %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}
+          decoding="async"
+        >
+        {%- if alt_media and show_hover_image -%}
+          <img
+            class="pc-card__img pc-card__img--alt"
+            src="{{ alt_media | image_url: width: 600 }}"
+            srcset="
+              {{ alt_media | image_url: width: 285 }} 285w,
+              {{ alt_media | image_url: width: 570 }} 570w,
+              {{ alt_media | image_url: width: 760 }} 760w
+            "
+            sizes="(min-width: 990px) 285px, (min-width: 750px) 33vw, 46vw"
+            alt=""
+            aria-hidden="true"
+            width="{{ alt_media.width }}"
+            height="{{ alt_media.height }}"
+            loading="lazy"
+            decoding="async"
+          >
+        {%- endif -%}
+      {%- else -%}
+        <div class="pc-card__placeholder">
+          {{ 'product-apparel-2' | placeholder_svg_tag }}
+        </div>
+      {%- endif -%}
+    </a>
+
+    {%- comment -%} ---------- BADGE ---------- {%- endcomment -%}
+    {%- if show_badge -%}
+      {%- liquid
+        assign meta_badge = p.metafields.custom.badge.value
+        if meta_badge == blank
+          assign meta_badge = p.metafields.custom.card_badge.value
+        endif
+        assign auto_badge = custom_badge
+        if auto_badge == blank and meta_badge != blank
+          assign auto_badge = meta_badge
+        endif
+      -%}
+      {%- if p.available == false or on_sale or auto_badge != blank -%}
+        <div class="pc-card__badges pc-card__badges--{{ badge_position }}">
+          {%- if p.available == false -%}
+            <span class="pc-badge pc-badge--soldout">{{ 'products.product.sold_out' | t | default: 'Sold out' }}</span>
+          {%- elsif on_sale -%}
+            <span class="pc-badge pc-badge--sale">
+              {%- if show_sale_percent -%}
+                {{- p.compare_at_price | minus: p.price | times: 100.0 | divided_by: p.compare_at_price | round -}}% OFF
+              {%- else -%}
+                {{- 'products.product.on_sale' | t | default: 'Sale' -}}
+              {%- endif -%}
+            </span>
+          {%- endif -%}
+          {%- if auto_badge != blank -%}
+            <span class="pc-badge">{{ auto_badge }}</span>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- comment -%} ---------- FLOATING WISHLIST ---------- {%- endcomment -%}
+    {%- if show_wishlist and wishlist_position == 'image' -%}
+      <button
+        type="button"
+        class="pc-icon-btn pc-wish pc-wish--float"
+        data-pc-wish
+        aria-pressed="false"
+        aria-label="{{ 'products.product.add_to_wishlist' | t | default: 'Add to wishlist' }}"
+      >
+        {{ pc_icon_heart }}
+      </button>
+    {%- endif -%}
+
+    {%- comment -%} ---------- INFO ---------- {%- endcomment -%}
+    <div class="pc-card__info">
+      {%- if show_vendor and p.vendor != blank -%}
+        <span class="pc-card__vendor">{{ p.vendor }}</span>
+      {%- endif -%}
+
+      {%- if show_title -%}
+        <a class="pc-card__title" href="{{ p.url }}" id="pc-title-{{ uid }}">{{ p.title | escape }}</a>
+      {%- endif -%}
+
+      {%- if show_rating and p.metafields.reviews.rating.value != blank -%}
+        {%- assign rating = p.metafields.reviews.rating.value.rating | round: 1 -%}
+        <div class="pc-card__rating">
+          <span class="pc-card__rating-stars" aria-hidden="true">★★★★★</span>
+          <span>{{ rating }} ({{ p.metafields.reviews.rating_count }})</span>
+        </div>
+      {%- endif -%}
+
+      {%- if show_price or show_cart or show_wishlist -%}
+        <div class="pc-card__meta">
+  {%- if show_price -%}
+    <div class="pc-card__price">
+      <span class="pc-price">
+        {{ p.price | money_without_trailing_zeros }}
+      </span>
+
+      {%- if on_sale and show_compare_price -%}
+        <s class="pc-price pc-price--compare">
+          {{ p.compare_at_price | money_without_trailing_zeros }}
+        </s>
+
+        {%- if show_sale_percent -%}
+          <span class="pc-price--save">
+            -{{ p.compare_at_price | minus: p.price | times: 100.0 | divided_by: p.compare_at_price | round }}%
+          </span>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+          {%- else -%}
+            <span></span>
+          {%- endif -%}
+
+          <div class="pc-card__actions">
+            {%- if show_cart -%}
+              {%- if p.available == false -%}
+                <button type="button" class="pc-icon-btn" disabled aria-label="Sold out">
+                  {{ pc_icon_cart }}
+                </button>
+              {%- elsif has_options -%}
+                <a
+                  class="pc-icon-btn"
+                  href="{{ p.url }}"
+                  aria-label="{{ 'products.product.choose_options' | t | default: 'Choose options' }}"
+                >
+                  {{ pc_icon_cart }}
+                </a>
+              {%- else -%}
+                <button
+                  type="button"
+                  class="pc-icon-btn"
+                  data-pc-add
+                  aria-label="{{ 'products.product.add_to_cart' | t | default: 'Add to cart' }}"
+                >
+                  {{ pc_icon_cart }}
+                </button>
+              {%- endif -%}
+            {%- endif -%}
+
+            {%- if show_wishlist and wishlist_position == 'meta' -%}
+              <button
+                type="button"
+                class="pc-icon-btn pc-wish"
+                data-pc-wish
+                aria-pressed="false"
+                aria-label="{{ 'products.product.add_to_wishlist' | t | default: 'Add to wishlist' }}"
+              >
+                {{ pc_icon_heart }}
+              </button>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- if show_buy_button -%}
+        {%- if p.available == false -%}
+          <button type="button" class="pc-buy" disabled>
+            {{ 'products.product.sold_out' | t | default: 'Sold out' }}
+          </button>
+        {%- elsif has_options -%}
+          <a class="pc-buy" href="{{ p.url }}">
+            {{ 'products.product.choose_options' | t | default: 'Buy Now' }}
+          </a>
+        {%- else -%}
+          <button type="button" class="pc-buy" data-pc-buy>
+            {{ buy_button_text | default: 'Buy Now' }}
+          </button>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+  </pc-product-card>
+
+{%- comment -%} ---------- PLACEHOLDER (onboarding / empty collection) ---------- {%- endcomment -%}
+{%- else -%}
+  <div class="pc-card">
+    <div class="pc-card__media">
+      <div class="pc-card__placeholder">{{ 'product-apparel-2' | placeholder_svg_tag }}</div>
+    </div>
+    <div class="pc-card__info">
+      <span class="pc-card__title">{{ 'onboarding.product_title' | t | default: 'Example product title' }}</span>
+      <div class="pc-card__meta">
+        <div class="pc-card__price"><span class="pc-price">{{ 1999 | money }}</span></div>
+      </div>
+      <span class="pc-buy">Buy Now</span>
+    </div>
+  </div>
+{%- endif -%}

@@ -1,0 +1,921 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// 1. ADMIN AUTHENTICATION, STAFF USERS, REFRESH TOKENS & RBAC
+// ============================================================================
+
+enum RoleName {
+  OWNER
+  MANAGER
+  PRICING_OPERATOR
+}
+
+model Role {
+  id          String       @id @default(uuid())
+  name        RoleName     @unique
+  description String
+  permissions Permission[]
+  users       AdminUser[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  description String
+  roles       Role[]
+  createdAt   DateTime @default(now())
+}
+
+model AdminUser {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  passwordHash  String
+  displayName   String
+  roleId        String
+  role          Role           @relation(fields: [roleId], references: [id])
+  isActive      Boolean        @default(true)
+  lastLoginAt   DateTime?
+  refreshTokens RefreshToken[]
+  auditLogs     AuditLog[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model RefreshToken {
+  id          String     @id @default(uuid())
+  tokenHash   String     @unique
+  adminUserId String?
+  adminUser   AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  customerId  String?
+  customer    Customer?  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  replacedBy  String?
+  createdAt   DateTime   @default(now())
+
+  @@index([adminUserId])
+  @@index([customerId])
+}
+
+// ============================================================================
+// 2. CATALOG: CATEGORIES, COLLECTIONS, PRODUCTS, VARIANTS, IMAGES & SPECS
+// ============================================================================
+
+model Category {
+  id                  String            @id @default(uuid())
+  name                String            @unique
+  slug                String            @unique
+  shopifyCollectionId String?           @unique
+  description         String?
+  imageUrl            String?
+  excelSheetName      String?
+  displayOrder        Int               @default(0)
+  isActive            Boolean           @default(true)
+  products            ProductMetadata[]
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+}
+
+model Collection {
+  id          String              @id @default(uuid())
+  title       String
+  handle      String              @unique
+  description String?
+  imageUrl    String?
+  sortOrder   Int                 @default(0)
+  isActive    Boolean             @default(true)
+  products    CollectionProduct[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+}
+
+model CollectionProduct {
+  id                String          @id @default(uuid())
+  collectionId      String
+  collection        Collection      @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  productMetadataId String
+  productMetadata   ProductMetadata @relation(fields: [productMetadataId], references: [id], onDelete: Cascade)
+  position          Int             @default(0)
+
+  @@unique([collectionId, productMetadataId])
+}
+
+model ProductMetadata {
+  id                     String                  @id @default(uuid())
+  shopifyProductGid      String?                 @unique
+  shopifyVariantGid      String?                 @unique
+  serialNumber           String?
+  productTag             String?
+  sku                    String                  @unique
+  handle                 String                  @unique
+  title                  String
+  description            String?
+  seoTitle               String?
+  seoDescription         String?
+  categoryId             String?
+  category               Category?               @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  currentShopifyPrice    Decimal                 @db.Decimal(14, 2)
+  compareAtPrice         Decimal?                @db.Decimal(14, 2)
+  currency               String                  @default("INR")
+  imageUrl               String?
+  hoverImageUrl          String?
+  status                 String                  @default("ACTIVE")
+  isFeatured             Boolean                 @default(false)
+  isBestseller           Boolean                 @default(false)
+  collections            CollectionProduct[]
+  variants               ProductVariant[]
+  images                 ProductImage[]
+  jewellerySpecification JewellerySpecification?
+  inventoryRecord        InventoryRecord?
+  pricingSnapshots       PricingSnapshot[]
+  cartItems               CartItem[]
+  wishlistItems           WishlistItem[]
+  orderItems              OrderItem[]
+  customizationAssignment ProductCustomizationAssignment?
+  modelAsset              ProductModelAsset?
+  customerDesigns         CustomerDesign[]
+  createdAt               DateTime                        @default(now())
+  updatedAt              DateTime                @updatedAt
+
+  @@index([categoryId, status])
+  @@index([isBestseller, status])
+}
+
+model ProductVariant {
+  id                String          @id @default(uuid())
+  productMetadataId String
+  productMetadata   ProductMetadata @relation(fields: [productMetadataId], references: [id], onDelete: Cascade)
+  sku               String          @unique
+  title             String
+  ringSize          String?
+  metalPurity       String          @default("18K")
+  metalColor        String          @default("YELLOW_GOLD")
+  priceInr          Decimal         @db.Decimal(14, 2)
+  compareAtPriceInr Decimal?        @db.Decimal(14, 2)
+  availableQuantity Int             @default(1)
+  isAvailable       Boolean         @default(true)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([productMetadataId])
+}
+
+model ProductImage {
+  id                 String          @id @default(uuid())
+  productMetadataId  String
+  productMetadata    ProductMetadata @relation(fields: [productMetadataId], references: [id], onDelete: Cascade)
+  url                String
+  cloudinaryPublicId String?
+  altText            String?
+  width              Int             @default(1000)
+  height             Int             @default(1000)
+  sortOrder          Int             @default(0)
+  isPrimary          Boolean         @default(false)
+  createdAt          DateTime        @default(now())
+
+  @@index([productMetadataId, sortOrder])
+}
+
+model JewellerySpecification {
+  id                     String             @id @default(uuid())
+  productMetadataId      String             @unique
+  productMetadata        ProductMetadata    @relation(fields: [productMetadataId], references: [id], onDelete: Cascade)
+  metalType              String             @default("GOLD") // GOLD, SILVER, PLATINUM
+  metalPurity            String             @default("18K")  // 24K, 22K, 18K, 14K, 925_SILVER, 950_PLATINUM
+  metalColor             String             @default("ROSE_GOLD")
+  ringSize               String?
+  grossWeightGrams       Decimal            @db.Decimal(10, 3)
+  netMetalWeightGrams    Decimal            @db.Decimal(10, 3)
+  netWeightMode          String             @default("EXPLICIT_NET_WEIGHT")
+  makingChargeMode       String             @default("PER_GRAM_NET")
+  makingChargeValue      Decimal            @db.Decimal(14, 2)
+  wastageMode            String             @default("NONE")
+  wastageValue           Decimal            @default(0) @db.Decimal(10, 3)
+  certificationFeeInr    Decimal            @default(0) @db.Decimal(14, 2)
+  hallmarkFeeInr         Decimal            @default(0) @db.Decimal(14, 2)
+  fixedAdjustmentInr     Decimal            @default(0) @db.Decimal(14, 2)
+  manualPriceOverrideInr Decimal?           @db.Decimal(14, 2)
+  igiCertificateNumber   String?
+  isHallmarked           Boolean            @default(true)
+  pricingEnabled         Boolean            @default(true)
+  diamondComponents      DiamondComponent[]
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+}
+
+model DiamondComponent {
+  id                       String                 @id @default(uuid())
+  jewellerySpecificationId String
+  jewellerySpecification   JewellerySpecification @relation(fields: [jewellerySpecificationId], references: [id], onDelete: Cascade)
+  componentName            String                 @default("Center / Accent Diamond")
+  shape                    String                 @default("ROUND")
+  stoneCount               Int                    @default(1)
+  totalCaratWeight         Decimal                @db.Decimal(10, 3)
+  colorGrade               String                 @default("EF")
+  clarityGrade             String                 @default("VVS")
+  cutGrade                 String?                @default("EXCELLENT")
+  sieveSize                String?
+  certification            String?                @default("IGI")
+  rateOverridePerCaratInr  Decimal?               @db.Decimal(14, 2)
+  createdAt                DateTime               @default(now())
+
+  @@index([jewellerySpecificationId])
+}
+
+// ============================================================================
+// 3. INVENTORY & STOCK MOVEMENT LOGS
+// ============================================================================
+
+model InventoryRecord {
+  id                  String              @id @default(uuid())
+  productMetadataId   String              @unique
+  productMetadata     ProductMetadata     @relation(fields: [productMetadataId], references: [id], onDelete: Cascade)
+  shopifyInventoryGid String?
+  locationName        String              @default("Mumbai Studio Vault")
+  availableQuantity   Int                 @default(0)
+  reservedQuantity    Int                 @default(0)
+  lowStockThreshold   Int                 @default(2)
+  movements           InventoryMovement[]
+  lastSyncedAt        DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+}
+
+model InventoryMovement {
+  id                String          @id @default(uuid())
+  inventoryRecordId String
+  inventoryRecord   InventoryRecord @relation(fields: [inventoryRecordId], references: [id], onDelete: Cascade)
+  sku               String
+  movementType      String          @default("MANUAL_ADJUSTMENT") // INITIAL_IMPORT, MANUAL_ADJUSTMENT, ORDER_RESERVED, ORDER_FULFILLED, ORDER_CANCELLED, RETURN_RESTOCK
+  quantityDelta     Int
+  previousQuantity  Int
+  newQuantity       Int
+  reason            String
+  referenceId       String?
+  actorEmail        String
+  createdAt         DateTime        @default(now())
+
+  @@index([inventoryRecordId, createdAt])
+  @@index([sku, createdAt])
+}
+
+// ============================================================================
+// 4. JEWELLERY PRICING ENGINE: RATES, RULES, RUNS & IMMUTABLE SNAPSHOTS
+// ============================================================================
+
+model GoldRate {
+  id              String   @id @default(uuid())
+  metalType       String   @default("GOLD") // GOLD, SILVER, PLATINUM
+  purity          String   // 24K, 22K, 18K, 14K, 925_SILVER, 950_PLATINUM
+  ratePerGramInr  Decimal  @db.Decimal(14, 4)
+  currency        String   @default("INR")
+  source          String   @default("PLACEHOLDER_PENDING_OWNER_APPROVAL")
+  sourceReference String?
+  isPlaceholder   Boolean  @default(true)
+  effectiveAt     DateTime @default(now())
+  createdBy       String
+  createdAt       DateTime @default(now())
+
+  @@index([metalType, purity, effectiveAt])
+}
+
+model DiamondRate {
+  id            String   @id @default(uuid())
+  shape         String   @default("ROUND")
+  sieveRange    String?
+  sizeMinCarat  Decimal  @db.Decimal(10, 4)
+  sizeMaxCarat  Decimal  @db.Decimal(10, 4)
+  colorGrade    String
+  clarityGrade  String
+  cutGrade      String   @default("EXCELLENT")
+  pricingType   String   @default("PER_CARAT") // PER_CARAT, FLAT_PER_STONE
+  rateInr       Decimal  @db.Decimal(14, 4)
+  currency      String   @default("INR")
+  version       Int      @default(1)
+  isPlaceholder Boolean  @default(true)
+  isActive      Boolean  @default(true)
+  effectiveAt   DateTime @default(now())
+  createdBy     String
+  createdAt     DateTime @default(now())
+
+  @@index([shape, colorGrade, clarityGrade, isActive])
+}
+
+model PricingRule {
+  id                            String            @id @default(uuid())
+  version                       Int               @unique
+  name                          String
+  description                   String
+  status                        String            @default("APPROVED") // DRAFT, APPROVED, RETIRED
+  isPlaceholderFormula          Boolean           @default(true)
+  stoneWeightToGramsFactor      Decimal           @default(0.2) @db.Decimal(8, 4)
+  gstRatePercent                Decimal           @default(3.00) @db.Decimal(6, 2)
+  gstMode                       String            @default("INCLUSIVE")
+  roundingMode                  String            @default("NEAREST_1")
+  maxPriceDeltaPercentThreshold Decimal           @default(15.00) @db.Decimal(6, 2)
+  defaultCertificationFeeInr    Decimal           @default(0) @db.Decimal(14, 2)
+  defaultHallmarkFeeInr         Decimal           @default(0) @db.Decimal(14, 2)
+  approvedBy                    String?
+  approvedAt                    DateTime?
+  pricingRuns                   PricingRun[]
+  pricingSnapshots              PricingSnapshot[]
+  createdAt                     DateTime          @default(now())
+}
+
+model PricingRun {
+  id            String            @id @default(uuid())
+  status        String            @default("PREVIEWED") // DRAFT, PREVIEWED, VALIDATED, APPROVED, PUBLISHING, PUBLISHED, FAILED, CANCELLED
+  pricingRuleId String
+  pricingRule   PricingRule       @relation(fields: [pricingRuleId], references: [id])
+  rateSnapshot  Json
+  summary       Json
+  notes         String?
+  createdBy     String
+  validatedBy   String?
+  validatedAt   DateTime?
+  approvedBy    String?
+  approvedAt    DateTime?
+  publishedBy   String?
+  publishedAt   DateTime?
+  items         PricingRunItem[]
+  snapshots     PricingSnapshot[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+}
+
+model PricingRunItem {
+  id                   String     @id @default(uuid())
+  pricingRunId         String
+  pricingRun           PricingRun @relation(fields: [pricingRunId], references: [id], onDelete: Cascade)
+  sku                  String
+  shopifyProductGid    String?
+  shopifyVariantGid    String?
+  oldPriceInr          Decimal    @db.Decimal(14, 2)
+  proposedPriceInr     Decimal    @db.Decimal(14, 2)
+  priceDeltaInr        Decimal    @db.Decimal(14, 2)
+  priceDeltaPercent    Decimal    @db.Decimal(8, 2)
+  calculationBreakdown Json
+  exceedsThreshold     Boolean    @default(false)
+  status               String     @default("PENDING") // PENDING, VALIDATED, PUBLISHED, FAILED
+  errorMessage         String?
+  attemptCount         Int        @default(0)
+  updatedAt            DateTime   @updatedAt
+}
+
+model PricingSnapshot {
+  id                   String           @id @default(uuid())
+  productMetadataId    String?
+  productMetadata      ProductMetadata? @relation(fields: [productMetadataId], references: [id])
+  pricingRunId         String?
+  pricingRun           PricingRun?      @relation(fields: [pricingRunId], references: [id])
+  pricingRuleId        String
+  pricingRule          PricingRule      @relation(fields: [pricingRuleId], references: [id])
+  sku                  String
+  shopifyVariantGid    String?
+  publishedPriceInr    Decimal          @db.Decimal(14, 2)
+  currency             String           @default("INR")
+  rateSnapshot         Json
+  calculationBreakdown Json
+  publishedBy          String
+  publishedAt          DateTime         @default(now())
+
+  @@index([sku, publishedAt])
+}
+
+// ============================================================================
+// 5. BULK EXCEL / CSV IMPORT JOBS & ERRORS (MANGAL JEWELLERY.xlsx)
+// ============================================================================
+
+model ImportJob {
+  id              String        @id @default(uuid())
+  sourceFileName  String
+  status          String        @default("DRY_RUN_COMPLETED") // VALIDATING, DRY_RUN_COMPLETED, IMPORTED_TO_STAGING, COMPLETED, FAILED, ROLLED_BACK
+  dryRun          Boolean       @default(true)
+  detectedSheets  Json
+  categoryMapping Json
+  totalRows       Int           @default(0)
+  validRows       Int           @default(0)
+  failedRows      Int           @default(0)
+  duplicateSkus   Int           @default(0)
+  processedRows   Int           @default(0)
+  previewItems    Json
+  createdBy       String
+  startedAt       DateTime      @default(now())
+  completedAt     DateTime?
+  errors          ImportError[]
+  createdAt       DateTime      @default(now())
+}
+
+model ImportError {
+  id          String    @id @default(uuid())
+  importJobId String
+  importJob   ImportJob @relation(fields: [importJobId], references: [id], onDelete: Cascade)
+  sheetName   String
+  rowNumber   Int
+  sku         String?
+  field       String
+  message     String
+  severity    String    @default("ERROR") // ERROR, WARNING
+  rawRowData  Json?
+  createdAt   DateTime  @default(now())
+}
+
+// ============================================================================
+// 6. CUSTOMERS, ADDRESSES, CARTS & WISHLISTS
+// ============================================================================
+
+model Customer {
+  id                          String            @id @default(uuid())
+  shopifyCustomerGid          String?           @unique
+  email                       String            @unique
+  passwordHash                String?
+  firstName                   String
+  lastName                    String
+  phone                       String?
+  city                        String?
+  state                       String?
+  status                      String            @default("ACTIVE") // ACTIVE, SUSPENDED
+  isActive                    Boolean           @default(true)
+  emailVerified               Boolean           @default(false)
+  emailVerificationTokenHash  String?
+  emailVerificationExpiresAt  DateTime?
+  emailVerificationLastSentAt DateTime?
+  emailVerifiedAt             DateTime?
+  totalOrdersCount            Int               @default(0)
+  totalSpentInr               Decimal           @default(0) @db.Decimal(14, 2)
+  tags                        String[]
+  addresses                   CustomerAddress[]
+  carts                       Cart[]
+  wishlists                   Wishlist[]
+  orders                      OrderMetadata[]
+  designs                     CustomerDesign[]
+  refreshTokens               RefreshToken[]
+  createdAt                   DateTime          @default(now())
+  updatedAt                   DateTime          @updatedAt
+}
+
+model CustomerAddress {
+  id           String   @id @default(uuid())
+  customerId   String
+  customer     Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  fullName     String
+  phone        String
+  addressLine1 String
+  addressLine2 String?
+  city         String
+  state        String
+  pincode      String
+  country      String   @default("India")
+  isDefault    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([customerId])
+}
+
+model Cart {
+  id             String     @id @default(uuid())
+  sessionToken   String     @unique
+  customerId     String?
+  customer       Customer?  @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  discountCode   String?
+  discountAmount Decimal    @default(0) @db.Decimal(14, 2)
+  currency       String     @default("INR")
+  items          CartItem[]
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model CartItem {
+  id                String          @id @default(uuid())
+  cartId            String
+  cart              Cart            @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productMetadataId String
+  productMetadata   ProductMetadata @relation(fields: [productMetadataId], references: [id], onDelete: Cascade)
+  sku               String
+  variantTitle      String?
+  ringSize          String?
+  metalPurity       String?
+  metalColor        String?
+  quantity          Int             @default(1)
+  unitPriceInr            Decimal         @db.Decimal(14, 2)
+  linePriceInr            Decimal         @db.Decimal(14, 2)
+  customizationSelections Json?
+  customizationSnapshot   Json?
+  pricingBreakdown        Json?
+  customerDesignId        String?
+  createdAt               DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([cartId])
+}
+
+model Wishlist {
+  id           String         @id @default(uuid())
+  sessionToken String         @unique
+  customerId   String?
+  customer     Customer?      @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  items        WishlistItem[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model WishlistItem {
+  id                String          @id @default(uuid())
+  wishlistId        String
+  wishlist          Wishlist        @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+  productMetadataId String
+  productMetadata   ProductMetadata @relation(fields: [productMetadataId], references: [id], onDelete: Cascade)
+  sku               String
+  handle            String
+  addedAt           DateTime        @default(now())
+
+  @@unique([wishlistId, productMetadataId])
+}
+
+// ============================================================================
+// 7. ORDERS, ORDER ITEMS, RAZORPAY PAYMENTS, REFUNDS & SHIPROCKET LOGISTICS
+// ============================================================================
+
+model OrderMetadata {
+  id                   String          @id @default(uuid())
+  shopifyOrderGid      String?         @unique
+  orderNumber          String          @unique
+  invoiceNumber        String?         @unique
+  customerId           String?
+  customer             Customer?       @relation(fields: [customerId], references: [id])
+  customerEmail        String
+  customerName         String
+  customerPhone        String?
+  subtotalPriceInr     Decimal         @db.Decimal(14, 2)
+  discountAmountInr    Decimal         @default(0) @db.Decimal(14, 2)
+  shippingAmountInr    Decimal         @default(0) @db.Decimal(14, 2)
+  totalTaxInr          Decimal         @db.Decimal(14, 2)
+  totalPriceInr        Decimal         @db.Decimal(14, 2)
+  currency             String          @default("INR")
+  financialStatus      String          @default("PENDING") // PENDING, AUTHORIZED, PAID, PARTIALLY_REFUNDED, REFUNDED, FAILED
+  fulfillmentStatus    String          @default("UNFULFILLED") // UNFULFILLED, PROCESSING, SHIPPED, DELIVERED, CANCELLED, RETURNED
+  discountCode         String?
+  idempotencyKey       String?         @unique
+  lineItemsSnapshot    Json
+  pricingSnapshotsJson Json
+  shippingAddressJson  Json
+  billingAddressJson   Json?
+  notes                String?
+  cancelledAt          DateTime?
+  cancelReason         String?
+  items                OrderItem[]
+  payments             PaymentRecord[]
+  refunds              RefundRecord[]
+  shipments            Shipment[]
+  placedAt             DateTime        @default(now())
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+
+  @@index([customerEmail, placedAt])
+  @@index([customerId, placedAt])
+  @@index([financialStatus, fulfillmentStatus])
+}
+
+model OrderItem {
+  id                  String           @id @default(uuid())
+  orderMetadataId     String
+  orderMetadata       OrderMetadata    @relation(fields: [orderMetadataId], references: [id], onDelete: Cascade)
+  productMetadataId   String?
+  productMetadata     ProductMetadata? @relation(fields: [productMetadataId], references: [id], onDelete: SetNull)
+  sku                 String
+  title               String
+  variantTitle        String?
+  ringSize            String?
+  metalPurity         String?
+  metalColor          String?
+  quantity            Int              @default(1)
+  unitPriceInr        Decimal          @db.Decimal(14, 2)
+  totalPriceInr             Decimal          @db.Decimal(14, 2)
+  pricingSnapshotJson       Json?
+  customizationSnapshotJson Json?
+  customerDesignId          String?
+  createdAt                 DateTime         @default(now())
+
+  @@index([orderMetadataId])
+}
+
+model PaymentRecord {
+  id                String         @id @default(uuid())
+  orderMetadataId   String
+  orderMetadata     OrderMetadata  @relation(fields: [orderMetadataId], references: [id], onDelete: Cascade)
+  provider          String         @default("RAZORPAY")
+  providerOrderId   String?        @unique
+  providerPaymentId String         @unique
+  providerSignature String?
+  amountInr         Decimal        @db.Decimal(14, 2)
+  currency          String         @default("INR")
+  status            String         @default("CAPTURED") // CREATED, AUTHORIZED, CAPTURED, REFUNDED, PARTIALLY_REFUNDED, FAILED
+  method            String?        @default("UPI / Card")
+  signatureVerified Boolean        @default(true)
+  idempotencyKey    String?        @unique
+  webhookEventId    String?
+  failureReason     String?
+  capturedAt        DateTime?
+  refunds           RefundRecord[]
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@index([orderMetadataId])
+}
+
+model RefundRecord {
+  id               String        @id @default(uuid())
+  orderMetadataId  String
+  orderMetadata    OrderMetadata @relation(fields: [orderMetadataId], references: [id], onDelete: Cascade)
+  paymentRecordId  String
+  paymentRecord    PaymentRecord @relation(fields: [paymentRecordId], references: [id], onDelete: Cascade)
+  providerRefundId String        @unique
+  amountInr        Decimal       @db.Decimal(14, 2)
+  currency         String        @default("INR")
+  reason           String
+  status           String        @default("PROCESSED") // PENDING, PROCESSED, FAILED
+  initiatedBy      String
+  processedAt      DateTime?
+  createdAt        DateTime      @default(now())
+
+  @@index([orderMetadataId])
+}
+
+model Shipment {
+  id                 String        @id @default(uuid())
+  orderMetadataId    String
+  orderMetadata      OrderMetadata @relation(fields: [orderMetadataId], references: [id], onDelete: Cascade)
+  shopifyOrderGid    String?
+  provider           String        @default("SHIPROCKET")
+  shiprocketOrderId  String?
+  shipmentId         String?
+  awbCode            String?       @unique
+  courierName        String?
+  declaredValueInr   Decimal       @db.Decimal(14, 2)
+  isInsured          Boolean       @default(true)
+  packageWeightGrams Decimal       @default(120) @db.Decimal(8, 2)
+  pickupScheduledAt  DateTime?
+  labelUrl           String?
+  manifestUrl        String?
+  trackingUrl        String?
+  status             String        @default("CREATED") // CREATED, AWB_ASSIGNED, PICKUP_SCHEDULED, IN_TRANSIT, DELIVERED, RTO, CANCELLED, RETURN_INITIATED
+  trackingHistory    Json
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  @@index([orderMetadataId])
+}
+
+// ============================================================================
+// 8. DISCOUNTS, BANNERS, CONTENT, NOTIFICATIONS, SETTINGS & AUDIT LOGS
+// ============================================================================
+
+model Discount {
+  id                String    @id @default(uuid())
+  code              String    @unique
+  title             String
+  discountType      String    @default("PERCENTAGE") // PERCENTAGE, FIXED_AMOUNT, MAKING_CHARGE_WAIVER
+  value             Decimal   @db.Decimal(10, 2)
+  minOrderAmountInr Decimal?  @db.Decimal(14, 2)
+  maxDiscountInr    Decimal?  @db.Decimal(14, 2)
+  appliesTo         String    @default("ALL_COLLECTIONS")
+  shopifyDiscountId String?
+  isActive          Boolean   @default(true)
+  usageLimit        Int?
+  usageCount        Int       @default(0)
+  startsAt          DateTime  @default(now())
+  endsAt            DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model Banner {
+  id        String   @id @default(uuid())
+  title     String
+  eyebrow   String?
+  subtitle  String?
+  Placement String   @default("HOMEPAGE_HERO") // HOMEPAGE_HERO, ANNOUNCEMENT_BAR, PROMO_QUOTE, PDP_STORE_CTA
+  imageUrl  String
+  ctaLabel  String?
+  ctaLink   String?
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  updatedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Content {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  title       String
+  sectionType String   @default("EDITORIAL") // EDITORIAL, POLICY, FAQ, TRUST_PILLAR, STORE_LOCATION
+  body        String
+  metadata    Json?
+  isPublished Boolean  @default(true)
+  updatedBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Notification {
+  id             String    @id @default(uuid())
+  channel        String    @default("EMAIL") // EMAIL, SMS, WHATSAPP, ADMIN_ALERT
+  recipientEmail String?
+  recipientPhone String?
+  subject        String
+  body           String
+  eventType      String    // ORDER_CONFIRMATION, PAYMENT_RECEIPT, SHIPMENT_DISPATCHED, LOW_STOCK_ALERT, PRICING_APPROVAL
+  status         String    @default("SENT") // QUEUED, SENT, FAILED
+  referenceId    String?
+  sentAt         DateTime? @default(now())
+  createdAt      DateTime  @default(now())
+}
+
+model StoreSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  valueJson Json
+  updatedBy String?
+  updatedAt DateTime @updatedAt
+}
+
+model IntegrationEvent {
+  id          String    @id @default(uuid())
+  provider    String    // SHOPIFY, SHIPROCKET, RAZORPAY
+  eventId     String
+  eventType   String
+  payloadHash String
+  status      String    @default("PROCESSED")
+  receivedAt  DateTime  @default(now())
+  processedAt DateTime?
+
+  @@unique([provider, eventId])
+}
+
+model AuditLog {
+  id         String     @id @default(uuid())
+  actorId    String?
+  actor      AdminUser? @relation(fields: [actorId], references: [id])
+  actorEmail String
+  actorRole  String
+  action     String
+  entityType String
+  entityId   String
+  summary    String
+  beforeData Json?
+  afterData  Json?
+  ipHash     String?
+  createdAt  DateTime   @default(now())
+
+  @@index([entityType, entityId, createdAt])
+}
+
+// ============================================================================
+// 11. PHASE 2: JEWELLERY CUSTOMIZATION, SAVED DESIGNS & 3D MODEL ASSETS
+// ============================================================================
+
+model CustomizationProfile {
+  id                 String                           @id @default(uuid())
+  code               String                           @unique
+  name               String
+  description        String?
+  eligibleCategories Json                             @default("[]")
+  isActive           Boolean                          @default(true)
+  isDefault          Boolean                          @default(false)
+  createdBy          String
+  updatedBy          String?
+  groups             CustomizationGroup[]
+  assignments        ProductCustomizationAssignment[]
+  createdAt          DateTime                         @default(now())
+  updatedAt          DateTime                         @updatedAt
+
+  @@index([isActive, isDefault])
+}
+
+model CustomizationGroup {
+  id             String                @id @default(uuid())
+  profileId      String
+  profile        CustomizationProfile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  code           String
+  name           String
+  description    String?
+  stepOrder      Int                   @default(1)
+  selectionMode  String                @default("SINGLE") // SINGLE | TEXT
+  optionCategory String                @default("OTHER") // METAL | PURITY | METAL_COLOR | DIAMOND | GEMSTONE | SIZE | FINISH | SETTING | ENGRAVING | OTHER
+  isRequired     Boolean               @default(true)
+  isActive       Boolean               @default(true)
+  dependencyRule Json?
+  options        CustomizationOption[]
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+
+  @@unique([profileId, code])
+  @@index([profileId, stepOrder, isActive])
+}
+
+model CustomizationOption {
+  id                  String             @id @default(uuid())
+  groupId             String
+  group               CustomizationGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  code                String
+  label               String
+  description         String?
+  value               String
+  swatchHex           String?
+  imageUrl            String?
+  priceRuleType       String             @default("INCLUDED") // INCLUDED | FIXED_INR | PER_GRAM_INR | PER_CARAT_INR | PERCENT_OF_BASE | METAL_RATE_PURITY
+  priceRuleValue      Decimal            @default(0) @db.Decimal(14, 4)
+  metalType           String?
+  metalPurity         String?
+  metalColor          String?
+  diamondShape        String?
+  diamondCaratWeight  Decimal?           @db.Decimal(10, 4)
+  diamondColorGrade   String?
+  diamondClarityGrade String?
+  gemstoneType        String?
+  isDefault           Boolean            @default(false)
+  isActive            Boolean            @default(true)
+  sortOrder           Int                @default(1)
+  eligibilityRule     Json?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  @@unique([groupId, code])
+  @@index([groupId, sortOrder, isActive])
+}
+
+model ProductCustomizationAssignment {
+  id                    String               @id @default(uuid())
+  productMetadataId     String               @unique
+  productMetadata       ProductMetadata      @relation(fields: [productMetadataId], references: [id], onDelete: Cascade)
+  profileId             String
+  profile               CustomizationProfile @relation(fields: [profileId], references: [id], onDelete: Restrict)
+  isCustomizable        Boolean              @default(true)
+  allowDiamondSelection Boolean              @default(true)
+  allowEngraving        Boolean              @default(false)
+  maxEngravingChars     Int                  @default(20)
+  disabledOptionCodes   Json                 @default("[]")
+  configOverrides       Json?
+  updatedBy             String?
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+
+  @@index([profileId, isCustomizable])
+}
+
+model CustomerDesign {
+  id                 String          @id @default(uuid())
+  customerId         String
+  customer           Customer        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  productMetadataId  String
+  productMetadata    ProductMetadata @relation(fields: [productMetadataId], references: [id], onDelete: Cascade)
+  productSku         String
+  productHandle      String
+  productTitle       String
+  profileId          String?
+  name               String
+  selections         Json
+  selectionSnapshot  Json
+  lastQuotedPriceInr Decimal         @db.Decimal(14, 2)
+  lastPriceBreakdown Json
+  pricingRuleVersion Int             @default(1)
+  status             String          @default("SAVED") // SAVED | ARCHIVED
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  @@index([customerId, status, updatedAt])
+  @@index([productMetadataId])
+}
+
+model ProductModelAsset {
+  id                String          @id @default(uuid())
+  productMetadataId String          @unique
+  productMetadata   ProductMetadata @relation(fields: [productMetadataId], references: [id], onDelete: Cascade)
+  productSku        String
+  fileName          String
+  mimeType          String
+  fileSizeBytes     Int
+  storageProvider   String          @default("LOCAL_MANAGED") // LOCAL_MANAGED | EXTERNAL_URL
+  storageKey        String
+  assetUrl          String
+  previewImageUrl   String?
+  status            String          @default("ACTIVE") // ACTIVE | INACTIVE
+  uploadedBy        String
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([productSku, status])
+}
+
+ 
+ 

@@ -1,0 +1,1019 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "slideshow_nAcmpg": {
+      "type": "slideshow",
+      "blocks": {
+        "slide_RE9X4N": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/2cad1ff177013aa3114de81b745559fa80ff958a.jpg",
+            "image_overlay_opacity": 0,
+            "eyebrow": "TRADITION IN TRUST",
+            "eyebrow_color": "#ffffff",
+            "eyebrow_size_desktop": 34,
+            "eyebrow_size_tablet": 18,
+            "eyebrow_size_mobile": 15,
+            "eyebrow_letter_spacing": 0.5,
+            "eyebrow_weight": "600",
+            "heading": "Brilliance For Today",
+            "heading_color": "#ffffff",
+            "heading_size_desktop": 64,
+            "heading_size_tablet": 20,
+            "heading_size_mobile": 27,
+            "heading_weight": "400",
+            "description": "<p>Fifty years of heritage. One unwavering belief — that beauty should never come at a cost to conscience. Mangal Royal Studio brings you lab-grown diamonds of extraordinary brilliance, set in designs that feel both timeless and deeply personal.</p>",
+            "description_color": "#ebebeb",
+            "description_size_desktop": 14,
+            "description_size_tablet": 13,
+            "description_size_mobile": 11,
+            "button_label": "Shop Now",
+            "link": "",
+            "button_color": "#ffffff",
+            "button_size_desktop": 18,
+            "button_size_mobile": 12,
+            "show_text_box": false,
+            "box_align": "bottom-left",
+            "text_alignment": "left",
+            "text_alignment_mobile": "center",
+            "color_scheme": "scheme-3"
+          }
+        },
+        "slide_mwwjMg": {
+          "type": "slide",
+          "settings": {
+            "image_overlay_opacity": 0,
+            "eyebrow": "TRADITION IN TRUST",
+            "eyebrow_color": "#ffffff",
+            "eyebrow_size_desktop": 64,
+            "eyebrow_size_tablet": 52,
+            "eyebrow_size_mobile": 32,
+            "eyebrow_letter_spacing": 0.5,
+            "eyebrow_weight": "600",
+            "heading": "Image slide",
+            "heading_color": "#ffffff",
+            "heading_size_desktop": 88,
+            "heading_size_tablet": 72,
+            "heading_size_mobile": 42,
+            "heading_weight": "400",
+            "description": "<p>Fifty years of heritage. One unwavering belief — that beauty should never come at a cost to conscience. Mangal Royal Studio brings you lab-grown diamonds of extraordinary brilliance, set in designs that feel both timeless and deeply personal.</p>",
+            "description_color": "#ebebeb",
+            "description_size_desktop": 22,
+            "description_size_tablet": 18,
+            "description_size_mobile": 15,
+            "button_label": "Button label",
+            "link": "",
+            "button_color": "#ffffff",
+            "button_size_desktop": 18,
+            "button_size_mobile": 15,
+            "show_text_box": true,
+            "box_align": "middle-center",
+            "text_alignment": "center",
+            "text_alignment_mobile": "center",
+            "color_scheme": ""
+          }
+        }
+      },
+      "block_order": [
+        "slide_RE9X4N",
+        "slide_mwwjMg"
+      ],
+      "name": "t:sections.slideshow.presets.name",
+      "settings": {
+        "height_desktop": 610,
+        "height_tablet": 600,
+        "height_mobile": 400,
+        "overlay_color": "#000000",
+        "layout": "full_bleed",
+        "auto_rotate": false,
+        "change_slides_speed": 5,
+        "image_behavior": "none",
+        "show_text_below": false,
+        "accessibility_info": "Slideshow about our brand"
+      }
+    },
+    "featured_collection_rFm8fg": {
+      "type": "featured-collection",
+      "name": "Featured Collection",
+      "settings": {
+        "collection": "best-sellers",
+        "products_to_show": 8,
+        "eyebrow": "The most loved",
+        "title": "Our Bestsellers",
+        "show_view_all": true,
+        "view_all_text": "View All",
+        "layout_desktop": "carousel",
+        "layout_mobile": "grid",
+        "show_arrows": true,
+        "columns_desktop": 4,
+        "columns_tablet": 3,
+        "columns_mobile": 2,
+        "gap_desktop": 36,
+        "gap_mobile": 14,
+        "max_width": 1400,
+        "show_title": true,
+        "show_price": true,
+        "show_compare_price": true,
+        "show_sale_percent": false,
+        "show_vendor": false,
+        "show_rating": false,
+        "show_wishlist": true,
+        "show_cart": true,
+        "show_buy_button": true,
+        "show_hover_image": true,
+        "wishlist_position": "meta",
+        "show_badge": true,
+        "custom_badge": "",
+        "badge_position": "top-right",
+        "badge_bg": "#7d132a",
+        "badge_color": "#ffffff",
+        "badge_radius": 0,
+        "image_ratio": "portrait",
+        "card_radius": 0,
+        "image_radius": 0,
+        "card_shadow": false,
+        "buy_button_text": "Buy Now",
+        "buy_height": 30,
+        "script_font_family": "Battlemade",
+        "script_font_size": 64,
+        "script_line_height": 24,
+        "heading_font_family": "Begum",
+        "heading_font_size": 45,
+        "heading_font_weight": 500,
+        "heading_spacing": 44,
+        "title_size": 14,
+        "price_size": 16,
+        "button_size": 14,
+        "background_color": "#ffffff",
+        "text_color": "#190303",
+        "accent_color": "#7d132a",
+        "accent_hover_color": "#5e0e20",
+        "buy_text_color": "#ffffff",
+        "padding_top": 80,
+        "padding_bottom": 80
+      }
+    },
+    "shop_by_shape_fhKnUK": {
+      "type": "shop-by-shape",
+      "blocks": {
+        "shape_yrPMkc": {
+          "type": "shape",
+          "settings": {
+            "image": "shopify://shop_images/0d3cd5b42c34340dd612c78835ea1c2d3b0adb38.png",
+            "title": "Round",
+            "link": "shopify://collections/round",
+            "new_tab": false
+          }
+        },
+        "shape_JTpYeR": {
+          "type": "shape",
+          "settings": {
+            "title": "Cushion",
+            "link": "",
+            "new_tab": false
+          }
+        },
+        "shape_LaPTCd": {
+          "type": "shape",
+          "settings": {
+            "title": "Emerald",
+            "link": "",
+            "new_tab": false
+          }
+        },
+        "shape_mGkUi7": {
+          "type": "shape",
+          "settings": {
+            "title": "Pear",
+            "link": "",
+            "new_tab": false
+          }
+        },
+        "shape_YKdRnc": {
+          "type": "shape",
+          "settings": {
+            "title": "Oval",
+            "link": "",
+            "new_tab": false
+          }
+        },
+        "shape_Wc7JRC": {
+          "type": "shape",
+          "settings": {
+            "title": "Princess",
+            "link": "",
+            "new_tab": false
+          }
+        },
+        "shape_qAjjbw": {
+          "type": "shape",
+          "settings": {
+            "title": "Heart",
+            "link": "",
+            "new_tab": false
+          }
+        }
+      },
+      "block_order": [
+        "shape_yrPMkc",
+        "shape_JTpYeR",
+        "shape_LaPTCd",
+        "shape_mGkUi7",
+        "shape_YKdRnc",
+        "shape_Wc7JRC",
+        "shape_qAjjbw"
+      ],
+      "name": "Shop By Shape",
+      "settings": {
+        "bg_color": "#86142c",
+        "text_color": "#ffffff",
+        "hover_color": "#f8d8df",
+        "subtitle": "Crafter for you",
+        "subtitle_size_desktop": 64,
+        "subtitle_size_tablet": 52,
+        "subtitle_size_mobile": 34,
+        "title": "SHOP BY SHAPE",
+        "title_size_desktop": 45,
+        "title_size_tablet": 38,
+        "title_size_mobile": 28,
+        "container_width": 1280,
+        "mobile_layout": "grid",
+        "columns_mobile": 3,
+        "mobile_gap": 24,
+        "image_size": 80,
+        "padding_top_desktop": 80,
+        "padding_bottom_desktop": 80,
+        "padding_top_mobile": 56,
+        "padding_bottom_mobile": 56
+      }
+    },
+    "shop_by_catogory_6TLAit": {
+      "type": "shop-by-catogory",
+      "blocks": {
+        "category_JcAHTd": {
+          "type": "category",
+          "settings": {
+            "enable_block": true,
+            "collection": "",
+            "image": "shopify://shop_images/a79933e475b1160a9334828e0d30c003bc131737.png",
+            "title": "Rings",
+            "open_new_tab": false,
+            "image_height_desktop": 410,
+            "image_height_mobile": 300,
+            "offset_desktop": 0,
+            "offset_mobile": 0,
+            "enable_overlay": false,
+            "overlay_color": "#190303",
+            "overlay_opacity": 15
+          }
+        },
+        "category_frrbVW": {
+          "type": "category",
+          "settings": {
+            "enable_block": true,
+            "collection": "",
+            "image": "shopify://shop_images/6158221b28f34134f5119c8a750d12eceab5003b.png",
+            "title": "Bracelets",
+            "open_new_tab": false,
+            "image_height_desktop": 410,
+            "image_height_mobile": 300,
+            "offset_desktop": -48,
+            "offset_mobile": 0,
+            "enable_overlay": false,
+            "overlay_color": "#190303",
+            "overlay_opacity": 15
+          }
+        },
+        "category_HhWH9A": {
+          "type": "category",
+          "settings": {
+            "enable_block": true,
+            "collection": "",
+            "image": "shopify://shop_images/cfbaaa5e00a2471def9df241953eeac01f492955_1.png",
+            "title": "Earrings",
+            "open_new_tab": false,
+            "image_height_desktop": 410,
+            "image_height_mobile": 300,
+            "offset_desktop": 0,
+            "offset_mobile": 0,
+            "enable_overlay": false,
+            "overlay_color": "#190303",
+            "overlay_opacity": 15
+          }
+        },
+        "category_Yjb8iR": {
+          "type": "category",
+          "settings": {
+            "enable_block": true,
+            "collection": "",
+            "image": "shopify://shop_images/1ae87b39ce7745cdb5ca5d5fb547519fe3fa790c.png",
+            "title": "Bangles",
+            "open_new_tab": false,
+            "image_height_desktop": 410,
+            "image_height_mobile": 300,
+            "offset_desktop": -48,
+            "offset_mobile": 0,
+            "enable_overlay": false,
+            "overlay_color": "#190303",
+            "overlay_opacity": 15
+          }
+        },
+        "category_bbQHWQ": {
+          "type": "category",
+          "settings": {
+            "enable_block": true,
+            "collection": "",
+            "image": "shopify://shop_images/9e0729be479b73cbaecfabb3e8368e2f323323d5.png",
+            "title": "Pendants",
+            "open_new_tab": false,
+            "image_height_desktop": 410,
+            "image_height_mobile": 300,
+            "offset_desktop": 0,
+            "offset_mobile": 0,
+            "enable_overlay": false,
+            "overlay_color": "#190303",
+            "overlay_opacity": 15
+          }
+        },
+        "category_U7GxCY": {
+          "type": "category",
+          "settings": {
+            "enable_block": true,
+            "collection": "",
+            "image": "shopify://shop_images/348b73957dedca68bba67b33bc0a9766b5914cd3.jpg",
+            "title": "Necklaces",
+            "open_new_tab": false,
+            "image_height_desktop": 410,
+            "image_height_mobile": 300,
+            "offset_desktop": -48,
+            "offset_mobile": 0,
+            "enable_overlay": false,
+            "overlay_color": "#190303",
+            "overlay_opacity": 15
+          }
+        },
+        "category_xc6BEU": {
+          "type": "category",
+          "settings": {
+            "enable_block": true,
+            "collection": "",
+            "image": "shopify://shop_images/cfbaaa5e00a2471def9df241953eeac01f492955.png",
+            "title": "Antique",
+            "open_new_tab": false,
+            "image_height_desktop": 410,
+            "image_height_mobile": 300,
+            "offset_desktop": 0,
+            "offset_mobile": 0,
+            "enable_overlay": false,
+            "overlay_color": "#190303",
+            "overlay_opacity": 15
+          }
+        }
+      },
+      "block_order": [
+        "category_JcAHTd",
+        "category_frrbVW",
+        "category_HhWH9A",
+        "category_Yjb8iR",
+        "category_bbQHWQ",
+        "category_U7GxCY",
+        "category_xc6BEU"
+      ],
+      "name": "Shop by category",
+      "settings": {
+        "background_color": "#f8e1cf",
+        "container_width": 1280,
+        "image_focus": "center",
+        "padding_top": 80,
+        "padding_bottom": 90,
+        "padding_left": 70,
+        "padding_right": 70,
+        "padding_top_mobile": 48,
+        "padding_bottom_mobile": 56,
+        "padding_side_mobile": 20,
+        "gap_desktop": 10,
+        "gap_tablet": 16,
+        "gap_mobile": 16,
+        "font_script_file": "",
+        "font_serif_file": "",
+        "font_sans_file": "",
+        "font_script_stack": "Battlemade, 'Great Vibes', cursive",
+        "font_serif_stack": "Begum, 'Cormorant Garamond', Georgia, serif",
+        "font_sans_stack": "Gotham, Lato, 'Helvetica Neue', Arial, sans-serif",
+        "heading_script": "Discover collections",
+        "heading_script_color": "#7d132a",
+        "heading_script_size": 64,
+        "heading_script_size_tablet": 50,
+        "heading_script_size_mobile": 34,
+        "heading_script_line_height": 24,
+        "heading_script_letter_spacing": 3.8,
+        "heading_main": "Shop by category",
+        "heading_main_color": "#190303",
+        "heading_main_uppercase": "uppercase",
+        "heading_main_size": 45,
+        "heading_main_size_tablet": 38,
+        "heading_main_size_mobile": 28,
+        "heading_main_line_height": 48,
+        "heading_main_letter_spacing": 0,
+        "heading_alignment": "center",
+        "heading_gap": 10,
+        "space_below_heading": 70,
+        "space_below_heading_tablet": 56,
+        "space_below_heading_mobile": 40,
+        "title_color": "#190303",
+        "title_size": 16,
+        "title_size_tablet": 15,
+        "title_size_mobile": 14,
+        "title_line_height": 150,
+        "title_letter_spacing": 0.1,
+        "label_padding": 26,
+        "label_padding_mobile": 16,
+        "enable_hover": true,
+        "hover_scale": 106,
+        "hover_overlay_opacity": 8,
+        "transition_speed": 350,
+        "enable_animation": true,
+        "animation_stagger": 70,
+        "mobile_layout": "carousel",
+        "mobile_aspect_ratio": "1 / 1",
+        "show_arrows": false
+      }
+    },
+    "brand_story_cABfpx": {
+      "type": "brand-story",
+      "name": "Brand Story Editorial",
+      "settings": {
+        "container_width": 1320,
+        "background_color": "#ffffff",
+        "left_width": 42,
+        "right_width": 58,
+        "desktop_gap": 40,
+        "mobile_gap": 40,
+        "small_heading": "ROOTED IN LEGACY",
+        "small_heading_color": "#190303",
+        "small_heading_size_desktop": 58,
+        "small_heading_size_tablet": 46,
+        "small_heading_size_mobile": 30,
+        "desktop_line_height": 110,
+        "mobile_line_height": 110,
+        "main_heading": "Build for today.",
+        "main_heading_color": "#190303",
+        "main_heading_size_desktop": 114,
+        "main_heading_lh_desktop": 90,
+        "main_heading_size_tablet": 96,
+        "main_heading_size_mobile": 58,
+        "main_heading_lh_mobile": 95,
+        "description": "<p>Mangal Royal Studio is born from 50 years of trust — a legacy jewellery house that has celebrated generations of milestones. Now, we bring that heritage forward through lab-grown diamonds: ethically made, scientifically identical, and designed for a generation that values both beauty and intention.</p>",
+        "desc_color": "#3e3e3e",
+        "desc_size_desktop": 16,
+        "desc_max_width_desktop": 520,
+        "desc_size_tablet": 15,
+        "desc_size_mobile": 14,
+        "show_button": false,
+        "button_text": "Discover our story",
+        "button_link": "",
+        "image_1": "shopify://shop_images/bcc9181711e9062c42a1984945aa96643c4c1ac8.jpg",
+        "image_2": "shopify://shop_images/5df927a04b18c2c4c8210a32cb3a14c09e7dc4f3.jpg",
+        "image_3": "shopify://shop_images/ecc2833a188c54ecfc769f015891cdb3ae75bd69.jpg",
+        "image_fit": "cover",
+        "desktop_image_gap": 12,
+        "mobile_image_gap": 12,
+        "desktop_image_radius": 0,
+        "mobile_image_radius": 0,
+        "mobile_image_height": 200,
+        "padding_top_desktop": 110,
+        "padding_bottom_desktop": 110,
+        "padding_top_mobile": 60,
+        "padding_bottom_mobile": 60
+      }
+    },
+    "trust_bar_gXcDWx": {
+      "type": "trust-bar",
+      "blocks": {
+        "benefit_cCXrCe": {
+          "type": "benefit",
+          "settings": {
+            "enabled": true,
+            "icon": "certificate",
+            "heading": "IGI Certified",
+            "description": "Every diamond certified for authenticity"
+          }
+        },
+        "benefit_hFaKFe": {
+          "type": "benefit",
+          "settings": {
+            "enabled": true,
+            "icon": "exchange",
+            "heading": "Lifetime Exchange",
+            "description": "Full value on every piece, forever"
+          }
+        },
+        "benefit_UekmAx": {
+          "type": "benefit",
+          "settings": {
+            "enabled": true,
+            "icon": "shipping",
+            "heading": "Free Shipping",
+            "description": "Insured delivery across India"
+          }
+        },
+        "benefit_adiQEH": {
+          "type": "benefit",
+          "settings": {
+            "enabled": true,
+            "icon": "resizing",
+            "heading": "Free Resizing",
+            "description": "Complimentary for 30 days after purchase"
+          }
+        }
+      },
+      "block_order": [
+        "benefit_cCXrCe",
+        "benefit_hFaKFe",
+        "benefit_UekmAx",
+        "benefit_adiQEH"
+      ],
+      "name": "Trust bar",
+      "settings": {
+        "section_enabled": true,
+        "background_color": "#8b0d2b",
+        "heading_color": "#ffffff",
+        "description_color": "#ffffff",
+        "description_opacity": 92,
+        "icon_color": "#ffffff",
+        "show_borders": false,
+        "border_color": "#6f0a22",
+        "border_width": 1,
+        "section_height": 84,
+        "max_width": 1300,
+        "padding_horizontal": 24,
+        "padding_top": 18,
+        "padding_bottom": 18,
+        "item_gap": 30,
+        "icon_size": 26,
+        "icon_gap": 15,
+        "icon_stroke_width": 1.4,
+        "heading_size": 22,
+        "heading_weight": "500",
+        "heading_line_height": 1.2,
+        "heading_letter_spacing": 0,
+        "description_size": 13,
+        "description_line_height": 1.4,
+        "description_letter_spacing": 0,
+        "mobile_section_height": 78,
+        "mobile_padding_horizontal": 18,
+        "mobile_padding_top": 14,
+        "mobile_padding_bottom": 14,
+        "mobile_item_width": 88,
+        "mobile_icon_size": 23,
+        "mobile_icon_gap": 12,
+        "mobile_icon_stroke_width": 1.4,
+        "mobile_heading_size": 17,
+        "mobile_heading_line_height": 1.2,
+        "mobile_heading_letter_spacing": 0,
+        "mobile_description_size": 12,
+        "mobile_description_line_height": 1.4,
+        "mobile_description_letter_spacing": 0,
+        "enable_marquee": true,
+        "marquee_speed": 22,
+        "pause_on_hover": false
+      }
+    },
+    "shop_by_price_7pqwbQ": {
+      "type": "shop-by-price",
+      "blocks": {
+        "price_range_fijGNG": {
+          "type": "price_range",
+          "settings": {
+            "enable_block": true,
+            "collection": "best-sellers",
+            "image": "shopify://shop_images/c28d5704abb507036c26701c54ae84ffc8656ea8_1.jpg",
+            "price_title": "UNDER ₹15K",
+            "custom_link": "",
+            "open_new_tab": false
+          }
+        },
+        "price_range_fcmNbi": {
+          "type": "price_range",
+          "settings": {
+            "enable_block": true,
+            "collection": "frontpage",
+            "image": "shopify://shop_images/4ad63d14eaf4ccb8ad69310f2c516f5a96f1f8c1_1.jpg",
+            "price_title": "₹15K TO ₹25K",
+            "custom_link": "",
+            "open_new_tab": false
+          }
+        },
+        "price_range_Rcjwzz": {
+          "type": "price_range",
+          "settings": {
+            "enable_block": true,
+            "collection": "",
+            "image": "shopify://shop_images/832f60664a5381eb7addb5fef2ce71e8ae897c6f_1.jpg",
+            "price_title": "₹25K TO ₹50K",
+            "custom_link": "",
+            "open_new_tab": false
+          }
+        },
+        "price_range_X8nJYJ": {
+          "type": "price_range",
+          "settings": {
+            "enable_block": true,
+            "collection": "",
+            "image": "shopify://shop_images/c04cabaf26db3873ddde6bde243cde7572ddeea8_1.jpg",
+            "price_title": "₹50K AND ABOVE",
+            "custom_link": "",
+            "open_new_tab": false
+          }
+        }
+      },
+      "block_order": [
+        "price_range_fijGNG",
+        "price_range_fcmNbi",
+        "price_range_Rcjwzz",
+        "price_range_X8nJYJ"
+      ],
+      "name": "Shop by prices",
+      "settings": {
+        "layout_desktop": "carousel",
+        "layout_mobile": "carousel",
+        "container_width": 1440,
+        "card_width": 285,
+        "columns_desktop": 4,
+        "gap_desktop": 37,
+        "padding_top": 50,
+        "padding_bottom": 90,
+        "padding_left": 70,
+        "padding_right": 70,
+        "columns_mobile": 2,
+        "mobile_visible": 2.5,
+        "gap_mobile": 14,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 56,
+        "padding_side_mobile": 20,
+        "show_dots": true,
+        "image_style": "ratio",
+        "image_ratio": "1 / 1",
+        "image_height": 275,
+        "image_height_mobile": 220,
+        "image_fit": "cover",
+        "image_position": "center",
+        "card_radius": 0,
+        "card_radius_mobile": 0,
+        "font_script_file": "",
+        "font_serif_file": "",
+        "font_script_stack": "Battlemade, 'Great Vibes', cursive",
+        "font_serif_stack": "Begum, 'Cormorant Garamond', Georgia, serif",
+        "price_font": "lato_n4",
+        "eyebrow": "In your budget",
+        "eyebrow_color": "#7d132a",
+        "eyebrow_size": 64,
+        "eyebrow_size_tablet": 54,
+        "eyebrow_size_mobile": 36,
+        "eyebrow_line_height": 24,
+        "eyebrow_line_height_mobile": 30,
+        "eyebrow_letter_spacing": 3.8,
+        "eyebrow_letter_spacing_mobile": 2,
+        "heading": "Shop by prices",
+        "title_color": "#190303",
+        "title_size": 45,
+        "title_size_tablet": 38,
+        "title_size_mobile": 30,
+        "title_line_height": 48,
+        "title_line_height_mobile": 38,
+        "title_letter_spacing": 0,
+        "title_letter_spacing_mobile": 0,
+        "heading_gap": 8,
+        "space_below_heading": 43,
+        "space_below_heading_mobile": 32,
+        "strip_color": "#7d132a",
+        "strip_hover_color": "#5e0d1f",
+        "price_color": "#ffffff",
+        "strip_height": 28,
+        "strip_height_mobile": 32,
+        "price_size": 16,
+        "price_size_mobile": 12,
+        "price_line_height": 20,
+        "price_letter_spacing": 0.1,
+        "arrow_size": 46,
+        "arrow_offset": 25,
+        "arrow_stroke": 2,
+        "arrow_color": "#190303",
+        "arrow_background": "rgba(0,0,0,0)",
+        "arrow_color_hover": "#ffffff",
+        "arrow_background_hover": "#7d132a",
+        "background_color": "#ffffff",
+        "enable_hover": true,
+        "hover_zoom": 105,
+        "hover_lift": 6,
+        "hover_shadow_opacity": 0.1,
+        "hover_speed": 450,
+        "enable_loop": true,
+        "carousel_speed": 600,
+        "enable_animation": true,
+        "animation_stagger": 70,
+        "label_previous": "Previous price ranges",
+        "label_next": "Next price ranges",
+        "label_dots": "Go to slide"
+      }
+    },
+    "image_banner": {
+      "type": "image-banner",
+      "blocks": {
+        "heading_q64PEQ": {
+          "type": "heading",
+          "settings": {
+            "heading": "\"Luxury today is not just about what you wear. It's about the choices you make.\"",
+            "heading_size": "h1"
+          }
+        }
+      },
+      "block_order": [
+        "heading_q64PEQ"
+      ],
+      "settings": {
+        "image": "shopify://shop_images/59205e0bf94ef6a4257d713defef8fe89d9fe5b8.png",
+        "image_overlay_opacity": 40,
+        "image_height": "medium",
+        "image_behavior": "none",
+        "desktop_content_position": "middle-center",
+        "desktop_content_alignment": "left",
+        "show_text_box": false,
+        "color_scheme": "scheme-3",
+        "stack_images_on_mobile": false,
+        "mobile_content_alignment": "center",
+        "show_text_below": false
+      }
+    },
+    "why_lab_grown_CqHY3r": {
+      "type": "why-lab-grown",
+      "blocks": {
+        "feature_FxzUMf": {
+          "type": "feature",
+          "settings": {
+            "icon_style": "flower",
+            "icon_svg": "",
+            "title": "Physically identical",
+            "description": "<p>Chemically, optically and physically identical to mined diamonds. The same fire, the same hardness, the same forever — created in weeks, not millennia.</p>"
+          }
+        },
+        "feature_qJGyqM": {
+          "type": "feature",
+          "settings": {
+            "icon_style": "leaf",
+            "icon_svg": "",
+            "title": "Consciously made",
+            "description": "<p>No mining. No displacement. No ethical compromise. Lab-grown diamonds are the future of fine jewellery for the generation that chooses with intention.</p>"
+          }
+        },
+        "feature_miNaHW": {
+          "type": "feature",
+          "settings": {
+            "icon_style": "gem",
+            "icon_svg": "",
+            "title": "Exceptional value",
+            "description": "<p>Get more carat, more clarity, and more brilliance for the same investment. Certified by IGI — so you always know exactly what you're wearing.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "feature_FxzUMf",
+        "feature_qJGyqM",
+        "feature_miNaHW"
+      ],
+      "name": "Why lab grown",
+      "settings": {
+        "background_color": "#f9e2d2",
+        "container_width": 1440,
+        "column_gap": 56,
+        "vertical_alignment": "center",
+        "section_radius": 0,
+        "padding_top": 90,
+        "padding_bottom": 90,
+        "padding_left": 70,
+        "padding_right": 70,
+        "padding_top_mobile": 56,
+        "padding_bottom_mobile": 56,
+        "padding_side_mobile": 24,
+        "stack_gap_mobile": 34,
+        "mobile_text_alignment": "center",
+        "image": "shopify://shop_images/32830c2dc27609f18b884bc5ab307d57f0f8f900.png",
+        "image_height": 795,
+        "image_height_mobile": 420,
+        "image_fit": "cover",
+        "image_position": "center",
+        "image_radius": 0,
+        "image_radius_mobile": 14,
+        "font_script_file": "",
+        "font_serif_file": "",
+        "font_sans_file": "",
+        "font_sans_medium_file": "",
+        "font_script_stack": "Battlemade, 'Great Vibes', cursive",
+        "font_serif_stack": "Begum, 'Cormorant Garamond', Georgia, serif",
+        "font_sans_stack": "Gotham",
+        "body_font": "lato_n4",
+        "eyebrow": "The conscious choice",
+        "eyebrow_color": "#7d132a",
+        "eyebrow_size": 64,
+        "eyebrow_size_tablet": 54,
+        "eyebrow_size_mobile": 34,
+        "eyebrow_line_height": 24,
+        "eyebrow_line_height_mobile": 30,
+        "eyebrow_letter_spacing": 3.8,
+        "eyebrow_letter_spacing_mobile": 2,
+        "heading": "Why lab grown?",
+        "title_color": "#190303",
+        "title_size": 45,
+        "title_size_tablet": 38,
+        "title_size_mobile": 30,
+        "title_line_height": 48,
+        "title_line_height_mobile": 38,
+        "title_letter_spacing": 0,
+        "heading_gap": 8,
+        "heading_space_below": 44,
+        "heading_space_below_mobile": 32,
+        "feature_title_color": "#190303",
+        "feature_title_size": 24,
+        "feature_title_size_tablet": 22,
+        "feature_title_size_mobile": 20,
+        "feature_title_line_height": 37,
+        "feature_title_letter_spacing": 0,
+        "feature_desc_color": "#3e3e3e",
+        "feature_desc_size": 18,
+        "feature_desc_size_tablet": 17,
+        "feature_desc_size_mobile": 16,
+        "feature_desc_line_height": 175,
+        "feature_desc_line_height_mobile": 170,
+        "feature_desc_max_width": 540,
+        "feature_desc_gap": 0,
+        "feature_gap": 22,
+        "feature_gap_mobile": 28,
+        "icon_color": "#190303",
+        "icon_size": 40,
+        "icon_size_mobile": 34,
+        "icon_gap": 18,
+        "icon_stroke": 1.5,
+        "button_text": "Shop now",
+        "button_link": "",
+        "button_new_tab": false,
+        "button_background": "#7d132a",
+        "button_background_hover": "#5e0f22",
+        "button_text_color": "#ffffff",
+        "button_font_size": 16,
+        "button_font_size_mobile": 15,
+        "button_line_height": 1.2,
+        "button_letter_spacing": 0.1,
+        "button_padding_y": 7,
+        "button_padding_x": 32,
+        "button_min_width": 150,
+        "button_height": 0,
+        "button_radius": 0,
+        "button_alignment": "left",
+        "button_margin_top": 48,
+        "button_margin_top_mobile": 40,
+        "button_full_width_mobile": true,
+        "button_max_width_mobile": 260,
+        "enable_hover": true,
+        "image_zoom": 104,
+        "button_lift": 3,
+        "hover_speed": 600,
+        "enable_animation": true,
+        "animation_stagger": 110
+      }
+    },
+    "testimonals_MTcpn9": {
+      "type": "testimonals",
+      "blocks": {
+        "review_WmgzMW": {
+          "type": "review",
+          "settings": {
+            "enable_review": true,
+            "customer_name": "Jay Veer",
+            "review_title": "\"Luxury and elegance in every piece!\"",
+            "review_text": "<p>The attention to detail in every piece is breathtaking—truly a work of art.</p>",
+            "rating": 5
+          }
+        },
+        "review_GYT76Y": {
+          "type": "review",
+          "settings": {
+            "enable_review": true,
+            "customer_name": "Jay Veer",
+            "review_title": "\"Luxury and elegance in every piece!\"",
+            "review_text": "<p>The attention to detail in every piece is breathtaking—truly a work of art.</p>",
+            "rating": 5
+          }
+        },
+        "review_pYbkW7": {
+          "type": "review",
+          "settings": {
+            "enable_review": true,
+            "customer_name": "Jay Veer",
+            "review_title": "\"Luxury and elegance in every piece!\"",
+            "review_text": "<p>The attention to detail in every piece is breathtaking—truly a work of art.</p>",
+            "rating": 5
+          }
+        },
+        "review_XTQwdU": {
+          "type": "review",
+          "settings": {
+            "enable_review": true,
+            "customer_name": "Jay Veer",
+            "review_title": "\"Luxury and elegance in every piece!\"",
+            "review_text": "<p>The attention to detail in every piece is breathtaking—truly a work of art.</p>",
+            "rating": 5
+          }
+        }
+      },
+      "block_order": [
+        "review_WmgzMW",
+        "review_GYT76Y",
+        "review_pYbkW7",
+        "review_XTQwdU"
+      ],
+      "name": "Custom Testimonials",
+      "settings": {
+        "bg_color": "#ffffff",
+        "container_max_width": 1300,
+        "padding_top_desktop": 70,
+        "padding_bottom_desktop": 70,
+        "padding_left_desktop": 32,
+        "padding_right_desktop": 0,
+        "padding_top_mobile": 45,
+        "padding_bottom_mobile": 45,
+        "padding_left_mobile": 16,
+        "padding_right_mobile": 16,
+        "heading_card_gap": 40,
+        "subheading": "Loved by families",
+        "subheading_size_desktop": 64,
+        "subheading_size_tablet": 48,
+        "subheading_size_mobile": 38,
+        "subheading_letter_spacing": 3.8,
+        "subheading_color": "#7d132a",
+        "heading_alignment": "left",
+        "heading": "WHAT OUR CUSTOMERS SAY",
+        "heading_size_desktop": 45,
+        "heading_size_tablet": 36,
+        "heading_size_mobile": 30,
+        "heading_letter_spacing": 0,
+        "heading_color": "#190303",
+        "arrow_size_desktop": 48,
+        "arrow_size_mobile": 40,
+        "arrow_gap": 12,
+        "arrow_border_width": 1,
+        "arrow_border_color": "#e2e2e2",
+        "prev_bg": "#ffffff",
+        "prev_color": "#190303",
+        "next_bg": "#7d132a",
+        "next_color": "#ffffff",
+        "card_gap_desktop": 32,
+        "card_gap_tablet": 20,
+        "card_gap_mobile": 14,
+        "card_padding_desktop": 40,
+        "card_padding_mobile": 20,
+        "card_border_width": 1,
+        "card_border_color": "#e2e2e2",
+        "card_border_radius": 0,
+        "card_bg": "#ffffff",
+        "name_size_desktop": 16,
+        "name_size_mobile": 14,
+        "name_color": "#190303",
+        "title_size_desktop": 26,
+        "title_size_mobile": 21,
+        "title_color": "#190303",
+        "desc_size_desktop": 16,
+        "desc_size_mobile": 14,
+        "desc_color": "#190303",
+        "star_size": 18,
+        "star_size_mobile": 16,
+        "star_gap": 6,
+        "star_color": "#8d0f2b",
+        "enable_autoplay": true,
+        "autoplay_interval": 5,
+        "enable_infinite": true,
+        "enable_swipe": true,
+        "transition_duration": 400
+      }
+    }
+  },
+  "order": [
+    "slideshow_nAcmpg",
+    "featured_collection_rFm8fg",
+    "shop_by_shape_fhKnUK",
+    "shop_by_catogory_6TLAit",
+    "brand_story_cABfpx",
+    "trust_bar_gXcDWx",
+    "shop_by_price_7pqwbQ",
+    "image_banner",
+    "why_lab_grown_CqHY3r",
+    "testimonals_MTcpn9"
+  ]
+}

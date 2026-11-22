@@ -1,0 +1,960 @@
+{%- comment -%}
+  Mangal Royal Studio — Luxury trust / service benefits bar
+  Desktop: 4-column compact bar. Mobile: seamless auto-scrolling marquee.
+  Shopify OS 2.0 section. Vanilla CSS only, no external libraries.
+{%- endcomment -%}
+
+{%- liquid
+  assign visible_count = 0
+  for block in section.blocks
+    if block.settings.enabled
+      assign visible_count = visible_count | plus: 1
+    endif
+  endfor
+
+  assign columns = visible_count
+  if columns > 4
+    assign columns = 4
+  endif
+  if columns < 1
+    assign columns = 1
+  endif
+
+  assign tablet_columns = 2
+  if visible_count == 1
+    assign tablet_columns = 1
+  endif
+-%}
+
+{%- if section.settings.section_enabled and visible_count > 0 -%}
+  {%- style -%}
+    #shopify-section-{{ section.id }} {
+      --tb-font: 'Gotham', 'Gotham Book', 'GothamBook', 'Lato', Arial, sans-serif;
+
+      --tb-bg: {{ section.settings.background_color }};
+      --tb-text: {{ section.settings.heading_color }};
+      --tb-desc: {{ section.settings.description_color }};
+      --tb-desc-opacity: {{ section.settings.description_opacity | times: 0.01 }};
+      --tb-icon: {{ section.settings.icon_color }};
+      --tb-border-color: {{ section.settings.border_color }};
+      --tb-border-width: {{ section.settings.border_width }}px;
+
+      --tb-max: {{ section.settings.max_width }}px;
+      --tb-px: {{ section.settings.padding_horizontal }}px;
+      --tb-pt: {{ section.settings.padding_top }}px;
+      --tb-pb: {{ section.settings.padding_bottom }}px;
+      --tb-height: {{ section.settings.section_height }}px;
+      --tb-gap: {{ section.settings.item_gap }}px;
+      --tb-icon-size: {{ section.settings.icon_size }}px;
+      --tb-icon-gap: {{ section.settings.icon_gap }}px;
+      --tb-stroke: {{ section.settings.icon_stroke_width }};
+
+      --tb-h-size: {{ section.settings.heading_size }}px;
+      --tb-h-weight: {{ section.settings.heading_weight }};
+      --tb-h-lh: {{ section.settings.heading_line_height }};
+      --tb-h-ls: {{ section.settings.heading_letter_spacing }}px;
+
+      --tb-d-size: {{ section.settings.description_size }}px;
+      --tb-d-lh: {{ section.settings.description_line_height }};
+      --tb-d-ls: {{ section.settings.description_letter_spacing }}px;
+
+      --tb-speed: {{ section.settings.marquee_speed }}s;
+      --tb-item-w: {{ section.settings.mobile_item_width }}vw;
+    }
+
+    @media screen and (max-width: 749px) {
+      #shopify-section-{{ section.id }} {
+        --tb-px: {{ section.settings.mobile_padding_horizontal }}px;
+        --tb-pt: {{ section.settings.mobile_padding_top }}px;
+        --tb-pb: {{ section.settings.mobile_padding_bottom }}px;
+        --tb-height: {{ section.settings.mobile_section_height }}px;
+        --tb-icon-size: {{ section.settings.mobile_icon_size }}px;
+        --tb-icon-gap: {{ section.settings.mobile_icon_gap }}px;
+        --tb-stroke: {{ section.settings.mobile_icon_stroke_width }};
+        --tb-h-size: {{ section.settings.mobile_heading_size }}px;
+        --tb-h-lh: {{ section.settings.mobile_heading_line_height }};
+        --tb-h-ls: {{ section.settings.mobile_heading_letter_spacing }}px;
+        --tb-d-size: {{ section.settings.mobile_description_size }}px;
+        --tb-d-lh: {{ section.settings.mobile_description_line_height }};
+        --tb-d-ls: {{ section.settings.mobile_description_letter_spacing }}px;
+      }
+    }
+
+    .tb-bar {
+      background-color: var(--tb-bg);
+      color: var(--tb-text);
+      font-family: var(--tb-font);
+      overflow: hidden;
+      {% if section.settings.show_borders %}
+        border-top: var(--tb-border-width) solid var(--tb-border-color);
+        border-bottom: var(--tb-border-width) solid var(--tb-border-color);
+      {% endif %}
+    }
+
+    .tb-bar * {
+      box-sizing: border-box;
+    }
+
+    .tb-bar__inner {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      max-width: var(--tb-max);
+      min-height: var(--tb-height);
+      margin: 0 auto;
+      padding: var(--tb-pt) var(--tb-px) var(--tb-pb);
+    }
+
+    .tb-bar__grid {
+      display: grid;
+      grid-template-columns: repeat({{ columns }}, minmax(0, 1fr));
+      gap: var(--tb-gap);
+      width: 100%;
+    }
+
+    .tb-item {
+      display: flex;
+      align-items: center;
+      gap: var(--tb-icon-gap);
+      min-width: 0;
+    }
+
+    .tb-item__icon {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--tb-icon-size);
+      height: var(--tb-icon-size);
+      color: var(--tb-icon);
+    }
+
+    .tb-item__icon svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: var(--tb-stroke);
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .tb-item__icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .tb-item__text {
+      min-width: 0;
+    }
+
+    .tb-item__heading {
+      margin: 0;
+      font-family: var(--tb-font);
+      font-size: var(--tb-h-size);
+      font-weight: var(--tb-h-weight);
+      line-height: var(--tb-h-lh);
+      letter-spacing: var(--tb-h-ls);
+      color: var(--tb-text);
+    }
+
+    .tb-item__desc {
+      margin: 4px 0 0;
+      font-family: var(--tb-font);
+      font-size: var(--tb-d-size);
+      font-weight: 400;
+      line-height: var(--tb-d-lh);
+      letter-spacing: var(--tb-d-ls);
+      color: var(--tb-desc);
+      opacity: var(--tb-desc-opacity);
+    }
+
+    /* ---------- MOBILE MARQUEE ---------- */
+    .tb-bar__marquee {
+      display: none;
+      width: 100%;
+      overflow: hidden;
+      -webkit-mask-image: linear-gradient(to right, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
+      mask-image: linear-gradient(to right, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
+    }
+
+    .tb-bar__track {
+      display: flex;
+      align-items: center;
+      width: max-content;
+      animation: tb-marquee-scroll var(--tb-speed) linear infinite;
+      will-change: transform;
+    }
+
+    .tb-bar__track .tb-item {
+      flex: 0 0 var(--tb-item-w);
+      max-width: var(--tb-item-w);
+      padding-right: 6vw;
+    }
+
+    {%- if section.settings.pause_on_hover -%}
+      .tb-bar__marquee:hover .tb-bar__track,
+      .tb-bar__marquee:focus-within .tb-bar__track {
+        animation-play-state: paused;
+      }
+    {%- endif -%}
+
+    @keyframes tb-marquee-scroll {
+      from { transform: translate3d(0, 0, 0); }
+      to { transform: translate3d(-50%, 0, 0); }
+    }
+
+    @media screen and (min-width: 750px) and (max-width: 989px) {
+      .tb-bar__grid {
+        grid-template-columns: repeat({{ tablet_columns }}, minmax(0, 1fr));
+        row-gap: calc(var(--tb-gap) * 0.75);
+      }
+
+      .tb-bar__inner {
+        min-height: 0;
+      }
+    }
+
+    @media screen and (max-width: 749px) {
+      {%- if section.settings.enable_marquee -%}
+        .tb-bar__grid {
+          display: none;
+        }
+
+        .tb-bar__marquee {
+          display: block;
+        }
+
+        .tb-bar__inner {
+          padding-left: 0;
+          padding-right: 0;
+        }
+
+        .tb-bar__track .tb-item {
+          padding-left: var(--tb-px);
+        }
+      {%- else -%}
+        .tb-bar__grid {
+          grid-template-columns: minmax(0, 1fr);
+          row-gap: 14px;
+        }
+      {%- endif -%}
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .tb-bar__track {
+        animation: none;
+        transform: none;
+      }
+
+      .tb-bar__marquee {
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .tb-bar__track .tb-item {
+        scroll-snap-align: start;
+      }
+    }
+  {%- endstyle -%}
+
+  <div class="tb-bar" {{ section.shopify_attributes }}>
+    <div class="tb-bar__inner">
+      {%- comment -%} Desktop / tablet grid {%- endcomment -%}
+      <div class="tb-bar__grid">
+        {%- for block in section.blocks -%}
+          {%- if block.settings.enabled -%}
+            <div class="tb-item" {{ block.shopify_attributes }}>
+              <span class="tb-item__icon" aria-hidden="true">
+                {%- if block.settings.custom_icon != blank -%}
+                  {{ block.settings.custom_icon | image_url: width: 120 | image_tag: alt: '', loading: 'lazy' }}
+                {%- else -%}
+                  {%- case block.settings.icon -%}
+                    {%- when 'certificate' -%}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false">
+                        <path d="M7 4h13l5 5v13"/>
+                        <path d="M25 22v6H7V4"/>
+                        <path d="M20 4v5h5"/>
+                        <circle cx="16" cy="15.5" r="3.6"/>
+                        <path d="M13.6 18.6 12.4 25l3.6-2 3.6 2-1.2-6.4"/>
+                      </svg>
+                    {%- when 'exchange' -%}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false">
+                        <path d="M26 16a10 10 0 0 1-16.8 7.3"/>
+                        <path d="M6 16A10 10 0 0 1 22.8 8.7"/>
+                        <path d="M22.6 4.4V9h-4.6"/>
+                        <path d="M9.4 27.6V23H14"/>
+                      </svg>
+                    {%- when 'shipping' -%}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false">
+                        <path d="M2.5 8.5h14v13h-14z"/>
+                        <path d="M16.5 12.5h5.6l3.4 4v5h-9z"/>
+                        <circle cx="9" cy="24.5" r="2.4"/>
+                        <circle cx="21.5" cy="24.5" r="2.4"/>
+                        <path d="M6.5 13.5h6"/>
+                        <path d="M6.5 16.8h6"/>
+                      </svg>
+                    {%- when 'resizing' -%}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false">
+                        <circle cx="16" cy="16" r="12"/>
+                        <path d="M13.6 12.4 10 16l3.6 3.6"/>
+                        <path d="M18.4 12.4 22 16l-3.6 3.6"/>
+                      </svg>
+                    {%- when 'diamond' -%}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false">
+                        <path d="M8 6h16l5 7-13 13L3 13z"/>
+                        <path d="M3 13h26"/>
+                        <path d="M11 13 16 26l5-13-5-7z"/>
+                      </svg>
+                    {%- when 'shield' -%}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false">
+                        <path d="M16 3.5 27 7v8.4c0 6.2-4.4 11.2-11 13.1-6.6-1.9-11-6.9-11-13.1V7z"/>
+                        <path d="m11.6 16 3 3 6-6"/>
+                      </svg>
+                    {%- when 'support' -%}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false">
+                        <path d="M6 19v-3a10 10 0 0 1 20 0v3"/>
+                        <path d="M6 17.5h2.5A1.5 1.5 0 0 1 10 19v4a1.5 1.5 0 0 1-1.5 1.5H6z"/>
+                        <path d="M26 17.5h-2.5A1.5 1.5 0 0 0 22 19v4a1.5 1.5 0 0 0 1.5 1.5H26z"/>
+                      </svg>
+                    {%- when 'gift' -%}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false">
+                        <path d="M4.5 12.5h23v5h-23z"/>
+                        <path d="M6.5 17.5h19v10h-19z"/>
+                        <path d="M16 12.5v15"/>
+                        <path d="M16 12.5s-1.5-8-5.5-8a3 3 0 0 0 0 6h11a3 3 0 0 0 0-6c-4 0-5.5 8-5.5 8z"/>
+                      </svg>
+                    {%- when 'payment' -%}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false">
+                        <path d="M3.5 7.5h25v17h-25z"/>
+                        <path d="M3.5 13h25"/>
+                        <path d="M7.5 19h6"/>
+                      </svg>
+                    {%- else -%}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false">
+                        <circle cx="16" cy="16" r="12"/>
+                      </svg>
+                  {%- endcase -%}
+                {%- endif -%}
+              </span>
+
+              <div class="tb-item__text">
+                {%- if block.settings.heading != blank -%}
+                  <p class="tb-item__heading">{{ block.settings.heading | escape }}</p>
+                {%- endif -%}
+                {%- if block.settings.description != blank -%}
+                  <p class="tb-item__desc">{{ block.settings.description | escape }}</p>
+                {%- endif -%}
+              </div>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      {%- comment -%} Mobile seamless marquee (content duplicated once) {%- endcomment -%}
+      {%- if section.settings.enable_marquee -%}
+        <div class="tb-bar__marquee">
+          <div class="tb-bar__track">
+            {%- for i in (1..2) -%}
+              {%- for block in section.blocks -%}
+                {%- if block.settings.enabled -%}
+                  <div class="tb-item"{% if i == 2 %} aria-hidden="true"{% endif %}>
+                    <span class="tb-item__icon" aria-hidden="true">
+                      {%- if block.settings.custom_icon != blank -%}
+                        {{ block.settings.custom_icon | image_url: width: 120 | image_tag: alt: '', loading: 'lazy' }}
+                      {%- else -%}
+                        {%- case block.settings.icon -%}
+                          {%- when 'certificate' -%}
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false">
+                              <path d="M7 4h13l5 5v13"/>
+                              <path d="M25 22v6H7V4"/>
+                              <path d="M20 4v5h5"/>
+                              <circle cx="16" cy="15.5" r="3.6"/>
+                              <path d="M13.6 18.6 12.4 25l3.6-2 3.6 2-1.2-6.4"/>
+                            </svg>
+                          {%- when 'exchange' -%}
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false">
+                              <path d="M26 16a10 10 0 0 1-16.8 7.3"/>
+                              <path d="M6 16A10 10 0 0 1 22.8 8.7"/>
+                              <path d="M22.6 4.4V9h-4.6"/>
+                              <path d="M9.4 27.6V23H14"/>
+                            </svg>
+                          {%- when 'shipping' -%}
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false">
+                              <path d="M2.5 8.5h14v13h-14z"/>
+                              <path d="M16.5 12.5h5.6l3.4 4v5h-9z"/>
+                              <circle cx="9" cy="24.5" r="2.4"/>
+                              <circle cx="21.5" cy="24.5" r="2.4"/>
+                              <path d="M6.5 13.5h6"/>
+                              <path d="M6.5 16.8h6"/>
+                            </svg>
+                          {%- when 'resizing' -%}
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false">
+                              <circle cx="16" cy="16" r="12"/>
+                              <path d="M13.6 12.4 10 16l3.6 3.6"/>
+                              <path d="M18.4 12.4 22 16l-3.6 3.6"/>
+                            </svg>
+                          {%- when 'diamond' -%}
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false">
+                              <path d="M8 6h16l5 7-13 13L3 13z"/>
+                              <path d="M3 13h26"/>
+                              <path d="M11 13 16 26l5-13-5-7z"/>
+                            </svg>
+                          {%- when 'shield' -%}
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false">
+                              <path d="M16 3.5 27 7v8.4c0 6.2-4.4 11.2-11 13.1-6.6-1.9-11-6.9-11-13.1V7z"/>
+                              <path d="m11.6 16 3 3 6-6"/>
+                            </svg>
+                          {%- when 'support' -%}
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false">
+                              <path d="M6 19v-3a10 10 0 0 1 20 0v3"/>
+                              <path d="M6 17.5h2.5A1.5 1.5 0 0 1 10 19v4a1.5 1.5 0 0 1-1.5 1.5H6z"/>
+                              <path d="M26 17.5h-2.5A1.5 1.5 0 0 0 22 19v4a1.5 1.5 0 0 0 1.5 1.5H26z"/>
+                            </svg>
+                          {%- when 'gift' -%}
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false">
+                              <path d="M4.5 12.5h23v5h-23z"/>
+                              <path d="M6.5 17.5h19v10h-19z"/>
+                              <path d="M16 12.5v15"/>
+                              <path d="M16 12.5s-1.5-8-5.5-8a3 3 0 0 0 0 6h11a3 3 0 0 0 0-6c-4 0-5.5 8-5.5 8z"/>
+                            </svg>
+                          {%- when 'payment' -%}
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false">
+                              <path d="M3.5 7.5h25v17h-25z"/>
+                              <path d="M3.5 13h25"/>
+                              <path d="M7.5 19h6"/>
+                            </svg>
+                          {%- else -%}
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false">
+                              <circle cx="16" cy="16" r="12"/>
+                            </svg>
+                        {%- endcase -%}
+                      {%- endif -%}
+                    </span>
+
+                    <div class="tb-item__text">
+                      {%- if block.settings.heading != blank -%}
+                        <p class="tb-item__heading">{{ block.settings.heading | escape }}</p>
+                      {%- endif -%}
+                      {%- if block.settings.description != blank -%}
+                        <p class="tb-item__desc">{{ block.settings.description | escape }}</p>
+                      {%- endif -%}
+                    </div>
+                  </div>
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Trust bar",
+  "tag": "section",
+  "class": "section-trust-bar",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "section_enabled",
+      "label": "Show section",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Colours"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#8B0D2B"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "range",
+      "id": "description_opacity",
+      "min": 50,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "Description opacity",
+      "default": 92
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon colour",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_borders",
+      "label": "Show top and bottom border",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border colour",
+      "default": "#6F0A22"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "Border width",
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Desktop layout"
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "min": 60,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "label": "Section height",
+      "default": 84
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 900,
+      "max": 1800,
+      "step": 20,
+      "unit": "px",
+      "label": "Content max width",
+      "default": 1300
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Horizontal padding",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "item_gap",
+      "min": 8,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Gap between items",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "min": 16,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "label": "Icon size",
+      "default": 26
+    },
+    {
+      "type": "range",
+      "id": "icon_gap",
+      "min": 6,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "label": "Icon to text gap",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "icon_stroke_width",
+      "min": 0.8,
+      "max": 2.4,
+      "step": 0.1,
+      "label": "Icon stroke width",
+      "default": 1.4
+    },
+    {
+      "type": "header",
+      "content": "Desktop typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 14,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading size",
+      "default": 22
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+   {
+  "type": "range",
+  "id": "heading_line_height",
+  "min": 1,
+  "max": 2,
+  "step": 0.1,
+  "label": "Heading line height",
+  "default": 1.2
+},
+    {
+      "type": "range",
+      "id": "heading_letter_spacing",
+      "min": -1,
+      "max": 3,
+      "step": 0.1,
+      "unit": "px",
+      "label": "Heading letter spacing",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Description size",
+      "default": 13
+    },
+   {
+  "type": "range",
+  "id": "description_line_height",
+  "min": 1,
+  "max": 2,
+  "step": 0.1,
+  "label": "Description line height",
+  "default": 1.4
+},
+    {
+      "type": "range",
+      "id": "description_letter_spacing",
+      "min": -1,
+      "max": 3,
+      "step": 0.1,
+      "unit": "px",
+      "label": "Description letter spacing",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Mobile layout"
+    },
+    {
+      "type": "range",
+      "id": "mobile_section_height",
+      "min": 56,
+      "max": 140,
+      "step": 2,
+      "unit": "px",
+      "label": "Mobile section height",
+      "default": 78
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_horizontal",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Mobile horizontal padding",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Mobile top padding",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Mobile bottom padding",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "mobile_item_width",
+      "min": 60,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "Mobile item width (viewport)",
+      "default": 88
+    },
+    {
+      "type": "range",
+      "id": "mobile_icon_size",
+      "min": 14,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "label": "Mobile icon size",
+      "default": 23
+    },
+    {
+      "type": "range",
+      "id": "mobile_icon_gap",
+      "min": 6,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Mobile icon to text gap",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "mobile_icon_stroke_width",
+      "min": 0.8,
+      "max": 2.4,
+      "step": 0.1,
+      "label": "Mobile icon stroke width",
+      "default": 1.4
+    },
+    {
+      "type": "header",
+      "content": "Mobile typography"
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Mobile heading size",
+      "default": 17
+    },
+  {
+  "type": "range",
+  "id": "mobile_heading_line_height",
+  "min": 1,
+  "max": 2,
+  "step": 0.1,
+  "label": "Mobile heading line height",
+  "default": 1.2
+},
+    {
+      "type": "range",
+      "id": "mobile_heading_letter_spacing",
+      "min": -1,
+      "max": 3,
+      "step": 0.1,
+      "unit": "px",
+      "label": "Mobile heading letter spacing",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_description_size",
+      "min": 9,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Mobile description size",
+      "default": 12
+    },
+    {
+   "type": "range",
+  "id": "mobile_description_line_height",
+  "min": 1,
+  "max": 2,
+  "step": 0.1,
+  "label": "Mobile description line height",
+  "default": 1.4
+},
+    {
+      "type": "range",
+      "id": "mobile_description_letter_spacing",
+      "min": -1,
+      "max": 3,
+      "step": 0.1,
+      "unit": "px",
+      "label": "Mobile description letter spacing",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Mobile marquee"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_marquee",
+      "label": "Auto-scroll on mobile",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "marquee_speed",
+      "min": 12,
+      "max": 40,
+      "step": 1,
+      "unit": "s",
+      "label": "Seconds per full loop",
+      "default": 22,
+      "info": "Lower is faster."
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "Pause on hover or focus",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "Benefit",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "enabled",
+          "label": "Show this benefit",
+          "default": true
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "certificate", "label": "Certificate" },
+            { "value": "exchange", "label": "Exchange" },
+            { "value": "shipping", "label": "Shipping" },
+            { "value": "resizing", "label": "Resizing" },
+            { "value": "diamond", "label": "Diamond" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "support", "label": "Support" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "payment", "label": "Payment" }
+          ],
+          "default": "certificate"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_icon",
+          "label": "Custom icon",
+          "info": "Optional. Replaces the selected icon. Use a white PNG or SVG."
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "IGI Certified"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Every diamond certified for authenticity"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trust bar",
+      "blocks": [
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "certificate",
+            "heading": "IGI Certified",
+            "description": "Every diamond certified for authenticity"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "exchange",
+            "heading": "Lifetime Exchange",
+            "description": "Full value on every piece, forever"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "shipping",
+            "heading": "Free Shipping",
+            "description": "Insured delivery across India"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "resizing",
+            "heading": "Free Resizing",
+            "description": "Complimentary for 30 days after purchase"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

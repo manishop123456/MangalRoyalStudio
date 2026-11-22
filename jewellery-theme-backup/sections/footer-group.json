@@ -1,0 +1,202 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "t:sections.footer.name",
+  "type": "footer",
+  "sections": {
+    "custom_footer_cmNB7q": {
+      "type": "custom-footer",
+      "name": "Custom Footer",
+      "settings": {
+        "color_background": "#7d132a",
+        "color_text": "#ffffff",
+        "secondary_text_opacity": 80,
+        "max_width": 1440,
+        "grid_template_d": "1.1fr 0.8fr 1fr 1fr 0.7fr",
+        "grid_template_t": "repeat(4, 1fr)",
+        "pad_top_d": 56,
+        "pad_bottom_d": 24,
+        "pad_left_d": 60,
+        "pad_right_d": 60,
+        "column_gap_d": 40,
+        "row_gap_d": 32,
+        "pad_left_t": 36,
+        "pad_right_t": 36,
+        "column_gap_t": 28,
+        "row_gap_t": 32,
+        "pad_top_m": 40,
+        "pad_bottom_m": 24,
+        "pad_left_m": 22,
+        "pad_right_m": 22,
+        "font_heading_family": "'Begum', 'Battlemade', 'Lato', Arial, sans-serif",
+        "font_body_family": "'Gotham', 'Lato', Arial, sans-serif",
+        "show_newsletter": true,
+        "news_heading": "Join the mailing list",
+        "news_heading_weight": "500",
+        "news_heading_size_d": 45,
+        "news_heading_lh_d": 60,
+        "news_heading_size_m": 30,
+        "news_heading_lh_m": 38,
+        "news_heading_ls": 2,
+        "news_heading_space_d": 18,
+        "news_heading_space_m": 16,
+        "news_bottom_space_d": 40,
+        "news_bottom_space_m": 32,
+        "news_form_width_d": 440,
+        "news_form_width_m": 440,
+        "news_input_h_d": 60,
+        "news_input_h_m": 50,
+        "news_gap": 8,
+        "news_btn_width_d": 126,
+        "news_mobile_stack": true,
+        "news_border_opacity": 35,
+        "news_input_font_size": 14,
+        "news_btn_bg": "#ffffff",
+        "news_btn_text": "#1c1c1c",
+        "news_btn_font_size": 13,
+        "news_placeholder": "E-mail",
+        "news_btn_label": "Subscribe",
+        "news_success_text": "Thank you. You are now on the mailing list.",
+        "news_error_text": "Enter a valid email address.",
+        "logo": "shopify://shop_images/6b6217cf80a12befaeed66e6688a7640fc7d7c82.png",
+        "logo_width_d": 120,
+        "logo_width_m": 120,
+        "logo_bottom_space_d": 18,
+        "logo_bottom_space_m": 16,
+        "logo_block_space_m": 28,
+        "description": "Designed for every day. Treasured for a lifetime. A unit of Mangal Royal Jewels Pvt Ltd — since 1975.",
+        "desc_size_d": 14,
+        "desc_size_m": 14,
+        "desc_line_height": 19,
+        "desc_line_height_m": 20,
+        "desc_letter_spacing": 1,
+        "desc_max_width": 220,
+        "desc_max_width_m": 300,
+        "desc_align_d": "left",
+        "desc_align_m": "center",
+        "menu_font_size_d": 13,
+        "menu_font_size_m": 13,
+        "menu_line_height_d": 28,
+        "menu_line_height_m": 28,
+        "menu_letter_spacing": 8,
+        "menu_item_gap": 0,
+        "menu_font_weight": "400",
+        "menu_uppercase": true,
+        "menu_1_enable": true,
+        "menu_1_heading": "Menu",
+        "menu_1_links": "quick-links",
+        "menu_1_show_heading_desktop": false,
+        "menu_2_enable": true,
+        "menu_2_heading": "Jewellery",
+        "menu_2_links": "collections",
+        "menu_2_show_heading_desktop": false,
+        "menu_3_enable": true,
+        "menu_3_heading": "Policies",
+        "menu_3_links": "servies",
+        "menu_3_show_heading_desktop": false,
+        "menu_4_enable": false,
+        "menu_4_heading": "More",
+        "menu_4_links": "",
+        "menu_4_show_heading_desktop": false,
+        "mobile_accordion_enable": true,
+        "accordion_allow_multiple": false,
+        "accordion_padding_m": 14,
+        "social_enable": true,
+        "social_heading": "Social",
+        "social_show_heading_desktop": false,
+        "mobile_social_accordion": false,
+        "social_style": "both",
+        "social_icon_size": 16,
+        "social_icon_size_m": 18,
+        "social_gap": 8,
+        "social_row_gap_m": 18,
+        "social_top_space_m": 24,
+        "instagram_enable": true,
+        "instagram_label": "Instagram",
+        "instagram_url": "https://www.instagram.com/",
+        "linkedin_enable": true,
+        "linkedin_label": "LinkedIn",
+        "linkedin_url": "",
+        "facebook_enable": true,
+        "facebook_label": "Facebook",
+        "facebook_url": "https://www.instagram.com/",
+        "youtube_enable": false,
+        "youtube_label": "YouTube",
+        "youtube_url": "",
+        "pinterest_enable": false,
+        "pinterest_label": "Pinterest",
+        "pinterest_url": "",
+        "copyright_text": "© 2026, All rights reserved by Mangal Royal Studio",
+        "copyright_divider": "|",
+        "developer_text": "",
+        "copyright_size_d": 12,
+        "copyright_size_m": 12,
+        "copyright_align_d": "center",
+        "copyright_align_m": "center",
+        "divider_opacity": 25,
+        "copyright_top_space_d": 40,
+        "copyright_top_space_m": 28,
+        "copyright_inner_space_d": 18,
+        "copyright_inner_space_m": 16
+      }
+    },
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "image_EBWKaV": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/6b6217cf80a12befaeed66e6688a7640fc7d7c82.png",
+            "image_width": 100
+          }
+        },
+        "link_list_BArhne": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Quick links",
+            "menu": "main-menu"
+          }
+        },
+        "link_list_jQ9Uwg": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Quick links",
+            "menu": "footer"
+          }
+        },
+        "brand_information_bJ8DAd": {
+          "type": "brand_information",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "image_EBWKaV",
+        "link_list_BArhne",
+        "link_list_jQ9Uwg",
+        "brand_information_bJ8DAd"
+      ],
+      "disabled": true,
+      "settings": {
+        "color_scheme": "scheme-1",
+        "newsletter_enable": true,
+        "newsletter_heading": "Subscribe to our emails",
+        "payment_enable": true,
+        "show_policy": true,
+        "margin_top": 0,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    }
+  },
+  "order": [
+    "custom_footer_cmNB7q",
+    "footer"
+  ]
+}

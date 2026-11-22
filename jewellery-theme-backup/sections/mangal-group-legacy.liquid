@@ -1,0 +1,1445 @@
+<section
+  id="mangal-group-legacy-{{ section.id }}"
+  class="mangal-group-legacy"
+  data-section-id="{{ section.id }}"
+>
+  <div class="mgl-container">
+    <div class="mgl-heading-wrap">
+      {% if section.settings.eyebrow != blank %}
+        <div class="mgl-eyebrow">{{ section.settings.eyebrow }}</div>
+      {% endif %}
+
+      {% if section.settings.heading != blank %}
+        <h2 class="mgl-heading">{{ section.settings.heading }}</h2>
+      {% endif %}
+    </div>
+
+    <div class="mgl-grid">
+      {% for block in section.blocks %}
+        <article class="mgl-card" {{ block.shopify_attributes }}>
+          <div class="mgl-icon" aria-hidden="true">
+            {% case block.settings.icon %}
+              {% when 'diamond' %}
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 17.5 15 8h18l7 9.5L24 40 8 17.5Z"/>
+                  <path d="M8 17.5h32M15 8l9 9.5L33 8M15 8l9 9.5L15 8ZM33 8l-9 9.5L33 8Z"/>
+                  <path d="m16 17.5 8 22 8-22"/>
+                </svg>
+              {% when 'bank' %}
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 17 24 8l18 9H6Z"/>
+                  <path d="M10 19v17M18 19v17M30 19v17M38 19v17M6 39h36"/>
+                </svg>
+              {% when 'finance' %}
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="7" y="14" width="34" height="20" rx="2"/>
+                  <path d="M7 20h34M12 27h7M29 27h7"/>
+                  <circle cx="24" cy="24" r="3"/>
+                </svg>
+              {% when 'building' %}
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 40V14h17v26M26 40V8h13v32M5 40h38"/>
+                  <path d="M14 20h3M14 26h3M14 32h3M21 20h3M21 26h3M21 32h3M31 14h3M31 20h3M31 26h3M31 32h3"/>
+                </svg>
+              {% when 'theatre' %}
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7 30c3-9 10-13 17-13s14 4 17 13"/>
+                  <path d="M11 29c-1-5 0-11 4-14 3 1 5 4 5 7"/>
+                  <path d="M37 29c1-5 0-11-4-14-3 1-5 4-5 7"/>
+                  <circle cx="16" cy="23" r="1"/>
+                  <circle cx="32" cy="23" r="1"/>
+                  <path d="M17 31c2 2 4 3 7 3s5-1 7-3"/>
+                </svg>
+              {% when 'heart' %}
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M24 39S9 30 9 19c0-5 3.5-8 8-8 3.2 0 5.7 1.8 7 4.3C25.3 12.8 27.8 11 31 11c4.5 0 8 3 8 8 0 11-15 20-15 20Z"/>
+                  <path d="M16 23h4l2-4 4 9 2-5h4"/>
+                </svg>
+              {% else %}
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="24" cy="24" r="15"/>
+                  <path d="M24 16v16M20 20h7c1.5 0 3 1.2 3 3s-1.5 3-3 3h-6c-1.5 0-3 1.2-3 3s1.5 3 3 3h7"/>
+                </svg>
+            {% endcase %}
+          </div>
+
+          {% if block.settings.title != blank %}
+            <h3 class="mgl-card-title">{{ block.settings.title }}</h3>
+          {% endif %}
+
+          {% if block.settings.description != blank %}
+            <div class="mgl-card-description">{{ block.settings.description }}</div>
+          {% endif %}
+
+          {% if block.settings.link_label != blank and block.settings.link != blank %}
+            <a class="mgl-card-link" href="{{ block.settings.link }}">
+              {{ block.settings.link_label }}
+              <span aria-hidden="true">→</span>
+            </a>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+
+  <style>
+    #mangal-group-legacy-{{ section.id }} {
+      --mgl-background: {{ section.settings.background_color }};
+      --mgl-heading: {{ section.settings.heading_color }};
+      --mgl-eyebrow: {{ section.settings.eyebrow_color }};
+      --mgl-card-border: {{ section.settings.card_border_color }};
+      --mgl-card-background: {{ section.settings.card_background }};
+      --mgl-card-title: {{ section.settings.card_title_color }};
+      --mgl-card-text: {{ section.settings.card_text_color }};
+      --mgl-icon: {{ section.settings.icon_color }};
+      --mgl-link: {{ section.settings.link_color }};
+
+      width: 100%;
+      background: var(--mgl-background);
+      border-top: {{ section.settings.top_border_width }}px solid {{ section.settings.top_border_color }};
+      padding-top: {{ section.settings.desktop_padding_top }}px;
+      padding-bottom: {{ section.settings.desktop_padding_bottom }}px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    #mangal-group-legacy-{{ section.id }},
+    #mangal-group-legacy-{{ section.id }} *,
+    #mangal-group-legacy-{{ section.id }} *::before,
+    #mangal-group-legacy-{{ section.id }} *::after {
+      box-sizing: border-box;
+    }
+
+    #mangal-group-legacy-{{ section.id }} .mgl-container {
+      width: min({{ section.settings.desktop_max_width }}px, calc(100% - {{ section.settings.desktop_side_padding }}px * 2));
+      margin: 0 auto;
+    }
+
+    #mangal-group-legacy-{{ section.id }} .mgl-heading-wrap {
+      text-align: {{ section.settings.desktop_heading_alignment }};
+      margin-bottom: {{ section.settings.desktop_heading_bottom_spacing }}px;
+    }
+
+    #mangal-group-legacy-{{ section.id }} .mgl-eyebrow {
+      margin: 0 0 {{ section.settings.desktop_eyebrow_spacing }}px;
+      color: var(--mgl-eyebrow);
+      font-family: {{ section.settings.desktop_eyebrow_font }}, cursive;
+      font-size: {{ section.settings.desktop_eyebrow_size }}px;
+      line-height: {{ section.settings.desktop_eyebrow_line_height }};
+      font-weight: 400;
+      letter-spacing: {{ section.settings.desktop_eyebrow_letter_spacing }}px;
+    }
+
+    #mangal-group-legacy-{{ section.id }} .mgl-heading {
+      margin: 0;
+      color: var(--mgl-heading);
+      font-family: {{ section.settings.desktop_heading_font }}, Georgia, serif;
+      font-size: {{ section.settings.desktop_heading_size }}px;
+      line-height: {{ section.settings.desktop_heading_line_height }};
+      font-weight: {{ section.settings.desktop_heading_weight }};
+      letter-spacing: {{ section.settings.desktop_heading_letter_spacing }}px;
+      text-transform: uppercase;
+    }
+
+    #mangal-group-legacy-{{ section.id }} .mgl-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: {{ section.settings.desktop_column_gap }}px;
+      row-gap: {{ section.settings.desktop_row_gap }}px;
+    }
+
+    #mangal-group-legacy-{{ section.id }} .mgl-card {
+      min-width: 0;
+      min-height: {{ section.settings.desktop_card_min_height }}px;
+      padding: {{ section.settings.desktop_card_padding_y }}px {{ section.settings.desktop_card_padding_x }}px;
+      background: var(--mgl-card-background);
+      border: {{ section.settings.desktop_card_border_width }}px solid var(--mgl-card-border);
+      border-radius: {{ section.settings.desktop_card_radius }}px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: {{ section.settings.desktop_card_vertical_alignment }};
+      text-align: {{ section.settings.desktop_card_text_alignment }};
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    #mangal-group-legacy-{{ section.id }} .mgl-card:hover {
+      transform: translateY(-{{ section.settings.desktop_card_hover_lift }}px);
+      box-shadow: 0 {{ section.settings.desktop_card_hover_shadow }}px {{ section.settings.desktop_card_hover_shadow_blur }}px rgba(40, 18, 24, 0.08);
+    }
+
+    #mangal-group-legacy-{{ section.id }} .mgl-icon {
+      width: {{ section.settings.desktop_icon_size }}px;
+      height: {{ section.settings.desktop_icon_size }}px;
+      margin-bottom: {{ section.settings.desktop_icon_bottom_spacing }}px;
+      color: var(--mgl-icon);
+      flex: 0 0 auto;
+    }
+
+    #mangal-group-legacy-{{ section.id }} .mgl-icon svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #mangal-group-legacy-{{ section.id }} .mgl-card-title {
+      max-width: {{ section.settings.desktop_title_width }}%;
+      margin: 0;
+      color: var(--mgl-card-title);
+      font-family: {{ section.settings.desktop_title_font }}, Arial, sans-serif;
+      font-size: {{ section.settings.desktop_title_size }}px;
+      line-height: {{ section.settings.desktop_title_line_height }};
+      font-weight: {{ section.settings.desktop_title_weight }};
+      letter-spacing: {{ section.settings.desktop_title_letter_spacing }}px;
+    }
+
+    #mangal-group-legacy-{{ section.id }} .mgl-card-description {
+      max-width: {{ section.settings.desktop_description_width }}%;
+      margin-top: {{ section.settings.desktop_description_spacing }}px;
+      color: var(--mgl-card-text);
+      font-family: {{ section.settings.desktop_body_font }}, Arial, sans-serif;
+      font-size: {{ section.settings.desktop_description_size }}px;
+      line-height: {{ section.settings.desktop_description_line_height }};
+      font-weight: {{ section.settings.desktop_description_weight }};
+      letter-spacing: {{ section.settings.desktop_description_letter_spacing }}px;
+    }
+
+    #mangal-group-legacy-{{ section.id }} .mgl-card-link {
+      margin-top: {{ section.settings.desktop_link_spacing }}px;
+      color: var(--mgl-link);
+      font-family: {{ section.settings.desktop_body_font }}, Arial, sans-serif;
+      font-size: {{ section.settings.desktop_link_size }}px;
+      line-height: 1.2;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    #mangal-group-legacy-{{ section.id }} .mgl-card-link span {
+      display: inline-block;
+      margin-left: 5px;
+      transition: transform 0.2s ease;
+    }
+
+    #mangal-group-legacy-{{ section.id }} .mgl-card-link:hover span {
+      transform: translateX(3px);
+    }
+
+    @media screen and (max-width: 749px) {
+      #mangal-group-legacy-{{ section.id }} {
+        padding-top: {{ section.settings.mobile_padding_top }}px;
+        padding-bottom: {{ section.settings.mobile_padding_bottom }}px;
+        border-top-width: {{ section.settings.mobile_top_border_width }}px;
+      }
+
+      #mangal-group-legacy-{{ section.id }} .mgl-container {
+        width: calc(100% - {{ section.settings.mobile_side_padding }}px * 2);
+        max-width: none;
+      }
+
+      #mangal-group-legacy-{{ section.id }} .mgl-heading-wrap {
+        text-align: {{ section.settings.mobile_heading_alignment }};
+        margin-bottom: {{ section.settings.mobile_heading_bottom_spacing }}px;
+      }
+
+      #mangal-group-legacy-{{ section.id }} .mgl-eyebrow {
+        margin-bottom: {{ section.settings.mobile_eyebrow_spacing }}px;
+        font-family: {{ section.settings.mobile_eyebrow_font }}, cursive;
+        font-size: {{ section.settings.mobile_eyebrow_size }}px;
+        line-height: {{ section.settings.mobile_eyebrow_line_height }};
+        letter-spacing: {{ section.settings.mobile_eyebrow_letter_spacing }}px;
+      }
+
+      #mangal-group-legacy-{{ section.id }} .mgl-heading {
+        font-family: {{ section.settings.mobile_heading_font }}, Georgia, serif;
+        font-size: {{ section.settings.mobile_heading_size }}px;
+        line-height: {{ section.settings.mobile_heading_line_height }};
+        font-weight: {{ section.settings.mobile_heading_weight }};
+        letter-spacing: {{ section.settings.mobile_heading_letter_spacing }}px;
+      }
+
+      #mangal-group-legacy-{{ section.id }} .mgl-grid {
+        grid-template-columns: 1fr;
+        gap: {{ section.settings.mobile_card_gap }}px;
+      }
+
+      #mangal-group-legacy-{{ section.id }} .mgl-card {
+        min-height: {{ section.settings.mobile_card_min_height }}px;
+        padding: {{ section.settings.mobile_card_padding_y }}px {{ section.settings.mobile_card_padding_x }}px;
+        border-width: {{ section.settings.mobile_card_border_width }}px;
+        border-radius: {{ section.settings.mobile_card_radius }}px;
+        justify-content: {{ section.settings.mobile_card_vertical_alignment }};
+        text-align: {{ section.settings.mobile_card_text_alignment }};
+      }
+
+      #mangal-group-legacy-{{ section.id }} .mgl-icon {
+        width: {{ section.settings.mobile_icon_size }}px;
+        height: {{ section.settings.mobile_icon_size }}px;
+        margin-bottom: {{ section.settings.mobile_icon_bottom_spacing }}px;
+      }
+
+      #mangal-group-legacy-{{ section.id }} .mgl-card-title {
+        max-width: {{ section.settings.mobile_title_width }}%;
+        font-family: {{ section.settings.mobile_title_font }}, Arial, sans-serif;
+        font-size: {{ section.settings.mobile_title_size }}px;
+        line-height: {{ section.settings.mobile_title_line_height }};
+        font-weight: {{ section.settings.mobile_title_weight }};
+        letter-spacing: {{ section.settings.mobile_title_letter_spacing }}px;
+      }
+
+      #mangal-group-legacy-{{ section.id }} .mgl-card-description {
+        max-width: {{ section.settings.mobile_description_width }}%;
+        margin-top: {{ section.settings.mobile_description_spacing }}px;
+        font-family: {{ section.settings.mobile_body_font }}, Arial, sans-serif;
+        font-size: {{ section.settings.mobile_description_size }}px;
+        line-height: {{ section.settings.mobile_description_line_height }};
+        font-weight: {{ section.settings.mobile_description_weight }};
+        letter-spacing: {{ section.settings.mobile_description_letter_spacing }}px;
+      }
+
+      #mangal-group-legacy-{{ section.id }} .mgl-card-link {
+        margin-top: {{ section.settings.mobile_link_spacing }}px;
+        font-family: {{ section.settings.mobile_body_font }}, Arial, sans-serif;
+        font-size: {{ section.settings.mobile_link_size }}px;
+      }
+    }
+
+    @media screen and (min-width: 750px) and (max-width: 1099px) {
+      #mangal-group-legacy-{{ section.id }} .mgl-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+  </style>
+</section>
+
+{% schema %}
+{
+  "name": "Mangal Group Legacy",
+  "tag": "section",
+  "class": "mangal-group-legacy-section",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow / script text",
+      "default": "The Mangal Group"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Main heading",
+      "default": "A LEGACY THAT EXTENDS BEYOND JEWELLERY"
+    },
+
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Section background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Main heading color",
+      "default": "#302326"
+    },
+    {
+      "type": "color",
+      "id": "eyebrow_color",
+      "label": "Eyebrow color",
+      "default": "#A02D4A"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "card_border_color",
+      "label": "Card border color",
+      "default": "#D99AAA"
+    },
+    {
+      "type": "color",
+      "id": "card_title_color",
+      "label": "Card title color",
+      "default": "#302326"
+    },
+    {
+      "type": "color",
+      "id": "card_text_color",
+      "label": "Card description color",
+      "default": "#777175"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#A51F43"
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link color",
+      "default": "#A51F43"
+    },
+    {
+      "type": "color",
+      "id": "top_border_color",
+      "label": "Top border color",
+      "default": "#8D102C"
+    },
+
+    {
+      "type": "header",
+      "content": "Desktop layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_max_width",
+      "label": "Maximum content width",
+      "min": 800,
+      "max": 1400,
+      "step": 20,
+      "unit": "px",
+      "default": 1160
+    },
+    {
+      "type": "range",
+      "id": "desktop_side_padding",
+      "label": "Side padding",
+      "min": 16,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_top",
+      "label": "Top spacing",
+      "min": 20,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 42
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_bottom",
+      "label": "Bottom spacing",
+      "min": 20,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 42
+    },
+    {
+      "type": "range",
+      "id": "top_border_width",
+      "label": "Top border width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "desktop_column_gap",
+      "label": "Column gap",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "desktop_row_gap",
+      "label": "Row gap",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+
+    {
+      "type": "header",
+      "content": "Desktop heading typography"
+    },
+    {
+      "type": "select",
+      "id": "desktop_eyebrow_font",
+      "label": "Eyebrow font",
+      "options": [
+        { "value": "Allura", "label": "Allura" },
+        { "value": "Great Vibes", "label": "Great Vibes" },
+        { "value": "Parisienne", "label": "Parisienne" }
+      ],
+      "default": "Allura"
+    },
+    {
+      "type": "select",
+      "id": "desktop_heading_font",
+      "label": "Heading font",
+      "options": [
+        { "value": "Cormorant Garamond", "label": "Cormorant Garamond" },
+        { "value": "Playfair Display", "label": "Playfair Display" },
+        { "value": "Georgia", "label": "Georgia" }
+      ],
+      "default": "Cormorant Garamond"
+    },
+    {
+      "type": "range",
+      "id": "desktop_eyebrow_size",
+      "label": "Eyebrow size",
+      "min": 18,
+      "max": 44,
+      "step": 1,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "select",
+      "id": "desktop_eyebrow_line_height",
+      "label": "Eyebrow line height",
+      "options": [
+        { "value": "0.9", "label": "Compact" },
+        { "value": "1", "label": "Normal" },
+        { "value": "1.1", "label": "Relaxed" }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "range",
+      "id": "desktop_eyebrow_letter_spacing",
+      "label": "Eyebrow letter spacing",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "desktop_eyebrow_spacing",
+      "label": "Eyebrow bottom spacing",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "desktop_heading_size",
+      "label": "Heading size",
+      "min": 20,
+      "max": 44,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "select",
+      "id": "desktop_heading_line_height",
+      "label": "Heading line height",
+      "options": [
+        { "value": "0.95", "label": "Compact" },
+        { "value": "1", "label": "Normal" },
+        { "value": "1.1", "label": "Relaxed" }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "select",
+      "id": "desktop_heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "range",
+      "id": "desktop_heading_letter_spacing",
+      "label": "Heading letter spacing",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "desktop_heading_bottom_spacing",
+      "label": "Heading to cards spacing",
+      "min": 20,
+      "max": 70,
+      "step": 2,
+      "unit": "px",
+      "default": 34
+    },
+    {
+      "type": "select",
+      "id": "desktop_heading_alignment",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+
+    {
+      "type": "header",
+      "content": "Desktop cards"
+    },
+    {
+      "type": "range",
+      "id": "desktop_card_min_height",
+      "label": "Card minimum height",
+      "min": 120,
+      "max": 240,
+      "step": 5,
+      "unit": "px",
+      "default": 170
+    },
+    {
+      "type": "range",
+      "id": "desktop_card_padding_x",
+      "label": "Card horizontal padding",
+      "min": 12,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "desktop_card_padding_y",
+      "label": "Card vertical padding",
+      "min": 12,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "desktop_card_border_width",
+      "label": "Card border width",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "desktop_card_radius",
+      "label": "Card corner radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "select",
+      "id": "desktop_card_vertical_alignment",
+      "label": "Card vertical alignment",
+      "options": [
+        { "value": "flex-start", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "flex-end", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "desktop_card_text_alignment",
+      "label": "Card text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "desktop_icon_size",
+      "label": "Icon size",
+      "min": 20,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "desktop_icon_bottom_spacing",
+      "label": "Icon bottom spacing",
+      "min": 6,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "desktop_title_font",
+      "label": "Card title font",
+      "options": [
+        { "value": "Montserrat", "label": "Montserrat" },
+        { "value": "DM Sans", "label": "DM Sans" },
+        { "value": "Arial", "label": "Arial" }
+      ],
+      "default": "Montserrat"
+    },
+    {
+      "type": "range",
+      "id": "desktop_title_size",
+      "label": "Card title size",
+      "min": 12,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "select",
+      "id": "desktop_title_line_height",
+      "label": "Card title line height",
+      "options": [
+        { "value": "1.1", "label": "Compact" },
+        { "value": "1.2", "label": "Normal" },
+        { "value": "1.3", "label": "Relaxed" }
+      ],
+      "default": "1.2"
+    },
+    {
+      "type": "select",
+      "id": "desktop_title_weight",
+      "label": "Card title weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "range",
+      "id": "desktop_title_letter_spacing",
+      "label": "Card title letter spacing",
+      "min": 0,
+      "max": 2,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "desktop_title_width",
+      "label": "Card title maximum width",
+      "min": 70,
+      "max": 100,
+      "step": 2,
+      "unit": "%",
+      "default": 94
+    },
+    {
+      "type": "select",
+      "id": "desktop_body_font",
+      "label": "Card body font",
+      "options": [
+        { "value": "Montserrat", "label": "Montserrat" },
+        { "value": "DM Sans", "label": "DM Sans" },
+        { "value": "Arial", "label": "Arial" }
+      ],
+      "default": "Montserrat"
+    },
+    {
+      "type": "range",
+      "id": "desktop_description_size",
+      "label": "Card description size",
+      "min": 9,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "select",
+      "id": "desktop_description_line_height",
+      "label": "Card description line height",
+      "options": [
+        { "value": "1.3", "label": "Compact" },
+        { "value": "1.4", "label": "Tight" },
+        { "value": "1.5", "label": "Normal" },
+        { "value": "1.6", "label": "Relaxed" },
+        { "value": "1.7", "label": "Loose" }
+      ],
+      "default": "1.5"
+    },
+    {
+      "type": "select",
+      "id": "desktop_description_weight",
+      "label": "Card description weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" }
+      ],
+      "default": "400"
+    },
+  {
+  "type": "range",
+  "id": "desktop_description_letter_spacing",
+  "label": "Card description letter spacing",
+  "min": 0,
+  "max": 2,
+  "step": 1,
+  "unit": "px",
+  "default": 0
+},
+    {
+      "type": "range",
+      "id": "desktop_description_width",
+      "label": "Card description maximum width",
+      "min": 70,
+      "max": 100,
+      "step": 2,
+      "unit": "%",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "desktop_description_spacing",
+      "label": "Title to description spacing",
+      "min": 4,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "desktop_link_spacing",
+      "label": "Link top spacing",
+      "min": 6,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "desktop_link_size",
+      "label": "Link size",
+      "min": 10,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "range",
+      "id": "desktop_card_hover_lift",
+      "label": "Hover lift",
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "desktop_card_hover_shadow",
+      "label": "Hover shadow distance",
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "unit": "px",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "desktop_card_hover_shadow_blur",
+      "label": "Hover shadow blur",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+
+    {
+      "type": "header",
+      "content": "Mobile layout"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Top spacing",
+      "min": 16,
+      "max": 70,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Bottom spacing",
+      "min": 16,
+      "max": 70,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "mobile_side_padding",
+      "label": "Side padding",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "mobile_top_border_width",
+      "label": "Top border width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_bottom_spacing",
+      "label": "Heading to cards spacing",
+      "min": 18,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_gap",
+      "label": "Card gap",
+      "min": 10,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+
+    {
+      "type": "header",
+      "content": "Mobile heading typography"
+    },
+    {
+      "type": "select",
+      "id": "mobile_eyebrow_font",
+      "label": "Eyebrow font",
+      "options": [
+        { "value": "Allura", "label": "Allura" },
+        { "value": "Great Vibes", "label": "Great Vibes" },
+        { "value": "Parisienne", "label": "Parisienne" }
+      ],
+      "default": "Allura"
+    },
+    {
+      "type": "select",
+      "id": "mobile_heading_font",
+      "label": "Heading font",
+      "options": [
+        { "value": "Cormorant Garamond", "label": "Cormorant Garamond" },
+        { "value": "Playfair Display", "label": "Playfair Display" },
+        { "value": "Georgia", "label": "Georgia" }
+      ],
+      "default": "Cormorant Garamond"
+    },
+    {
+      "type": "range",
+      "id": "mobile_eyebrow_size",
+      "label": "Eyebrow size",
+      "min": 16,
+      "max": 34,
+      "step": 1,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "select",
+      "id": "mobile_eyebrow_line_height",
+      "label": "Eyebrow line height",
+      "options": [
+        { "value": "0.9", "label": "Compact" },
+        { "value": "1", "label": "Normal" },
+        { "value": "1.1", "label": "Relaxed" }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "range",
+      "id": "mobile_eyebrow_letter_spacing",
+      "label": "Eyebrow letter spacing",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_eyebrow_spacing",
+      "label": "Eyebrow bottom spacing",
+      "min": 0,
+      "max": 16,
+      "step": 2,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_size",
+      "label": "Heading size",
+      "min": 18,
+      "max": 34,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "mobile_heading_line_height",
+      "label": "Heading line height",
+      "options": [
+        { "value": "0.95", "label": "Compact" },
+        { "value": "1", "label": "Normal" },
+        { "value": "1.1", "label": "Relaxed" }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "select",
+      "id": "mobile_heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_letter_spacing",
+      "label": "Heading letter spacing",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "mobile_heading_alignment",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+
+    {
+      "type": "header",
+      "content": "Mobile cards"
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_min_height",
+      "label": "Card minimum height",
+      "min": 130,
+      "max": 230,
+      "step": 5,
+      "unit": "px",
+      "default": 170
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_padding_x",
+      "label": "Card horizontal padding",
+      "min": 14,
+      "max": 34,
+      "step": 2,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_padding_y",
+      "label": "Card vertical padding",
+      "min": 16,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_border_width",
+      "label": "Card border width",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_radius",
+      "label": "Card corner radius",
+      "min": 0,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "select",
+      "id": "mobile_card_vertical_alignment",
+      "label": "Card vertical alignment",
+      "options": [
+        { "value": "flex-start", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "flex-end", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "mobile_card_text_alignment",
+      "label": "Card text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "mobile_icon_size",
+      "label": "Icon size",
+      "min": 20,
+      "max": 42,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "mobile_icon_bottom_spacing",
+      "label": "Icon bottom spacing",
+      "min": 6,
+      "max": 22,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "select",
+      "id": "mobile_title_font",
+      "label": "Card title font",
+      "options": [
+        { "value": "Montserrat", "label": "Montserrat" },
+        { "value": "DM Sans", "label": "DM Sans" },
+        { "value": "Arial", "label": "Arial" }
+      ],
+      "default": "Montserrat"
+    },
+    {
+      "type": "range",
+      "id": "mobile_title_size",
+      "label": "Card title size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "select",
+      "id": "mobile_title_line_height",
+      "label": "Card title line height",
+      "options": [
+        { "value": "1.1", "label": "Compact" },
+        { "value": "1.2", "label": "Normal" },
+        { "value": "1.3", "label": "Relaxed" }
+      ],
+      "default": "1.2"
+    },
+    {
+      "type": "select",
+      "id": "mobile_title_weight",
+      "label": "Card title weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "range",
+      "id": "mobile_title_letter_spacing",
+      "label": "Card title letter spacing",
+      "min": 0,
+      "max": 2,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_title_width",
+      "label": "Card title maximum width",
+      "min": 70,
+      "max": 100,
+      "step": 2,
+      "unit": "%",
+      "default": 94
+    },
+    {
+      "type": "select",
+      "id": "mobile_body_font",
+      "label": "Card body font",
+      "options": [
+        { "value": "Montserrat", "label": "Montserrat" },
+        { "value": "DM Sans", "label": "DM Sans" },
+        { "value": "Arial", "label": "Arial" }
+      ],
+      "default": "Montserrat"
+    },
+    {
+      "type": "range",
+      "id": "mobile_description_size",
+      "label": "Card description size",
+      "min": 9,
+      "max": 15,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "select",
+      "id": "mobile_description_line_height",
+      "label": "Card description line height",
+      "options": [
+        { "value": "1.3", "label": "Compact" },
+        { "value": "1.4", "label": "Tight" },
+        { "value": "1.5", "label": "Normal" },
+        { "value": "1.6", "label": "Relaxed" },
+        { "value": "1.7", "label": "Loose" }
+      ],
+      "default": "1.5"
+    },
+    {
+      "type": "select",
+      "id": "mobile_description_weight",
+      "label": "Card description weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" }
+      ],
+      "default": "400"
+    },
+  {
+  "type": "range",
+  "id": "mobile_description_letter_spacing",
+  "label": "Card description letter spacing",
+  "min": 0,
+  "max": 2,
+  "step": 1,
+  "unit": "px",
+  "default": 0
+},
+    {
+      "type": "range",
+      "id": "mobile_description_width",
+      "label": "Card description maximum width",
+      "min": 70,
+      "max": 100,
+      "step": 2,
+      "unit": "%",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "mobile_description_spacing",
+      "label": "Title to description spacing",
+      "min": 4,
+      "max": 18,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "mobile_link_spacing",
+      "label": "Link top spacing",
+      "min": 6,
+      "max": 22,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "mobile_link_size",
+      "label": "Link size",
+      "min": 10,
+      "max": 15,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    }
+  ],
+  "blocks": [
+    {
+      "type": "legacy_company",
+      "name": "Group company",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "diamond", "label": "Diamond" },
+            { "value": "bank", "label": "Bank" },
+            { "value": "finance", "label": "Finance" },
+            { "value": "building", "label": "Building" },
+            { "value": "theatre", "label": "Entertainment" },
+            { "value": "heart", "label": "Charitable / Heart" }
+          ],
+          "default": "diamond"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Company name",
+          "default": "Mangal Royal Studio"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Company description",
+          "default": "Lab-grown diamond jewellery. Heritage craftsmanship reimagined for the modern, conscious buyer."
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "Optional link label"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Optional link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Mangal Group Legacy",
+      "settings": {
+        "eyebrow": "The Mangal Group",
+        "heading": "A LEGACY THAT EXTENDS BEYOND JEWELLERY"
+      },
+      "blocks": [
+        {
+          "type": "legacy_company",
+          "settings": {
+            "icon": "diamond",
+            "title": "Mangal Royal Studio",
+            "description": "Lab-grown diamond jewellery. Heritage craftsmanship reimagined for the modern, conscious buyer."
+          }
+        },
+        {
+          "type": "legacy_company",
+          "settings": {
+            "icon": "bank",
+            "title": "Mangal Credit and Fincorp Ltd",
+            "description": "Trusted NBFC offering gold loans, personal loans, SME financing & property loans across Maharashtra & Gujarat."
+          }
+        },
+        {
+          "type": "legacy_company",
+          "settings": {
+            "icon": "finance",
+            "title": "Mangal Finserv Pvt Ltd",
+            "description": "Customer-centric unsecured lending with simplified digital experiences and transparent financial education."
+          }
+        },
+        {
+          "type": "legacy_company",
+          "settings": {
+            "icon": "building",
+            "title": "Mangal BuildHome Pvt Ltd",
+            "description": "Premium residential and commercial real estate. Thoughtfully designed spaces balancing luxury and everyday comfort."
+          }
+        },
+        {
+          "type": "legacy_company",
+          "settings": {
+            "icon": "theatre",
+            "title": "Mangal Entertainment Pvt Ltd",
+            "description": "End-to-end event management via Mangal Moments — weddings, corporate events, celebrations curated with precision."
+          }
+        },
+        {
+          "type": "legacy_company",
+          "settings": {
+            "icon": "heart",
+            "title": "Mangal Charitable Trust",
+            "description": "Empowering underprivileged communities through healthcare, education, skill development and welfare since 1975."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

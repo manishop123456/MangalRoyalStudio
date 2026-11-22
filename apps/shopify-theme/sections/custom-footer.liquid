@@ -1,0 +1,1169 @@
+{%- comment -%}
+  ============================================================
+  MANGAL ROYAL STUDIO — PREMIUM CUSTOM FOOTER
+  sections/custom-footer.liquid
+  Shopify OS 2.0 — self contained (Liquid + HTML + CSS + JS + Schema)
+  ============================================================
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign uid = section.id
+
+  assign heading_ls = s.news_heading_ls | divided_by: 100.0
+  assign menu_ls = s.menu_letter_spacing | divided_by: 100.0
+  assign desc_ls = s.desc_letter_spacing | divided_by: 100.0
+
+  assign border_alpha = s.news_border_opacity | divided_by: 100.0
+  assign divider_alpha = s.divider_opacity | divided_by: 100.0
+  assign muted_alpha = s.secondary_text_opacity | divided_by: 100.0
+
+  assign font_head = s.font_heading_family
+  assign font_body = s.font_body_family
+
+  assign has_menu_1 = false
+  assign has_menu_2 = false
+  assign has_menu_3 = false
+  assign has_menu_4 = false
+  if s.menu_1_enable and s.menu_1_links != blank
+    assign has_menu_1 = true
+  endif
+  if s.menu_2_enable and s.menu_2_links != blank
+    assign has_menu_2 = true
+  endif
+  if s.menu_3_enable and s.menu_3_links != blank
+    assign has_menu_3 = true
+  endif
+  if s.menu_4_enable and s.menu_4_links != blank
+    assign has_menu_4 = true
+  endif
+
+  assign has_social = false
+  if s.social_enable
+    if s.instagram_enable and s.instagram_url != blank
+      assign has_social = true
+    endif
+    if s.linkedin_enable and s.linkedin_url != blank
+      assign has_social = true
+    endif
+    if s.facebook_enable and s.facebook_url != blank
+      assign has_social = true
+    endif
+    if s.youtube_enable and s.youtube_url != blank
+      assign has_social = true
+    endif
+    if s.pinterest_enable and s.pinterest_url != blank
+      assign has_social = true
+    endif
+  endif
+
+  assign newsletter_form_id = 'MRSNewsletterForm-' | append: uid
+  assign logo_sizes = '(max-width: 767px) ' | append: s.logo_width_m | append: 'px, ' | append: s.logo_width_d | append: 'px'
+
+  assign show_social_icons = false
+  assign show_social_labels = false
+  if s.social_style == 'icons' or s.social_style == 'both'
+    assign show_social_icons = true
+  endif
+  if s.social_style == 'text' or s.social_style == 'both'
+    assign show_social_labels = true
+  endif
+-%}
+
+<style>
+  #MRSFooter-{{ uid }} {
+    --mrs-bg: {{ s.color_background }};
+    --mrs-text: {{ s.color_text }};
+    --mrs-text-muted: rgba({{ s.color_text.red }}, {{ s.color_text.green }}, {{ s.color_text.blue }}, {{ muted_alpha }});
+    --mrs-border: rgba({{ s.color_text.red }}, {{ s.color_text.green }}, {{ s.color_text.blue }}, {{ border_alpha }});
+    --mrs-divider: rgba({{ s.color_text.red }}, {{ s.color_text.green }}, {{ s.color_text.blue }}, {{ divider_alpha }});
+
+    --mrs-font-head: {{ font_head }};
+    --mrs-font-body: {{ font_body }};
+
+    --mrs-max-width: {{ s.max_width }}px;
+
+    --mrs-pad-top: {{ s.pad_top_d }}px;
+    --mrs-pad-bottom: {{ s.pad_bottom_d }}px;
+    --mrs-pad-left: {{ s.pad_left_d }}px;
+    --mrs-pad-right: {{ s.pad_right_d }}px;
+
+    --mrs-col-gap: {{ s.column_gap_d }}px;
+    --mrs-row-gap: {{ s.row_gap_d }}px;
+
+    --mrs-news-size: {{ s.news_heading_size_d }}px;
+    --mrs-news-lh: {{ s.news_heading_lh_d }}px;
+    --mrs-news-ls: {{ heading_ls }}em;
+    --mrs-news-width: {{ s.news_form_width_d }}px;
+    --mrs-news-input-h: {{ s.news_input_h_d }}px;
+    --mrs-news-gap: {{ s.news_gap }}px;
+    --mrs-news-btn-w: {{ s.news_btn_width_d }}px;
+    --mrs-news-space: {{ s.news_bottom_space_d }}px;
+    --mrs-news-head-space: {{ s.news_heading_space_d }}px;
+    --mrs-news-btn-bg: {{ s.news_btn_bg }};
+    --mrs-news-btn-text: {{ s.news_btn_text }};
+
+    --mrs-logo-width: {{ s.logo_width_d }}px;
+    --mrs-logo-space: {{ s.logo_bottom_space_d }}px;
+
+    --mrs-desc-size: {{ s.desc_size_d }}px;
+    --mrs-desc-lh: {{ s.desc_line_height }}px;
+    --mrs-desc-ls: {{ desc_ls }}em;
+    --mrs-desc-width: {{ s.desc_max_width }}px;
+    --mrs-desc-align: {{ s.desc_align_d }};
+
+    --mrs-menu-size: {{ s.menu_font_size_d }}px;
+    --mrs-menu-lh: {{ s.menu_line_height_d }}px;
+    --mrs-menu-ls: {{ menu_ls }}em;
+    --mrs-menu-gap: {{ s.menu_item_gap }}px;
+
+    --mrs-social-icon: {{ s.social_icon_size }}px;
+    --mrs-social-gap: {{ s.social_gap }}px;
+
+    --mrs-copy-size: {{ s.copyright_size_d }}px;
+    --mrs-copy-align: {{ s.copyright_align_d }};
+    --mrs-copy-space: {{ s.copyright_top_space_d }}px;
+
+    background-color: var(--mrs-bg);
+    color: var(--mrs-text);
+    font-family: var(--mrs-font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #MRSFooter-{{ uid }} *,
+  #MRSFooter-{{ uid }} *::before,
+  #MRSFooter-{{ uid }} *::after { box-sizing: border-box; }
+
+  #MRSFooter-{{ uid }} .mrs-inner {
+    max-width: var(--mrs-max-width);
+    margin: 0 auto;
+    padding: var(--mrs-pad-top) var(--mrs-pad-right) var(--mrs-pad-bottom) var(--mrs-pad-left);
+  }
+
+  #MRSFooter-{{ uid }} a { color: inherit; text-decoration: none; }
+  #MRSFooter-{{ uid }} ul { list-style: none; margin: 0; padding: 0; }
+  #MRSFooter-{{ uid }} p { margin: 0; }
+
+  #MRSFooter-{{ uid }} a:focus-visible,
+  #MRSFooter-{{ uid }} button:focus-visible,
+  #MRSFooter-{{ uid }} input:focus-visible {
+    outline: 2px solid var(--mrs-text);
+    outline-offset: 3px;
+  }
+
+  #MRSFooter-{{ uid }} .mrs-visually-hidden {
+    position: absolute !important;
+    width: 1px; height: 1px;
+    margin: -1px; padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ---------- NEWSLETTER ---------- */
+  #MRSFooter-{{ uid }} .mrs-newsletter {
+    text-align: center;
+    margin-bottom: var(--mrs-news-space);
+  }
+
+  #MRSFooter-{{ uid }} .mrs-newsletter__title {
+    font-family: var(--mrs-font-head);
+    font-weight: {{ s.news_heading_weight }};
+    font-size: var(--mrs-news-size);
+    line-height: var(--mrs-news-lh);
+    letter-spacing: var(--mrs-news-ls);
+    color: var(--mrs-text);
+    margin: 0 0 var(--mrs-news-head-space);
+    text-align: center;
+  }
+
+  #MRSFooter-{{ uid }} .mrs-newsletter__form {
+    max-width: var(--mrs-news-width);
+    margin: 0 auto;
+  }
+
+  #MRSFooter-{{ uid }} .mrs-newsletter__row {
+    display: flex;
+    gap: var(--mrs-news-gap);
+    align-items: stretch;
+  }
+
+  #MRSFooter-{{ uid }} .mrs-newsletter__field { flex: 1 1 auto; min-width: 0; }
+
+  #MRSFooter-{{ uid }} .mrs-newsletter__input {
+    width: 100%;
+    height: var(--mrs-news-input-h);
+    background: transparent;
+    border: 1px solid var(--mrs-border);
+    border-radius: 0;
+    color: var(--mrs-text);
+    font-family: var(--mrs-font-body);
+    font-size: {{ s.news_input_font_size }}px;
+    letter-spacing: 0.02em;
+    padding: 0 18px;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: border-color .25s ease;
+  }
+
+  #MRSFooter-{{ uid }} .mrs-newsletter__input::placeholder {
+    color: var(--mrs-text-muted);
+    opacity: 1;
+  }
+
+  #MRSFooter-{{ uid }} .mrs-newsletter__input:hover { border-color: var(--mrs-text); }
+  #MRSFooter-{{ uid }} .mrs-newsletter__input:focus { border-color: var(--mrs-text); outline: none; }
+  #MRSFooter-{{ uid }} .mrs-newsletter__input:focus-visible { outline: 2px solid var(--mrs-text); outline-offset: 2px; }
+
+  #MRSFooter-{{ uid }} .mrs-newsletter__button {
+    flex: 0 0 auto;
+    width: var(--mrs-news-btn-w);
+    height: var(--mrs-news-input-h);
+    background: var(--mrs-news-btn-bg);
+    color: var(--mrs-news-btn-text);
+    border: 1px solid var(--mrs-news-btn-bg);
+    border-radius: 0;
+    font-family: var(--mrs-font-body);
+    font-size: {{ s.news_btn_font_size }}px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity .25s ease;
+  }
+
+  #MRSFooter-{{ uid }} .mrs-newsletter__button:hover { opacity: .85; }
+
+  #MRSFooter-{{ uid }} .mrs-newsletter__message {
+    font-size: 13px;
+    line-height: 20px;
+    letter-spacing: 0.02em;
+    margin-top: 12px;
+    text-align: center;
+  }
+
+  #MRSFooter-{{ uid }} .mrs-newsletter__message--error { color: var(--mrs-text); opacity: .9; }
+
+  /* ---------- GRID ---------- */
+  #MRSFooter-{{ uid }} .mrs-grid {
+    display: grid;
+    grid-template-columns: {{ s.grid_template_d }};
+    column-gap: var(--mrs-col-gap);
+    row-gap: var(--mrs-row-gap);
+    align-items: start;
+  }
+
+  /* ---------- BRAND ---------- */
+  #MRSFooter-{{ uid }} .mrs-brand { text-align: var(--mrs-desc-align); }
+
+  #MRSFooter-{{ uid }} .mrs-brand__logo {
+    display: inline-block;
+    width: var(--mrs-logo-width);
+    max-width: 100%;
+    margin-bottom: var(--mrs-logo-space);
+  }
+
+  #MRSFooter-{{ uid }} .mrs-brand__logo img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  #MRSFooter-{{ uid }} .mrs-brand__text {
+    font-family: var(--mrs-font-body);
+    font-size: var(--mrs-desc-size);
+    line-height: var(--mrs-desc-lh);
+    letter-spacing: var(--mrs-desc-ls);
+    color: var(--mrs-text);
+    max-width: var(--mrs-desc-width);
+    text-align: var(--mrs-desc-align);
+  }
+
+  #MRSFooter-{{ uid }} .mrs-brand__text a { text-decoration: underline; }
+
+  /* ---------- MENU COLUMNS ---------- */
+  #MRSFooter-{{ uid }} .mrs-col__toggle {
+    display: none;
+    width: 100%;
+    background: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    color: var(--mrs-text);
+    font-family: var(--mrs-font-body);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  #MRSFooter-{{ uid }} .mrs-col__heading {
+    font-family: var(--mrs-font-body);
+    font-size: var(--mrs-menu-size);
+    line-height: var(--mrs-menu-lh);
+    letter-spacing: var(--mrs-menu-ls);
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--mrs-text);
+    margin: 0 0 6px;
+  }
+
+  #MRSFooter-{{ uid }} .mrs-col__list > li + li { margin-top: var(--mrs-menu-gap); }
+
+  #MRSFooter-{{ uid }} .mrs-col__link {
+    display: inline-block;
+    font-family: var(--mrs-font-body);
+    font-size: var(--mrs-menu-size);
+    line-height: var(--mrs-menu-lh);
+    letter-spacing: var(--mrs-menu-ls);
+    font-weight: {{ s.menu_font_weight }};
+    color: var(--mrs-text);
+    {% if s.menu_uppercase %}text-transform: uppercase;{% endif %}
+    transition: opacity .25s ease;
+  }
+
+  #MRSFooter-{{ uid }} .mrs-col__link:hover { opacity: .7; }
+
+  /* ---------- SOCIAL ---------- */
+  #MRSFooter-{{ uid }} .mrs-social__list > li + li { margin-top: var(--mrs-menu-gap); }
+
+  #MRSFooter-{{ uid }} .mrs-social__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--mrs-social-gap);
+    font-family: var(--mrs-font-body);
+    font-size: var(--mrs-menu-size);
+    line-height: var(--mrs-menu-lh);
+    letter-spacing: var(--mrs-menu-ls);
+    font-weight: {{ s.menu_font_weight }};
+    color: var(--mrs-text);
+    {% if s.menu_uppercase %}text-transform: uppercase;{% endif %}
+    transition: opacity .25s ease;
+  }
+
+  #MRSFooter-{{ uid }} .mrs-social__link:hover { opacity: .7; }
+
+  #MRSFooter-{{ uid }} .mrs-social__link svg {
+    width: var(--mrs-social-icon);
+    height: var(--mrs-social-icon);
+    flex: 0 0 auto;
+    fill: currentColor;
+  }
+
+  /* ---------- BOTTOM ---------- */
+  #MRSFooter-{{ uid }} .mrs-bottom {
+    margin-top: var(--mrs-copy-space);
+    padding-top: {{ s.copyright_inner_space_d }}px;
+    border-top: 1px solid var(--mrs-divider);
+  }
+
+  #MRSFooter-{{ uid }} .mrs-bottom__text {
+    font-family: var(--mrs-font-body);
+    font-size: var(--mrs-copy-size);
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+    color: var(--mrs-text-muted);
+    text-align: var(--mrs-copy-align);
+  }
+
+  /* ---------- TABLET ---------- */
+  @media screen and (min-width: 768px) and (max-width: 989px) {
+    #MRSFooter-{{ uid }} .mrs-inner {
+      padding-left: {{ s.pad_left_t }}px;
+      padding-right: {{ s.pad_right_t }}px;
+    }
+    #MRSFooter-{{ uid }} .mrs-grid {
+      grid-template-columns: {{ s.grid_template_t }};
+      column-gap: {{ s.column_gap_t }}px;
+      row-gap: {{ s.row_gap_t }}px;
+    }
+    #MRSFooter-{{ uid }} .mrs-brand { grid-column: 1 / -1; }
+  }
+
+  /* ---------- MOBILE ---------- */
+  @media screen and (max-width: 767px) {
+    #MRSFooter-{{ uid }} .mrs-inner {
+      padding: {{ s.pad_top_m }}px {{ s.pad_right_m }}px {{ s.pad_bottom_m }}px {{ s.pad_left_m }}px;
+    }
+
+    #MRSFooter-{{ uid }} .mrs-newsletter {
+      margin-bottom: {{ s.news_bottom_space_m }}px;
+    }
+
+    #MRSFooter-{{ uid }} .mrs-newsletter__title {
+      font-size: {{ s.news_heading_size_m }}px;
+      line-height: {{ s.news_heading_lh_m }}px;
+      margin-bottom: {{ s.news_heading_space_m }}px;
+    }
+
+    #MRSFooter-{{ uid }} .mrs-newsletter__form { max-width: {{ s.news_form_width_m }}px; }
+
+    #MRSFooter-{{ uid }} .mrs-newsletter__input,
+    #MRSFooter-{{ uid }} .mrs-newsletter__button { height: {{ s.news_input_h_m }}px; }
+
+    {% if s.news_mobile_stack %}
+      #MRSFooter-{{ uid }} .mrs-newsletter__row { flex-direction: column; }
+      #MRSFooter-{{ uid }} .mrs-newsletter__button { width: 100%; }
+    {% endif %}
+
+    #MRSFooter-{{ uid }} .mrs-grid {
+      grid-template-columns: 1fr;
+      column-gap: 0;
+      row-gap: 0;
+    }
+
+    #MRSFooter-{{ uid }} .mrs-brand {
+      text-align: {{ s.desc_align_m }};
+      margin-bottom: {{ s.logo_block_space_m }}px;
+    }
+
+    #MRSFooter-{{ uid }} .mrs-brand__logo {
+      width: {{ s.logo_width_m }}px;
+      margin-bottom: {{ s.logo_bottom_space_m }}px;
+    }
+
+    #MRSFooter-{{ uid }} .mrs-brand__text {
+      font-size: {{ s.desc_size_m }}px;
+      line-height: {{ s.desc_line_height_m }}px;
+      max-width: {{ s.desc_max_width_m }}px;
+      text-align: {{ s.desc_align_m }};
+      {% if s.desc_align_m == 'center' %}margin-left: auto; margin-right: auto;{% endif %}
+      {% if s.desc_align_m == 'right' %}margin-left: auto;{% endif %}
+    }
+
+    #MRSFooter-{{ uid }}.mrs-footer--accordion .mrs-col__heading--desktop { display: none; }
+
+    #MRSFooter-{{ uid }} .mrs-col__link,
+    #MRSFooter-{{ uid }} .mrs-social__link,
+    #MRSFooter-{{ uid }} .mrs-col__heading {
+      font-size: {{ s.menu_font_size_m }}px;
+      line-height: {{ s.menu_line_height_m }}px;
+    }
+
+    #MRSFooter-{{ uid }} .mrs-bottom {
+      margin-top: {{ s.copyright_top_space_m }}px;
+      padding-top: {{ s.copyright_inner_space_m }}px;
+    }
+
+    #MRSFooter-{{ uid }} .mrs-bottom__text {
+      font-size: {{ s.copyright_size_m }}px;
+      text-align: {{ s.copyright_align_m }};
+    }
+
+    #MRSFooter-{{ uid }} .mrs-social__link svg {
+      width: {{ s.social_icon_size_m }}px;
+      height: {{ s.social_icon_size_m }}px;
+    }
+
+    /* Accordion mode */
+    #MRSFooter-{{ uid }}.mrs-footer--accordion .mrs-col__toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: {{ s.accordion_padding_m }}px 0;
+      border-bottom: 1px solid var(--mrs-divider);
+    }
+
+    #MRSFooter-{{ uid }}.mrs-footer--accordion .mrs-col:first-child .mrs-col__toggle { border-top: 1px solid var(--mrs-divider); }
+
+    #MRSFooter-{{ uid }}.mrs-footer--accordion .mrs-col__toggle .mrs-col__heading {
+      margin: 0;
+      font-weight: 400;
+    }
+
+    #MRSFooter-{{ uid }}.mrs-footer--accordion .mrs-col__icon {
+      position: relative;
+      flex: 0 0 auto;
+      width: 12px;
+      height: 12px;
+    }
+
+    #MRSFooter-{{ uid }}.mrs-footer--accordion .mrs-col__icon::before,
+    #MRSFooter-{{ uid }}.mrs-footer--accordion .mrs-col__icon::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 12px;
+      height: 1px;
+      background: var(--mrs-text);
+      transform: translateY(-50%);
+      transition: transform .3s ease, opacity .3s ease;
+    }
+
+    #MRSFooter-{{ uid }}.mrs-footer--accordion .mrs-col__icon::after {
+      transform: translateY(-50%) rotate(90deg);
+    }
+
+    #MRSFooter-{{ uid }}.mrs-footer--accordion .mrs-col__toggle[aria-expanded="true"] .mrs-col__icon::after {
+      transform: translateY(-50%) rotate(0deg);
+      opacity: 0;
+    }
+
+    #MRSFooter-{{ uid }}.mrs-footer--accordion .mrs-col__panel {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height .35s ease, opacity .25s ease;
+    }
+
+    #MRSFooter-{{ uid }}.mrs-footer--accordion .mrs-col__panel.is-open { opacity: 1; }
+
+    #MRSFooter-{{ uid }}.mrs-footer--accordion .mrs-col__list,
+    #MRSFooter-{{ uid }}.mrs-footer--accordion .mrs-social__list {
+      padding: {{ s.accordion_padding_m }}px 0;
+    }
+
+    #MRSFooter-{{ uid }}.mrs-footer--accordion .mrs-col--static .mrs-col__panel {
+      max-height: none;
+      opacity: 1;
+    }
+
+    /* Non-accordion social block on mobile */
+    #MRSFooter-{{ uid }} .mrs-col--social-plain {
+      text-align: center;
+      margin-top: {{ s.social_top_space_m }}px;
+    }
+
+    #MRSFooter-{{ uid }} .mrs-col--social-plain .mrs-social__list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: {{ s.social_row_gap_m }}px;
+    }
+
+    #MRSFooter-{{ uid }} .mrs-col--social-plain .mrs-social__list > li + li { margin-top: 0; }
+  }
+
+  @media screen and (min-width: 768px) {
+    #MRSFooter-{{ uid }} .mrs-col__panel { max-height: none !important; opacity: 1 !important; overflow: visible !important; }
+    #MRSFooter-{{ uid }} .mrs-col__toggle { display: none !important; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #MRSFooter-{{ uid }} * { transition: none !important; animation: none !important; }
+  }
+</style>
+
+<footer
+  id="MRSFooter-{{ uid }}"
+  class="mrs-footer{% if s.mobile_accordion_enable %} mrs-footer--accordion{% endif %}"
+  role="contentinfo"
+  data-mrs-footer
+  data-accordion-multiple="{% if s.accordion_allow_multiple %}true{% else %}false{% endif %}"
+  data-accordion-enabled="{% if s.mobile_accordion_enable %}true{% else %}false{% endif %}"
+>
+  <div class="mrs-inner">
+
+    {%- if s.show_newsletter -%}
+      <div class="mrs-newsletter">
+        {%- if s.news_heading != blank -%}
+          <h2 class="mrs-newsletter__title">{{ s.news_heading }}</h2>
+        {%- endif -%}
+
+        <div class="mrs-newsletter__form">
+          {%- form 'customer', id: newsletter_form_id, class: 'mrs-newsletter__shopify-form' -%}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+
+            <div class="mrs-newsletter__row">
+              <div class="mrs-newsletter__field">
+                <label class="mrs-visually-hidden" for="MRSNewsletterEmail-{{ uid }}">
+                  {{ s.news_placeholder | default: 'E-mail' }}
+                </label>
+                <input
+                  id="MRSNewsletterEmail-{{ uid }}"
+                  class="mrs-newsletter__input"
+                  type="email"
+                  name="contact[email]"
+                  value="{{ form.email }}"
+                  placeholder="{{ s.news_placeholder | escape }}"
+                  autocomplete="email"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  required
+                  {% if form.errors %}aria-invalid="true" aria-describedby="MRSNewsletterError-{{ uid }}"{% endif %}
+                >
+              </div>
+
+              <button
+                type="submit"
+                class="mrs-newsletter__button"
+                name="commit"
+                aria-label="{{ s.news_btn_label | escape }}"
+              >
+                {{ s.news_btn_label }}
+              </button>
+            </div>
+
+            <div class="mrs-newsletter__status" role="status" aria-live="polite">
+              {%- if form.posted_successfully? -%}
+                <p class="mrs-newsletter__message mrs-newsletter__message--success">
+                  {{ s.news_success_text }}
+                </p>
+              {%- endif -%}
+            </div>
+
+            {%- if form.errors -%}
+              <p
+                id="MRSNewsletterError-{{ uid }}"
+                class="mrs-newsletter__message mrs-newsletter__message--error"
+                role="alert"
+              >
+                {{ form.errors.messages['email'] | default: s.news_error_text }}
+              </p>
+            {%- endif -%}
+          {%- endform -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    <div class="mrs-grid">
+
+      {%- comment -%} ---------- BRAND COLUMN ---------- {%- endcomment -%}
+      <div class="mrs-brand mrs-col mrs-col--static">
+        {%- if s.logo != blank -%}
+          <a class="mrs-brand__logo" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }} — home">
+            {{
+              s.logo
+              | image_url: width: 600
+              | image_tag:
+                loading: 'lazy',
+                widths: '120, 180, 240, 360, 480, 600',
+                sizes: logo_sizes,
+                alt: shop.name
+            }}
+          </a>
+        {%- else -%}
+          <a class="mrs-brand__logo" href="{{ routes.root_url }}">
+            <span class="mrs-col__heading">{{ shop.name }}</span>
+          </a>
+        {%- endif -%}
+
+        {%- if s.description != blank -%}
+          <div class="mrs-brand__text">{{ s.description | newline_to_br }}</div>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} ---------- MENU COLUMNS ---------- {%- endcomment -%}
+      {%- for i in (1..4) -%}
+        {%- liquid
+          case i
+            when 1
+              assign show_col = has_menu_1
+              assign col_links = s.menu_1_links
+              assign col_heading = s.menu_1_heading
+              assign col_desktop_heading = s.menu_1_show_heading_desktop
+            when 2
+              assign show_col = has_menu_2
+              assign col_links = s.menu_2_links
+              assign col_heading = s.menu_2_heading
+              assign col_desktop_heading = s.menu_2_show_heading_desktop
+            when 3
+              assign show_col = has_menu_3
+              assign col_links = s.menu_3_links
+              assign col_heading = s.menu_3_heading
+              assign col_desktop_heading = s.menu_3_show_heading_desktop
+            when 4
+              assign show_col = has_menu_4
+              assign col_links = s.menu_4_links
+              assign col_heading = s.menu_4_heading
+              assign col_desktop_heading = s.menu_4_show_heading_desktop
+          endcase
+          assign menu_title = col_heading
+          if menu_title == blank
+            assign menu_title = linklists[col_links].title
+          endif
+        -%}
+
+        {%- if show_col -%}
+          <div class="mrs-col mrs-col--menu">
+            {%- if s.mobile_accordion_enable -%}
+              <button
+                type="button"
+                class="mrs-col__toggle"
+                aria-expanded="false"
+                aria-controls="MRSPanel-{{ uid }}-{{ i }}"
+                data-mrs-accordion-toggle
+              >
+                <span class="mrs-col__heading">{{ menu_title }}</span>
+                <span class="mrs-col__icon" aria-hidden="true"></span>
+              </button>
+            {%- endif -%}
+
+            {%- if col_desktop_heading and menu_title != blank -%}
+              <p class="mrs-col__heading mrs-col__heading--desktop">{{ menu_title }}</p>
+            {%- endif -%}
+
+            <div class="mrs-col__panel" id="MRSPanel-{{ uid }}-{{ i }}" data-mrs-accordion-panel>
+              <nav aria-label="{{ menu_title | escape }}">
+                <ul class="mrs-col__list">
+                  {%- for link in linklists[col_links].links -%}
+                    <li>
+                      <a
+                        class="mrs-col__link"
+                        href="{{ link.url }}"
+                        {% if link.current %}aria-current="page"{% endif %}
+                      >{{ link.title }}</a>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              </nav>
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- comment -%} ---------- SOCIAL COLUMN ---------- {%- endcomment -%}
+      {%- if has_social -%}
+        {%- capture social_items -%}
+          {%- if s.instagram_enable and s.instagram_url != blank -%}
+            <li>
+              <a class="mrs-social__link" href="{{ s.instagram_url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ s.instagram_label | escape }} ({{ 'opens in a new window' }})">
+                {%- if show_social_icons -%}
+                  <svg viewBox="0 0 24 24" role="presentation" focusable="false" aria-hidden="true"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41 1.27-.06 1.65-.07 4.85-.07M12 0C8.74 0 8.33.01 7.05.07c-1.28.06-2.15.26-2.91.56-.79.31-1.46.72-2.13 1.38C1.35 2.68.94 3.35.63 4.14c-.3.76-.5 1.63-.56 2.91C.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.28.26 2.15.56 2.91.31.79.72 1.46 1.38 2.13.67.66 1.34 1.07 2.13 1.38.76.3 1.63.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.28-.06 2.15-.26 2.91-.56.79-.31 1.46-.72 2.13-1.38.66-.67 1.07-1.34 1.38-2.13.3-.76.5-1.63.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.28-.26-2.15-.56-2.91-.31-.79-.72-1.46-1.38-2.13C21.32 1.35 20.65.94 19.86.63c-.76-.3-1.63-.5-2.91-.56C15.67.01 15.26 0 12 0z"/><path d="M12 5.84A6.16 6.16 0 1 0 18.16 12 6.16 6.16 0 0 0 12 5.84zm0 10.16A4 4 0 1 1 16 12a4 4 0 0 1-4 4z"/><circle cx="18.41" cy="5.59" r="1.44"/></svg>
+                {%- endif -%}
+                {%- if show_social_labels -%}<span>{{ s.instagram_label }}</span>{%- endif -%}
+              </a>
+            </li>
+          {%- endif -%}
+
+          {%- if s.linkedin_enable and s.linkedin_url != blank -%}
+            <li>
+              <a class="mrs-social__link" href="{{ s.linkedin_url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ s.linkedin_label | escape }}">
+                {%- if show_social_icons -%}
+                  <svg viewBox="0 0 24 24" role="presentation" focusable="false" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.05a3.75 3.75 0 0 1 3.37-1.85c3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13zm1.78 13.02H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg>
+                {%- endif -%}
+                {%- if show_social_labels -%}<span>{{ s.linkedin_label }}</span>{%- endif -%}
+              </a>
+            </li>
+          {%- endif -%}
+
+          {%- if s.facebook_enable and s.facebook_url != blank -%}
+            <li>
+              <a class="mrs-social__link" href="{{ s.facebook_url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ s.facebook_label | escape }}">
+                {%- if show_social_icons -%}
+                  <svg viewBox="0 0 24 24" role="presentation" focusable="false" aria-hidden="true"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.25h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg>
+                {%- endif -%}
+                {%- if show_social_labels -%}<span>{{ s.facebook_label }}</span>{%- endif -%}
+              </a>
+            </li>
+          {%- endif -%}
+
+          {%- if s.youtube_enable and s.youtube_url != blank -%}
+            <li>
+              <a class="mrs-social__link" href="{{ s.youtube_url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ s.youtube_label | escape }}">
+                {%- if show_social_icons -%}
+                  <svg viewBox="0 0 24 24" role="presentation" focusable="false" aria-hidden="true"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 0 0 .5 6.19C0 8.08 0 12 0 12s0 3.92.5 5.81a3.02 3.02 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 0 0 2.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg>
+                {%- endif -%}
+                {%- if show_social_labels -%}<span>{{ s.youtube_label }}</span>{%- endif -%}
+              </a>
+            </li>
+          {%- endif -%}
+
+          {%- if s.pinterest_enable and s.pinterest_url != blank -%}
+            <li>
+              <a class="mrs-social__link" href="{{ s.pinterest_url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ s.pinterest_label | escape }}">
+                {%- if show_social_icons -%}
+                  <svg viewBox="0 0 24 24" role="presentation" focusable="false" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.08 3.16 9.43 7.62 11.19-.11-.95-.2-2.41.04-3.45.22-.94 1.4-5.96 1.4-5.96s-.36-.72-.36-1.78c0-1.67.97-2.92 2.17-2.92 1.02 0 1.52.77 1.52 1.69 0 1.03-.66 2.57-1 4-.28 1.2.6 2.17 1.78 2.17 2.14 0 3.78-2.25 3.78-5.5 0-2.88-2.07-4.89-5.02-4.89-3.42 0-5.42 2.56-5.42 5.21 0 1.03.4 2.14.89 2.74.1.12.11.22.08.34-.09.38-.29 1.2-.33 1.37-.05.22-.17.27-.4.16-1.5-.7-2.43-2.89-2.43-4.65 0-3.78 2.75-7.26 7.93-7.26 4.16 0 7.4 2.97 7.4 6.93 0 4.14-2.61 7.47-6.23 7.47-1.22 0-2.36-.63-2.75-1.38l-.75 2.85c-.27 1.04-1 2.35-1.49 3.15 1.12.35 2.31.53 3.55.53 6.63 0 12-5.37 12-12S18.63 0 12 0z"/></svg>
+                {%- endif -%}
+                {%- if show_social_labels -%}<span>{{ s.pinterest_label }}</span>{%- endif -%}
+              </a>
+            </li>
+          {%- endif -%}
+        {%- endcapture -%}
+
+        <div class="mrs-col mrs-col--social{% unless s.mobile_social_accordion %} mrs-col--social-plain mrs-col--static{% endunless %}">
+          {%- if s.mobile_accordion_enable and s.mobile_social_accordion -%}
+            <button
+              type="button"
+              class="mrs-col__toggle"
+              aria-expanded="false"
+              aria-controls="MRSPanel-{{ uid }}-social"
+              data-mrs-accordion-toggle
+            >
+              <span class="mrs-col__heading">{{ s.social_heading }}</span>
+              <span class="mrs-col__icon" aria-hidden="true"></span>
+            </button>
+          {%- endif -%}
+
+          {%- if s.social_show_heading_desktop and s.social_heading != blank -%}
+            <p class="mrs-col__heading mrs-col__heading--desktop">{{ s.social_heading }}</p>
+          {%- endif -%}
+
+          <div class="mrs-col__panel" id="MRSPanel-{{ uid }}-social" data-mrs-accordion-panel>
+            <nav aria-label="{{ s.social_heading | escape }}">
+              <ul class="mrs-social__list">
+                {{ social_items }}
+              </ul>
+            </nav>
+          </div>
+        </div>
+      {%- endif -%}
+
+    </div>
+
+    {%- if s.copyright_text != blank or s.developer_text != blank -%}
+      <div class="mrs-bottom">
+        <p class="mrs-bottom__text">
+          {%- if s.copyright_text != blank -%}
+            {{ s.copyright_text }}
+          {%- endif -%}
+          {%- if s.copyright_text != blank and s.developer_text != blank -%}
+            {{ s.copyright_divider }}
+          {%- endif -%}
+          {%- if s.developer_text != blank -%}
+            {{ s.developer_text }}
+          {%- endif -%}
+        </p>
+      </div>
+    {%- endif -%}
+
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var MOBILE_QUERY = '(max-width: 767px)';
+
+    function initMrsFooter(root) {
+      if (!root || root.getAttribute('data-mrs-init') === 'true') return;
+      root.setAttribute('data-mrs-init', 'true');
+
+      if (root.getAttribute('data-accordion-enabled') !== 'true') return;
+
+      var allowMultiple = root.getAttribute('data-accordion-multiple') === 'true';
+      var toggles = Array.prototype.slice.call(root.querySelectorAll('[data-mrs-accordion-toggle]'));
+      if (!toggles.length) return;
+
+      var mq = window.matchMedia(MOBILE_QUERY);
+
+      function panelFor(toggle) {
+        var id = toggle.getAttribute('aria-controls');
+        if (!id) return null;
+        return document.getElementById(id);
+      }
+
+      function close(toggle) {
+        var panel = panelFor(toggle);
+        if (!panel) return;
+        toggle.setAttribute('aria-expanded', 'false');
+        panel.style.maxHeight = panel.scrollHeight + 'px';
+        /* force reflow so the transition runs from a real height */
+        void panel.offsetHeight;
+        panel.classList.remove('is-open');
+        panel.style.maxHeight = '0px';
+      }
+
+      function open(toggle) {
+        var panel = panelFor(toggle);
+        if (!panel) return;
+        toggle.setAttribute('aria-expanded', 'true');
+        panel.classList.add('is-open');
+        panel.style.maxHeight = panel.scrollHeight + 'px';
+      }
+
+      function reset() {
+        toggles.forEach(function (toggle) {
+          var panel = panelFor(toggle);
+          if (!panel) return;
+          if (mq.matches) {
+            toggle.setAttribute('aria-expanded', 'false');
+            panel.classList.remove('is-open');
+            panel.style.maxHeight = '0px';
+          } else {
+            toggle.setAttribute('aria-expanded', 'false');
+            panel.classList.remove('is-open');
+            panel.style.maxHeight = '';
+          }
+        });
+      }
+
+      toggles.forEach(function (toggle) {
+        var panel = panelFor(toggle);
+
+        toggle.addEventListener('click', function () {
+          if (!mq.matches) return;
+          var isOpen = toggle.getAttribute('aria-expanded') === 'true';
+
+          if (!allowMultiple) {
+            toggles.forEach(function (other) {
+              if (other !== toggle && other.getAttribute('aria-expanded') === 'true') close(other);
+            });
+          }
+
+          if (isOpen) {
+            close(toggle);
+          } else {
+            open(toggle);
+          }
+        });
+
+        if (panel) {
+          panel.addEventListener('transitionend', function (event) {
+            if (event.propertyName !== 'max-height') return;
+            if (toggle.getAttribute('aria-expanded') === 'true' && mq.matches) {
+              panel.style.maxHeight = 'none';
+            }
+          });
+        }
+      });
+
+      function handleResize() {
+        toggles.forEach(function (toggle) {
+          var panel = panelFor(toggle);
+          if (!panel) return;
+          if (!mq.matches) {
+            panel.style.maxHeight = '';
+            panel.classList.remove('is-open');
+            toggle.setAttribute('aria-expanded', 'false');
+          } else if (toggle.getAttribute('aria-expanded') === 'true') {
+            panel.style.maxHeight = panel.scrollHeight + 'px';
+          } else {
+            panel.style.maxHeight = '0px';
+          }
+        });
+      }
+
+      if (typeof mq.addEventListener === 'function') {
+        mq.addEventListener('change', reset);
+      } else if (typeof mq.addListener === 'function') {
+        mq.addListener(reset);
+      }
+
+      var resizeTimer;
+      window.addEventListener('resize', function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(handleResize, 150);
+      });
+
+      reset();
+    }
+
+    function initAll(scope) {
+      var container = scope || document;
+      var nodes = container.querySelectorAll('[data-mrs-footer]');
+      Array.prototype.forEach.call(nodes, initMrsFooter);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function () { initAll(); });
+    } else {
+      initAll();
+    }
+
+    document.addEventListener('shopify:section:load', function (event) {
+      initAll(event.target);
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Custom Footer",
+  "tag": "section",
+  "class": "mrs-footer-section",
+  "settings": [
+    { "type": "header", "content": "General" },
+    { "type": "color", "id": "color_background", "label": "Background color", "default": "#7D132A" },
+    { "type": "color", "id": "color_text", "label": "Text color", "default": "#FFFFFF" },
+    { "type": "range", "id": "secondary_text_opacity", "label": "Secondary text opacity", "min": 40, "max": 100, "step": 5, "unit": "%", "default": 80 },
+    { "type": "range", "id": "max_width", "label": "Maximum content width", "min": 1000, "max": 1800, "step": 20, "unit": "px", "default": 1440 },
+    { "type": "text", "id": "grid_template_d", "label": "Desktop grid columns", "default": "1.1fr 0.8fr 1fr 1fr 0.7fr", "info": "CSS grid-template-columns value used above 990px." },
+    { "type": "text", "id": "grid_template_t", "label": "Tablet grid columns", "default": "repeat(4, 1fr)", "info": "Used between 768px and 989px." },
+
+    { "type": "header", "content": "Desktop spacing" },
+    { "type": "range", "id": "pad_top_d", "label": "Padding top", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 56 },
+    { "type": "range", "id": "pad_bottom_d", "label": "Padding bottom", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 24 },
+    { "type": "range", "id": "pad_left_d", "label": "Padding left", "min": 0, "max": 120, "step": 2, "unit": "px", "default": 60 },
+    { "type": "range", "id": "pad_right_d", "label": "Padding right", "min": 0, "max": 120, "step": 2, "unit": "px", "default": 60 },
+    { "type": "range", "id": "column_gap_d", "label": "Column gap", "min": 8, "max": 120, "step": 2, "unit": "px", "default": 40 },
+    { "type": "range", "id": "row_gap_d", "label": "Row gap", "min": 0, "max": 80, "step": 2, "unit": "px", "default": 32 },
+
+    { "type": "header", "content": "Tablet spacing" },
+    { "type": "range", "id": "pad_left_t", "label": "Padding left", "min": 0, "max": 80, "step": 2, "unit": "px", "default": 36 },
+    { "type": "range", "id": "pad_right_t", "label": "Padding right", "min": 0, "max": 80, "step": 2, "unit": "px", "default": 36 },
+    { "type": "range", "id": "column_gap_t", "label": "Column gap", "min": 8, "max": 80, "step": 2, "unit": "px", "default": 28 },
+    { "type": "range", "id": "row_gap_t", "label": "Row gap", "min": 0, "max": 80, "step": 2, "unit": "px", "default": 32 },
+
+    { "type": "header", "content": "Mobile spacing" },
+    { "type": "range", "id": "pad_top_m", "label": "Padding top", "min": 0, "max": 100, "step": 2, "unit": "px", "default": 40 },
+    { "type": "range", "id": "pad_bottom_m", "label": "Padding bottom", "min": 0, "max": 100, "step": 2, "unit": "px", "default": 24 },
+    { "type": "range", "id": "pad_left_m", "label": "Padding left", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 22 },
+    { "type": "range", "id": "pad_right_m", "label": "Padding right", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 22 },
+
+    { "type": "header", "content": "Typography families" },
+    { "type": "text", "id": "font_heading_family", "label": "Heading font stack", "default": "'Begum', 'Battlemade', 'Lato', Arial, sans-serif" },
+    { "type": "text", "id": "font_body_family", "label": "Body font stack", "default": "'Gotham', 'Lato', Arial, sans-serif" },
+
+    { "type": "header", "content": "Newsletter" },
+    { "type": "checkbox", "id": "show_newsletter", "label": "Enable newsletter", "default": true },
+    { "type": "text", "id": "news_heading", "label": "Heading", "default": "Join the mailing list" },
+    { "type": "select", "id": "news_heading_weight", "label": "Heading weight", "options": [
+      { "value": "300", "label": "300" },
+      { "value": "400", "label": "400" },
+      { "value": "500", "label": "500" },
+      { "value": "600", "label": "600" },
+      { "value": "700", "label": "700" }
+    ], "default": "500" },
+    { "type": "range", "id": "news_heading_size_d", "label": "Desktop heading size", "min": 20, "max": 72, "step": 1, "unit": "px", "default": 45 },
+    { "type": "range", "id": "news_heading_lh_d", "label": "Desktop heading line height", "min": 24, "max": 96, "step": 1, "unit": "px", "default": 60 },
+    { "type": "range", "id": "news_heading_size_m", "label": "Mobile heading size", "min": 16, "max": 56, "step": 1, "unit": "px", "default": 30 },
+    { "type": "range", "id": "news_heading_lh_m", "label": "Mobile heading line height", "min": 20, "max": 72, "step": 1, "unit": "px", "default": 38 },
+    { "type": "range", "id": "news_heading_ls", "label": "Heading letter spacing", "min": 0, "max": 10, "step": 0.5, "unit": "%", "default": 2 },
+    { "type": "range", "id": "news_heading_space_d", "label": "Desktop space below heading", "min": 0, "max": 80, "step": 2, "unit": "px", "default": 18 },
+    { "type": "range", "id": "news_heading_space_m", "label": "Mobile space below heading", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 16 },
+    { "type": "range", "id": "news_bottom_space_d", "label": "Desktop space below newsletter", "min": 0, "max": 140, "step": 2, "unit": "px", "default": 40 },
+    { "type": "range", "id": "news_bottom_space_m", "label": "Mobile space below newsletter", "min": 0, "max": 100, "step": 2, "unit": "px", "default": 32 },
+    { "type": "range", "id": "news_form_width_d", "label": "Desktop form width", "min": 280, "max": 760, "step": 10, "unit": "px", "default": 440 },
+    { "type": "range", "id": "news_form_width_m", "label": "Mobile form width", "min": 200, "max": 640, "step": 10, "unit": "px", "default": 440 },
+    { "type": "range", "id": "news_input_h_d", "label": "Desktop input / button height", "min": 40, "max": 84, "step": 1, "unit": "px", "default": 60 },
+    { "type": "range", "id": "news_input_h_m", "label": "Mobile input / button height", "min": 36, "max": 72, "step": 1, "unit": "px", "default": 50 },
+    { "type": "range", "id": "news_gap", "label": "Gap between input and button", "min": 0, "max": 24, "step": 1, "unit": "px", "default": 8 },
+    { "type": "range", "id": "news_btn_width_d", "label": "Button width", "min": 90, "max": 280, "step": 2, "unit": "px", "default": 126 },
+    { "type": "checkbox", "id": "news_mobile_stack", "label": "Stack input and button on mobile", "default": true },
+    { "type": "range", "id": "news_border_opacity", "label": "Input border opacity", "min": 10, "max": 100, "step": 5, "unit": "%", "default": 35 },
+    { "type": "range", "id": "news_input_font_size", "label": "Input font size", "min": 11, "max": 20, "step": 1, "unit": "px", "default": 14 },
+    { "type": "color", "id": "news_btn_bg", "label": "Button background", "default": "#FFFFFF" },
+    { "type": "color", "id": "news_btn_text", "label": "Button text color", "default": "#1C1C1C" },
+    { "type": "range", "id": "news_btn_font_size", "label": "Button font size", "min": 10, "max": 18, "step": 1, "unit": "px", "default": 13 },
+    { "type": "text", "id": "news_placeholder", "label": "Input placeholder", "default": "E-mail" },
+    { "type": "text", "id": "news_btn_label", "label": "Button label", "default": "Subscribe" },
+    { "type": "text", "id": "news_success_text", "label": "Success message", "default": "Thank you. You are now on the mailing list." },
+    { "type": "text", "id": "news_error_text", "label": "Fallback error message", "default": "Enter a valid email address." },
+
+    { "type": "header", "content": "Logo" },
+    { "type": "image_picker", "id": "logo", "label": "Logo image" },
+    { "type": "range", "id": "logo_width_d", "label": "Desktop logo width", "min": 60, "max": 260, "step": 2, "unit": "px", "default": 120 },
+    { "type": "range", "id": "logo_width_m", "label": "Mobile logo width", "min": 60, "max": 220, "step": 2, "unit": "px", "default": 120 },
+    { "type": "range", "id": "logo_bottom_space_d", "label": "Desktop space below logo", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 18 },
+    { "type": "range", "id": "logo_bottom_space_m", "label": "Mobile space below logo", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 16 },
+    { "type": "range", "id": "logo_block_space_m", "label": "Mobile space below brand block", "min": 0, "max": 80, "step": 2, "unit": "px", "default": 28 },
+
+    { "type": "header", "content": "Description" },
+    { "type": "textarea", "id": "description", "label": "Description", "default": "Designed for every day. Treasured for a lifetime. A unit of Mangal Royal Jewels Pvt Ltd — since 1975." },
+    { "type": "range", "id": "desc_size_d", "label": "Desktop font size", "min": 10, "max": 24, "step": 1, "unit": "px", "default": 14 },
+    { "type": "range", "id": "desc_size_m", "label": "Mobile font size", "min": 10, "max": 24, "step": 1, "unit": "px", "default": 14 },
+    { "type": "range", "id": "desc_line_height", "label": "Desktop line height", "min": 12, "max": 36, "step": 1, "unit": "px", "default": 19 },
+    { "type": "range", "id": "desc_line_height_m", "label": "Mobile line height", "min": 12, "max": 36, "step": 1, "unit": "px", "default": 20 },
+    { "type": "range", "id": "desc_letter_spacing", "label": "Letter spacing", "min": 0, "max": 8, "step": 0.5, "unit": "%", "default": 1 },
+    { "type": "range", "id": "desc_max_width", "label": "Desktop max width", "min": 140, "max": 420, "step": 5, "unit": "px", "default": 220 },
+    { "type": "range", "id": "desc_max_width_m", "label": "Mobile max width", "min": 160, "max": 480, "step": 5, "unit": "px", "default": 300 },
+    { "type": "select", "id": "desc_align_d", "label": "Desktop alignment", "options": [
+      { "value": "left", "label": "Left" },
+      { "value": "center", "label": "Center" },
+      { "value": "right", "label": "Right" }
+    ], "default": "left" },
+    { "type": "select", "id": "desc_align_m", "label": "Mobile alignment", "options": [
+      { "value": "left", "label": "Left" },
+      { "value": "center", "label": "Center" },
+      { "value": "right", "label": "Right" }
+    ], "default": "center" },
+
+    { "type": "header", "content": "Menu typography" },
+    { "type": "range", "id": "menu_font_size_d", "label": "Desktop font size", "min": 9, "max": 22, "step": 1, "unit": "px", "default": 13 },
+    { "type": "range", "id": "menu_font_size_m", "label": "Mobile font size", "min": 9, "max": 22, "step": 1, "unit": "px", "default": 13 },
+    { "type": "range", "id": "menu_line_height_d", "label": "Desktop line height", "min": 14, "max": 48, "step": 1, "unit": "px", "default": 28 },
+    { "type": "range", "id": "menu_line_height_m", "label": "Mobile line height", "min": 14, "max": 48, "step": 1, "unit": "px", "default": 28 },
+    { "type": "range", "id": "menu_letter_spacing", "label": "Letter spacing", "min": 0, "max": 16, "step": 0.5, "unit": "%", "default": 8 },
+    { "type": "range", "id": "menu_item_gap", "label": "Gap between links", "min": 0, "max": 24, "step": 1, "unit": "px", "default": 0 },
+    { "type": "select", "id": "menu_font_weight", "label": "Font weight", "options": [
+      { "value": "300", "label": "300" },
+      { "value": "400", "label": "400" },
+      { "value": "500", "label": "500" },
+      { "value": "600", "label": "600" }
+    ], "default": "400" },
+    { "type": "checkbox", "id": "menu_uppercase", "label": "Uppercase menu links", "default": true },
+
+    { "type": "header", "content": "Menu 1" },
+    { "type": "checkbox", "id": "menu_1_enable", "label": "Enable", "default": true },
+    { "type": "text", "id": "menu_1_heading", "label": "Heading", "default": "Menu" },
+    { "type": "link_list", "id": "menu_1_links", "label": "Menu", "default": "footer" },
+    { "type": "checkbox", "id": "menu_1_show_heading_desktop", "label": "Show heading on desktop", "default": false },
+
+    { "type": "header", "content": "Menu 2" },
+    { "type": "checkbox", "id": "menu_2_enable", "label": "Enable", "default": true },
+    { "type": "text", "id": "menu_2_heading", "label": "Heading", "default": "Jewellery" },
+    { "type": "link_list", "id": "menu_2_links", "label": "Menu" },
+    { "type": "checkbox", "id": "menu_2_show_heading_desktop", "label": "Show heading on desktop", "default": false },
+
+    { "type": "header", "content": "Menu 3" },
+    { "type": "checkbox", "id": "menu_3_enable", "label": "Enable", "default": true },
+    { "type": "text", "id": "menu_3_heading", "label": "Heading", "default": "Policies" },
+    { "type": "link_list", "id": "menu_3_links", "label": "Menu" },
+    { "type": "checkbox", "id": "menu_3_show_heading_desktop", "label": "Show heading on desktop", "default": false },
+
+    { "type": "header", "content": "Menu 4" },
+    { "type": "checkbox", "id": "menu_4_enable", "label": "Enable", "default": false },
+    { "type": "text", "id": "menu_4_heading", "label": "Heading", "default": "More" },
+    { "type": "link_list", "id": "menu_4_links", "label": "Menu" },
+    { "type": "checkbox", "id": "menu_4_show_heading_desktop", "label": "Show heading on desktop", "default": false },
+
+    { "type": "header", "content": "Mobile accordion" },
+    { "type": "checkbox", "id": "mobile_accordion_enable", "label": "Turn menus into accordions on mobile", "default": true },
+    { "type": "checkbox", "id": "accordion_allow_multiple", "label": "Allow multiple open at once", "default": false },
+    { "type": "range", "id": "accordion_padding_m", "label": "Accordion padding", "min": 6, "max": 28, "step": 1, "unit": "px", "default": 14 },
+
+    { "type": "header", "content": "Social" },
+    { "type": "checkbox", "id": "social_enable", "label": "Enable social links", "default": true },
+    { "type": "text", "id": "social_heading", "label": "Heading", "default": "Social" },
+    { "type": "checkbox", "id": "social_show_heading_desktop", "label": "Show heading on desktop", "default": false },
+    { "type": "checkbox", "id": "mobile_social_accordion", "label": "Show social as accordion on mobile", "default": false },
+    { "type": "select", "id": "social_style", "label": "Display style", "options": [
+      { "value": "text", "label": "Text labels" },
+      { "value": "icons", "label": "Icons only" },
+      { "value": "both", "label": "Icon and label" }
+    ], "default": "text" },
+    { "type": "range", "id": "social_icon_size", "label": "Desktop icon size", "min": 12, "max": 40, "step": 1, "unit": "px", "default": 16 },
+    { "type": "range", "id": "social_icon_size_m", "label": "Mobile icon size", "min": 12, "max": 40, "step": 1, "unit": "px", "default": 18 },
+    { "type": "range", "id": "social_gap", "label": "Gap between icon and label", "min": 0, "max": 24, "step": 1, "unit": "px", "default": 8 },
+    { "type": "range", "id": "social_row_gap_m", "label": "Mobile gap between social links", "min": 6, "max": 40, "step": 1, "unit": "px", "default": 18 },
+    { "type": "range", "id": "social_top_space_m", "label": "Mobile space above social", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 24 },
+
+    { "type": "checkbox", "id": "instagram_enable", "label": "Show Instagram", "default": true },
+    { "type": "text", "id": "instagram_label", "label": "Instagram label", "default": "Instagram" },
+    { "type": "url", "id": "instagram_url", "label": "Instagram URL" },
+
+    { "type": "checkbox", "id": "linkedin_enable", "label": "Show LinkedIn", "default": true },
+    { "type": "text", "id": "linkedin_label", "label": "LinkedIn label", "default": "LinkedIn" },
+    { "type": "url", "id": "linkedin_url", "label": "LinkedIn URL" },
+
+    { "type": "checkbox", "id": "facebook_enable", "label": "Show Facebook", "default": false },
+    { "type": "text", "id": "facebook_label", "label": "Facebook label", "default": "Facebook" },
+    { "type": "url", "id": "facebook_url", "label": "Facebook URL" },
+
+    { "type": "checkbox", "id": "youtube_enable", "label": "Show YouTube", "default": false },
+    { "type": "text", "id": "youtube_label", "label": "YouTube label", "default": "YouTube" },
+    { "type": "url", "id": "youtube_url", "label": "YouTube URL" },
+
+    { "type": "checkbox", "id": "pinterest_enable", "label": "Show Pinterest", "default": false },
+    { "type": "text", "id": "pinterest_label", "label": "Pinterest label", "default": "Pinterest" },
+    { "type": "url", "id": "pinterest_url", "label": "Pinterest URL" },
+
+    { "type": "header", "content": "Copyright" },
+    { "type": "text", "id": "copyright_text", "label": "Copyright text", "default": "© 2026, All rights reserved by Mangal Royal Studio" },
+    { "type": "text", "id": "copyright_divider", "label": "Separator", "default": " | " },
+    { "type": "text", "id": "developer_text", "label": "Developer text", "default": "Developed by Fireflyz Tech" },
+    { "type": "range", "id": "copyright_size_d", "label": "Desktop font size", "min": 9, "max": 20, "step": 1, "unit": "px", "default": 12 },
+    { "type": "range", "id": "copyright_size_m", "label": "Mobile font size", "min": 9, "max": 20, "step": 1, "unit": "px", "default": 12 },
+    { "type": "select", "id": "copyright_align_d", "label": "Desktop alignment", "options": [
+      { "value": "left", "label": "Left" },
+      { "value": "center", "label": "Center" },
+      { "value": "right", "label": "Right" }
+    ], "default": "left" },
+    { "type": "select", "id": "copyright_align_m", "label": "Mobile alignment", "options": [
+      { "value": "left", "label": "Left" },
+      { "value": "center", "label": "Center" },
+      { "value": "right", "label": "Right" }
+    ], "default": "center" },
+    { "type": "range", "id": "divider_opacity", "label": "Divider opacity", "min": 5, "max": 100, "step": 5, "unit": "%", "default": 25 },
+    { "type": "range", "id": "copyright_top_space_d", "label": "Desktop space above divider", "min": 0, "max": 100, "step": 2, "unit": "px", "default": 40 },
+    { "type": "range", "id": "copyright_top_space_m", "label": "Mobile space above divider", "min": 0, "max": 80, "step": 2, "unit": "px", "default": 28 },
+    { "type": "range", "id": "copyright_inner_space_d", "label": "Desktop space below divider", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 18 },
+    { "type": "range", "id": "copyright_inner_space_m", "label": "Mobile space below divider", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 16 }
+  ],
+  "presets": [
+    { "name": "Custom Footer" }
+  ]
+}
+{% endschema %}

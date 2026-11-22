@@ -1,0 +1,24 @@
+{
+  "name": "mangal-royal-studio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mangal Royal Studio — Jewellery E-Commerce Platform (Shopify Liquid Theme Storefront + Custom Express Backend + Next.js Custom Admin Dashboard)",
+  "workspaces": [
+    "packages/shared",
+    "services/api",
+    "apps/admin",
+    "apps/storefront"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace=@mrs/shared && npm run build --workspace=@mrs/api && npm run build --workspace=@mrs/admin && npm run build --workspace=@mrs/storefront",
+    "typecheck": "npm run typecheck --workspace=@mrs/shared && npm run typecheck --workspace=@mrs/api && npm run typecheck --workspace=@mrs/admin && npm run typecheck --workspace=@mrs/storefront",
+    "test": "npm run test --workspace=@mrs/shared && npm run test --workspace=@mrs/api",
+    "dev:storefront": "npm run dev --workspace=@mrs/storefront",
+    "dev:shopify-theme": "shopify theme dev --path apps/shopify-theme --store i1dtfi-iv.myshopify.com",
+    "preview:storefront": "npm run preview:storefront --workspace=@mrs/api",
+    "dev:api": "npm run dev --workspace=@mrs/api",
+    "dev:admin": "npm run dev --workspace=@mrs/admin",
+    "generate:sample-excel": "npm run generate:sample-excel --workspace=@mrs/api"
+  }
+}
+

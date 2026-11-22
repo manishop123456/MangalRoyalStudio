@@ -1,0 +1,110 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "t:sections.header.name",
+  "type": "header",
+  "sections": {
+    "announcement-bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement-bar-0": {
+          "type": "announcement",
+          "settings": {
+            "text": "Get 10% OFF On Engagement Rings",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "announcement-bar-0"
+      ],
+      "settings": {
+        "bg_color": "#7a1023",
+        "border_color": "#7a1023",
+        "text_color": "#ffffff",
+        "border_width": 2,
+        "height_desktop": 34,
+        "height_mobile": 32,
+        "font_size_desktop": 12,
+        "font_size_mobile": 10,
+        "auto_rotate": false,
+        "change_slides_speed": 5,
+        "color_scheme": "scheme-1",
+        "show_line_separator": true,
+        "show_social": false,
+        "enable_country_selector": false,
+        "enable_language_selector": false
+      }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "logo_position": "middle-left",
+        "mobile_logo_position": "center",
+        "menu": "main-menu",
+        "menu_type_desktop": "dropdown",
+        "sticky_header_type": "always",
+        "show_line_separator": true,
+        "color_scheme": "scheme-1",
+        "menu_color_scheme": "scheme-1",
+        "enable_country_selector": true,
+        "enable_language_selector": true,
+        "enable_customer_avatar": true,
+        "header_bg_color": "#ffffff",
+        "header_border_color": "#eeeeee",
+        "header_border_width": 1,
+        "menu_text_color": "#190303",
+        "icon_color": "#190303",
+        "drawer_bg_color": "#ffffff",
+        "drawer_text_color": "#190303",
+        "submenu_text_color": "#3a2a2a",
+        "divider_color": "#e8e8e8",
+        "header_height_desktop": 62,
+        "padding_horizontal_desktop": 40,
+        "desktop_logo_width": 110,
+        "menu_font_size": 12,
+        "menu_font_weight": "400",
+        "menu_letter_spacing": 0.6,
+        "menu_gap": 32,
+        "icon_size_desktop": 21,
+        "icon_gap_desktop": 20,
+        "icon_stroke_width": 1.3,
+        "header_height_mobile": 62,
+        "padding_horizontal_mobile": 12,
+        "mobile_logo_width": 130,
+        "icon_size_mobile": 20,
+        "icon_gap_mobile": 13,
+        "hamburger_size": 21,
+        "drawer_title": "Menu",
+        "drawer_width": 88,
+        "drawer_max_width": 370,
+        "drawer_overlay_opacity": 45,
+        "drawer_padding": 20,
+        "menu_row_height": 50,
+        "mobile_menu_font_size": 14,
+        "mobile_menu_letter_spacing": 0.5,
+        "submenu_font_size": 13,
+        "submenu_indent": 14,
+        "show_account_in_drawer": true,
+        "drawer_account_label": "Sign In / Sign Up",
+        "wishlist_enabled": true,
+        "wishlist_url": "/pages/wishlist",
+        "wishlist_label": "Wishlist",
+        "margin_bottom": 0,
+        "padding_top": 20,
+        "padding_bottom": 20
+      }
+    }
+  },
+  "order": [
+    "announcement-bar",
+    "header"
+  ]
+}
