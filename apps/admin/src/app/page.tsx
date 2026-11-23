@@ -1013,14 +1013,20 @@ export default function MangalRoyalAdminPage() {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <span className="mrs-badge mrs-badge-burgundy">
-              Shopify Admin API {settings.shopifyApiVersion || '2025-01'}
+              {settings.shopifyLiveWritesEnabled
+                ? `Shopify Admin API ${settings.shopifyApiVersion || '2025-01'} • Connected`
+                : 'Shopify Integration: Disabled (Safe Default)'}
             </span>
             <span
               className={`mrs-badge ${
                 apiConnected ? 'mrs-badge-success' : 'mrs-badge-warning'
               }`}
             >
-              {apiConnected ? '● Backend API Connected (:4000)' : '● API unavailable'}
+              {apiConnected
+                ? '● Backend API Connected'
+                : authToken
+                  ? '● Backend API Not Connected'
+                  : '● Sign in to connect Backend API'}
             </span>
           </div>
         </div>
