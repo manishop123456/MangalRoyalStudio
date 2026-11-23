@@ -6,6 +6,7 @@ import { getPrismaClient } from './db/prisma.js';
 import { hashPassword } from './store/data-store.js';
 import { generateSampleWorkbookBuffer } from './scripts/generate-sample-excel.js';
 import { createTemporaryPostgresAdmin } from './test-support/test-credentials.js';
+import { assertIsolatedTestDatabase } from './test-support/test-db.js';
 
 const hasDb = Boolean(process.env.DATABASE_URL);
 
@@ -24,6 +25,7 @@ describe.skipIf(!hasDb)('Phase 2 Live PostgreSQL Integration & E2E', () => {
   let createdImportJobId = '';
 
   beforeAll(async () => {
+    await assertIsolatedTestDatabase(prisma);
     const cat = await prisma.category.upsert({
       where: { slug: 'rings' },
       update: {},

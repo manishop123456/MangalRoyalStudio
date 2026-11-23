@@ -11,6 +11,7 @@ import {
   validateStateForImport,
 } from './import-json-to-postgres.js';
 import type { PlatformState } from '../store/data-store.js';
+import { createSyntheticPlatformStateFixture } from '../test-support/synthetic-platform-state.js';
 
 function createInMemoryPrismaHarness() {
   const committed: Record<string, Map<string, any>> = {};
@@ -126,6 +127,7 @@ function createInMemoryPrismaHarness() {
  * into a private temp dir before the suite, run every import against that snapshot, and derive expected totals
  * from the snapshot itself instead of hard-coding environment-dependent counts (e.g. 123 audit logs).
  */
+let fixture: ReturnType<typeof createSyntheticPlatformStateFixture>;
 let snapshotDir = '';
 let snapshotPath = '';
 let snapshot: PlatformState;
@@ -134,25 +136,26 @@ const readSnapshot = (): PlatformState => JSON.parse(fs.readFileSync(snapshotPat
 const sha256File = (file: string): string => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 
 beforeAll(() => {
-  snapshotDir = fs.mkdtempSync(path.join(os.tmpdir(), 'mrs-importer-snapshot-'));
-  snapshotPath = path.join(snapshotDir, 'platform-state.snapshot.json');
-  fs.copyFileSync(resolveStateFilePath(), snapshotPath);
+  fixture = createSyntheticPlatformStateFixture();
+  snapshotDir = fixture.dir;
+  snapshotPath = fixture.filePath;
   snapshot = readSnapshot();
   snapshotSha256 = sha256File(snapshotPath);
 });
 
 afterAll(() => {
-  if (snapshotDir) fs.rmSync(snapshotDir, { recursive: true, force: true });
+  fixture?.cleanup();
 });
 
 describe('JSON-to-PostgreSQL Importer Remediation (Phase 1.3C)', () => {
-  it('1. resolves state file paths reliably from package root and monorepo root', () => {
-    const defaultResolved = resolveStateFilePath();
-    expect(fs.existsSync(defaultResolved)).toBe(true);
-    expect(defaultResolved.endsWith('services/api/.data/platform-state.json')).toBe(true);
+  it('1. resolves explicit state file paths reliably and fails closed when missing', () => {
+    const resolved = resolveStateFilePath(snapshotPath);
+    expect(fs.existsSync(resolved)).toBe(true);
+    expect(resolved).toBe(snapshotPath);
 
-    const fromRootRel = resolveStateFilePath('services/api/.data/platform-state.json');
-    expect(fromRootRel).toBe(defaultResolved);
+    expect(() =>
+      resolveStateFilePath(path.join(snapshotDir, 'non-existent-platform-state.json'))
+    ).toThrow('FILE_NOT_FOUND');
   });
 
   it('2. preserves exact decimal precision without IEEE-754 float drift', () => {

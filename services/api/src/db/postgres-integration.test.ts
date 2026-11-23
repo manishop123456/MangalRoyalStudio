@@ -2,23 +2,29 @@ import { describe, expect, it, beforeAll, afterAll } from 'vitest';
 import { getPrismaClient, disconnectPrisma, checkDatabaseConnection } from './prisma.js';
 import { PostgresOrderRepository } from './repositories/order-repository.js';
 import { runJsonToPostgresImport } from '../scripts/import-json-to-postgres.js';
-import path from 'node:path';
-import fs from 'node:fs';
+import { createSyntheticPlatformStateFixture } from '../test-support/synthetic-platform-state.js';
+import { assertIsolatedTestDatabase, resolveIsolatedTestDatabaseUrl } from '../test-support/test-db.js';
 
-const DEV_DB_URL = 'postgresql://macbook@localhost:5432/mangal_royal_studio_dev?schema=public';
+const DEV_DB_URL = resolveIsolatedTestDatabaseUrl();
 
 describe('PostgreSQL Runtime Integration & Transaction Workflows (Step 1.3)', () => {
   let isDbAvailable = false;
   let prisma: ReturnType<typeof getPrismaClient>;
   let orderRepo: PostgresOrderRepository;
+  let syntheticFixture: ReturnType<typeof createSyntheticPlatformStateFixture>;
 
   beforeAll(async () => {
+    syntheticFixture = createSyntheticPlatformStateFixture();
     prisma = getPrismaClient(DEV_DB_URL);
     const health = await checkDatabaseConnection(prisma);
     isDbAvailable = health.ok;
+    if (isDbAvailable) {
+      await assertIsolatedTestDatabase(prisma);
+    }
   });
 
   afterAll(async () => {
+    syntheticFixture?.cleanup();
     if (isDbAvailable) {
       await disconnectPrisma();
     }
@@ -39,16 +45,12 @@ describe('PostgreSQL Runtime Integration & Transaction Workflows (Step 1.3)', ()
       console.warn('Skipping test 2: PostgreSQL not reachable in sandbox');
       return;
     }
-    let statePath = path.resolve(process.cwd(), '.data/platform-state.json');
-    if (!fs.existsSync(statePath)) {
-      statePath = path.resolve(process.cwd(), 'services/api/.data/platform-state.json');
-    }
 
     // Count products before dry-run
     const prodsBefore = await prisma.productMetadata.count();
 
     const summary = await runJsonToPostgresImport({
-      filePath: statePath,
+      filePath: syntheticFixture.filePath,
       dryRun: true,
       testArtifactPolicy: 'EXCLUDE',
       databaseUrl: DEV_DB_URL,
@@ -285,6 +287,7 @@ describe('PostgreSQL Runtime Integration & Transaction Workflows (Step 1.3)', ()
     let verifiedInsideTx = false;
 
     const summary = await runJsonToPostgresImport({
+      filePath: syntheticFixture.filePath,
       dryRun: true,
       testArtifactPolicy: 'EXCLUDE',
       databaseUrl: DEV_DB_URL,
@@ -304,12 +307,12 @@ describe('PostgreSQL Runtime Integration & Transaction Workflows (Step 1.3)', ()
         const snaps = await tx.pricingSnapshot.findMany({
           include: { pricingRun: true, pricingRule: true },
         });
-        expect(snaps.length).toBe(59);
+        expect(snaps.length).toBeGreaterThanOrEqual(1);
         expect(snaps.every((s) => s.pricingRule !== null && s.pricingRun !== null)).toBe(true);
 
-        // Verify AuditLog count (at least all 99 non-test logs)
+        // Verify AuditLog count
         const auditCount = await tx.auditLog.count();
-        expect(auditCount).toBeGreaterThanOrEqual(99);
+        expect(auditCount).toBeGreaterThanOrEqual(1);
 
         // Verify idempotency: re-upserting existing category & product inside tx creates 0 duplicates
         const prodCountBefore = await tx.productMetadata.count();

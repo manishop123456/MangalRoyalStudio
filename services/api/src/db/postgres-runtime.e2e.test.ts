@@ -6,10 +6,9 @@ import { createApp } from '../app.js';
 import { ensurePostgresStartup, resolveDataBackendMode } from './backend.js';
 import { checkDatabaseConnection } from './prisma.js';
 import { createTemporaryPostgresAdmin } from '../test-support/test-credentials.js';
+import { assertIsolatedTestDatabase, resolveIsolatedTestDatabaseUrl } from '../test-support/test-db.js';
 
-const DEV_DB_URL =
-  process.env.DATABASE_URL ||
-  'postgresql://macbook@localhost:5432/mangal_royal_studio_dev?schema=public';
+const DEV_DB_URL = resolveIsolatedTestDatabaseUrl();
 
 describe('PostgreSQL HTTP Runtime E2E & Security Verification (Phase 1 Closure)', () => {
   let prisma: PrismaClient;
@@ -46,6 +45,7 @@ describe('PostgreSQL HTTP Runtime E2E & Security Verification (Phase 1 Closure)'
     const health = await checkDatabaseConnection(prisma);
     dbReachable = health.ok;
     if (dbReachable) {
+      await assertIsolatedTestDatabase(prisma);
       app = createApp({ backend: 'postgres', prisma });
     }
   });
