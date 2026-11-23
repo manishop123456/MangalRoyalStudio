@@ -65,4 +65,18 @@ describe('production configuration validation', () => {
     env.TRUSTED_PROXY_CIDRS = '0.0.0.0/0';
     expect(() => validateProductionConfigOnStartup(env)).toThrow(/INVALID_TRUSTED_PROXY_CIDRS/);
   });
+
+  it('allows Catalogue + Studio Enquiry Mode without payment/email secrets while still requiring strong JWT, CORS, and https URL', () => {
+    const env: NodeJS.ProcessEnv = {
+      NODE_ENV: 'production',
+      CATALOGUE_ENQUIRY_MODE: 'true',
+      JWT_SECRET: '3d9bcf4710a62e85f3217a94c5068bd123456789abcdef',
+      CORS_ORIGIN: 'https://mangalroyalstudio.com',
+      STOREFRONT_PUBLIC_URL: 'https://mangalroyalstudio.com',
+    };
+    expect(() => validateProductionConfigOnStartup(env)).not.toThrow();
+
+    const weakEnv = { ...env, STOREFRONT_PUBLIC_URL: 'http://mangalroyalstudio.com' };
+    expect(() => validateProductionConfigOnStartup(weakEnv)).toThrow(/STOREFRONT_PUBLIC_URL/);
+  });
 });

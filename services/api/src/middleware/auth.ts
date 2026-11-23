@@ -269,23 +269,30 @@ export function validateProductionConfigOnStartup(env: NodeJS.ProcessEnv = proce
 
   const missingOrInvalid: string[] = [];
   const readiness = getOperationalReadiness(env);
+  const catalogueEnquiryMode = env.CATALOGUE_ENQUIRY_MODE === 'true';
 
   if (!readiness.corsConfigured) {
     missingOrInvalid.push('CORS_ORIGIN (must specify explicit http/https origins, never "*")');
   }
-  if (!readiness.razorpayConfigured) {
-    missingOrInvalid.push('RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET');
-  }
-  if (!readiness.razorpayWebhookConfigured) {
-    missingOrInvalid.push('RAZORPAY_WEBHOOK_SECRET');
-  }
-  if (!readiness.shopifyWebhookConfigured) {
-    missingOrInvalid.push('SHOPIFY_WEBHOOK_SECRET');
-  }
-  if (!readiness.emailVerificationConfigured) {
-    missingOrInvalid.push(
-      'RESEND_API_KEY / EMAIL_FROM / STOREFRONT_PUBLIC_URL (must be https:// in production)'
-    );
+  if (catalogueEnquiryMode) {
+    if (!isValidPublicStorefrontUrl(env.STOREFRONT_PUBLIC_URL, true)) {
+      missingOrInvalid.push('STOREFRONT_PUBLIC_URL (must be https:// in production)');
+    }
+  } else {
+    if (!readiness.razorpayConfigured) {
+      missingOrInvalid.push('RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET');
+    }
+    if (!readiness.razorpayWebhookConfigured) {
+      missingOrInvalid.push('RAZORPAY_WEBHOOK_SECRET');
+    }
+    if (!readiness.shopifyWebhookConfigured) {
+      missingOrInvalid.push('SHOPIFY_WEBHOOK_SECRET');
+    }
+    if (!readiness.emailVerificationConfigured) {
+      missingOrInvalid.push(
+        'RESEND_API_KEY / EMAIL_FROM / STOREFRONT_PUBLIC_URL (must be https:// in production)'
+      );
+    }
   }
 
   if (missingOrInvalid.length > 0) {
