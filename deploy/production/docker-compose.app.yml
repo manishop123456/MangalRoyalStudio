@@ -1,0 +1,95 @@
+services:
+  mrs_prod_api:
+    build:
+      context: /srv/mangal-royal-studio-prod/app
+      dockerfile: /srv/mangal-royal-studio-prod/deployment/Dockerfile
+      target: api
+    image: mrs-api:prod
+    container_name: mrs_prod_api
+    restart: unless-stopped
+    env_file:
+      - /srv/mangal-royal-studio-prod/deployment/.env.app
+    volumes:
+      - /srv/mangal-royal-studio-prod/product-assets:/srv/mangal-royal-studio-prod/product-assets:ro
+    ports:
+      - "127.0.0.1:4100:4000"
+    networks:
+      - mrs_prod_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:4000/api/v1/health >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  mrs_prod_storefront:
+    build:
+      context: /srv/mangal-royal-studio-prod/app
+      dockerfile: /srv/mangal-royal-studio-prod/deployment/Dockerfile
+      target: storefront
+      args:
+        SITE_URL: https://mangalroyalstudio.com
+        NEXT_PUBLIC_STOREFRONT_URL: https://mangalroyalstudio.com
+        NEXT_PUBLIC_SITE_URL: https://mangalroyalstudio.com
+        NEXT_PUBLIC_API_URL: https://mangalroyalstudio.com
+        NEXT_PUBLIC_STOREFRONT_API_URL: /api/v1
+        NEXT_PUBLIC_API_BASE_URL: /api/v1
+        NEXT_PUBLIC_ONLINE_CHECKOUT_ENABLED: "false"
+    image: mrs-storefront:prod
+    container_name: mrs_prod_storefront
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      SITE_URL: https://mangalroyalstudio.com
+      NEXT_PUBLIC_STOREFRONT_URL: https://mangalroyalstudio.com
+      NEXT_PUBLIC_SITE_URL: https://mangalroyalstudio.com
+      NEXT_PUBLIC_API_URL: https://mangalroyalstudio.com
+      NEXT_PUBLIC_STOREFRONT_API_URL: /api/v1
+      NEXT_PUBLIC_API_BASE_URL: /api/v1
+      NEXT_PUBLIC_ONLINE_CHECKOUT_ENABLED: "false"
+      API_INTERNAL_URL: http://mrs_prod_api:4000/api
+    ports:
+      - "127.0.0.1:3100:3000"
+    depends_on:
+      mrs_prod_api:
+        condition: service_healthy
+    networks:
+      - mrs_prod_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:3000/ >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  mrs_prod_admin:
+    build:
+      context: /srv/mangal-royal-studio-prod/app
+      dockerfile: /srv/mangal-royal-studio-prod/deployment/Dockerfile
+      target: admin
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:4100
+        NEXT_PUBLIC_ADMIN_API_URL: http://localhost:4100
+        NEXT_PUBLIC_API_BASE_URL: http://localhost:4100
+    image: mrs-admin:prod
+    container_name: mrs_prod_admin
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://localhost:4100
+      NEXT_PUBLIC_ADMIN_API_URL: http://localhost:4100
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:4100
+    ports:
+      - "127.0.0.1:3101:3001"
+    depends_on:
+      mrs_prod_api:
+        condition: service_healthy
+    networks:
+      - mrs_prod_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:3001/ >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+networks:
+  mrs_prod_network:
+    external: true

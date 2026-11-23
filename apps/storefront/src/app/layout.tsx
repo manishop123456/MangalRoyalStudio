@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
+    url: getSiteUrl(),
     siteName: 'Mangal Royal Studio',
     title: 'Mangal Royal Studio — IGI Certified Lab-Grown Diamond Fine Jewellery',
     description:
