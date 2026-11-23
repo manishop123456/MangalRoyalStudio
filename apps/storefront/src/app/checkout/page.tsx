@@ -308,6 +308,61 @@ export default function CheckoutPage() {
     }
   };
 
+  const onlineCheckoutEnabled = process.env.NEXT_PUBLIC_ONLINE_CHECKOUT_ENABLED === 'true';
+
+  if (!onlineCheckoutEnabled) {
+    return (
+      <div style={{ maxWidth: '820px', margin: '0 auto', padding: '72px 24px' }}>
+        <div
+          style={{
+            background: '#FFFFFF',
+            border: '1px solid #E6E0DE',
+            padding: '44px 36px',
+            textAlign: 'center',
+          }}
+        >
+          <p className="mrs-section-eyebrow-script" style={{ fontSize: '42px', marginBottom: '4px' }}>
+            Studio Concierge
+          </p>
+          <h1 className="mrs-section-heading-serif" style={{ fontSize: '30px', marginBottom: '14px' }}>
+            ONLINE CHECKOUT CURRENTLY UNAVAILABLE
+          </h1>
+          <p style={{ fontSize: '14px', color: '#6B5B5B', lineHeight: 1.7, maxWidth: '580px', margin: '0 auto 24px' }}>
+            Mangal Royal Studio is currently operating in Catalogue &amp; Studio Enquiry mode. Online payment processing and automated shipping are disabled. Please contact our studio concierge to reserve selected pieces, confirm bespoke specifications, or arrange a private viewing.
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', flexWrap: 'wrap' }}>
+            <Link
+              href="/contact"
+              style={{
+                padding: '14px 32px',
+                background: '#7D132A',
+                color: '#FFFFFF',
+                fontSize: '12px',
+                letterSpacing: '1.2px',
+                textTransform: 'uppercase',
+              }}
+            >
+              Enquire With Our Studio
+            </Link>
+            <Link
+              href="/collections/all"
+              style={{
+                padding: '14px 32px',
+                border: '1px solid #7D132A',
+                color: '#7D132A',
+                fontSize: '12px',
+                letterSpacing: '1.2px',
+                textTransform: 'uppercase',
+              }}
+            >
+              Browse Catalogue
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (createdOrder) {
     const headingByState: Record<CheckoutPaymentState, string> = {
       PREPARING: 'PREPARING PAYMENT',

@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { StorefrontShell } from '../components/StorefrontShell';
+import { getSiteUrl } from '../lib/site-url';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_STOREFRONT_URL || 'http://localhost:3000'),
+  metadataBase: new URL(getSiteUrl()),
   title: {
     default: 'Mangal Royal Studio — IGI Certified Lab-Grown Diamond Fine Jewellery',
     template: '%s | Mangal Royal Studio',

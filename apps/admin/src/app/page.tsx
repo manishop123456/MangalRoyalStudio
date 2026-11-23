@@ -2390,6 +2390,7 @@ export default function MangalRoyalAdminPage() {
                       <input
                         type="checkbox"
                         checked={marketConfirmPublish}
+                        disabled={!authUser?.permissions?.includes('RATES_WRITE')}
                         onChange={(e) => setMarketConfirmPublish(e.target.checked)}
                       />
                       I confirm publishing these Owner-updated market rates (preserves manual product price overrides &amp; logs audit history)
@@ -2397,11 +2398,16 @@ export default function MangalRoyalAdminPage() {
                     <button
                       type="submit"
                       className="mrs-btn mrs-btn-primary"
-                      disabled={loadingAction || !marketConfirmPublish}
+                      disabled={loadingAction || !marketConfirmPublish || !authUser?.permissions?.includes('RATES_WRITE')}
                     >
                       Confirm &amp; Publish Owner-Updated Market Rates
                     </button>
                   </div>
+                  {!authUser?.permissions?.includes('RATES_WRITE') && (
+                    <p style={{ fontSize: 12, color: '#9b2c2c', marginTop: 8 }}>
+                      Read-only view: Only the OWNER role holds <code>RATES_WRITE</code> permission to publish live rates.
+                    </p>
+                  )}
                 </form>
               </div>
 
@@ -2495,10 +2501,15 @@ export default function MangalRoyalAdminPage() {
                   <button
                     type="submit"
                     className="mrs-btn mrs-btn-primary"
-                    disabled={loadingAction}
+                    disabled={loadingAction || !authUser?.permissions?.includes('RATES_WRITE')}
                   >
                     Save Metal Rate & Log Audit Entry
                   </button>
+                  {!authUser?.permissions?.includes('RATES_WRITE') && (
+                    <p style={{ fontSize: 12, color: '#9b2c2c', marginTop: 8 }}>
+                      Read-only view: Only OWNER can publish metal rate updates.
+                    </p>
+                  )}
                 </form>
               </div>
             </div>
@@ -2637,10 +2648,15 @@ export default function MangalRoyalAdminPage() {
                   <button
                     type="submit"
                     className="mrs-btn mrs-btn-primary"
-                    disabled={loadingAction}
+                    disabled={loadingAction || !authUser?.permissions?.includes('RATES_WRITE')}
                   >
                     Save Diamond Matrix Rate
                   </button>
+                  {!authUser?.permissions?.includes('RATES_WRITE') && (
+                    <p style={{ fontSize: 12, color: '#9b2c2c', marginTop: 8 }}>
+                      Read-only view: Only OWNER can publish diamond rate updates.
+                    </p>
+                  )}
                 </form>
               </div>
             </div>

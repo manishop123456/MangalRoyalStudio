@@ -245,23 +245,57 @@ export default function CartPage() {
               </div>
             </div>
 
-            <Link
-              href="/checkout"
-              style={{
-                display: 'block',
-                width: '100%',
-                marginTop: '22px',
-                padding: '15px',
-                background: '#7D132A',
-                color: '#FFFFFF',
-                textAlign: 'center',
-                fontSize: '13px',
-                letterSpacing: '1.2px',
-                textTransform: 'uppercase',
-              }}
-            >
-              Proceed To Secure Checkout
-            </Link>
+            {process.env.NEXT_PUBLIC_ONLINE_CHECKOUT_ENABLED === 'true' ? (
+              <Link
+                href="/checkout"
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  marginTop: '22px',
+                  padding: '15px',
+                  background: '#7D132A',
+                  color: '#FFFFFF',
+                  textAlign: 'center',
+                  fontSize: '13px',
+                  letterSpacing: '1.2px',
+                  textTransform: 'uppercase',
+                }}
+              >
+                Proceed To Secure Checkout
+              </Link>
+            ) : (
+              <div style={{ marginTop: '22px' }}>
+                <div
+                  style={{
+                    padding: '12px 14px',
+                    background: '#FBF7F4',
+                    border: '1px solid #E5D6D2',
+                    fontSize: '12px',
+                    color: '#5C4A4B',
+                    marginBottom: '12px',
+                    lineHeight: 1.5,
+                  }}
+                >
+                  Online checkout and automated shipping are currently unavailable. Please enquire with our studio concierge to reserve or order these pieces.
+                </div>
+                <Link
+                  href="/contact"
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    padding: '15px',
+                    background: '#7D132A',
+                    color: '#FFFFFF',
+                    textAlign: 'center',
+                    fontSize: '13px',
+                    letterSpacing: '1.2px',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Enquire With Studio Concierge
+                </Link>
+              </div>
+            )}
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '14px', gap: '12px' }}>
               <Link

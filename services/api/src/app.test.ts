@@ -760,6 +760,7 @@ describe('Mangal Royal Studio API (@mrs/api)', () => {
       });
       expect(managerMe.status).toBe(200);
       expect(managerMe.body.user.role).toBe('MANAGER');
+      expect(managerMe.body.user.permissions).not.toContain('RATES_WRITE');
       expect(managerMe.body.user.permissions).not.toContain('PRICING_APPROVE');
       expect(managerMe.body.user.permissions).not.toContain('USERS_MANAGE');
 
@@ -770,7 +771,8 @@ describe('Mangal Royal Studio API (@mrs/api)', () => {
       });
       expect(operatorMe.status).toBe(200);
       expect(operatorMe.body.user.role).toBe('PRICING_OPERATOR');
-      expect(operatorMe.body.user.permissions).toContain('RATES_WRITE');
+      expect(operatorMe.body.user.permissions).toContain('RATES_VIEW');
+      expect(operatorMe.body.user.permissions).not.toContain('RATES_WRITE');
       expect(operatorMe.body.user.permissions).not.toContain('ORDERS_VIEW');
     });
 
@@ -815,6 +817,78 @@ describe('Mangal Royal Studio API (@mrs/api)', () => {
         body: { shopifyLiveWritesEnabled: true },
       });
       expect(mgrSettingsPut.status).toBe(403);
+    });
+
+    it('7b. restricts rate publishing (RATES_WRITE) strictly to OWNER and rejects MANAGER and PRICING_OPERATOR with 403', async () => {
+      const ownerToken = await loginAs('owner@mangalroyalstudio.com', testSeedAdminPassword('OWNER'));
+      const managerToken = await loginAs('manager@mangalroyalstudio.com', testSeedAdminPassword('MANAGER'));
+      const operatorToken = await loginAs('pricing@mangalroyalstudio.com', testSeedAdminPassword('PRICING_OPERATOR'));
+
+      for (const token of [managerToken, operatorToken]) {
+        const marketCardRes = await invokeApp(app, {
+          method: 'POST',
+          url: '/api/admin/rates/market-card',
+          headers: { authorization: `Bearer ${token}` },
+          body: {
+            confirmPublish: true,
+            gold14kPerGramInr: 10200,
+            gold18kPerGramInr: 12300,
+            gold22kPerGramInr: 11510,
+            platinum950PerGramInr: 3911,
+            makingChargePerGramInr: 2500,
+            diamondBelow1CtInr: 30000,
+            diamondAbove1CtInr: 45000,
+          },
+        });
+        expect(marketCardRes.status).toBe(403);
+
+        const metalRes = await invokeApp(app, {
+          method: 'POST',
+          url: '/api/admin/rates/metals',
+          headers: { authorization: `Bearer ${token}` },
+          body: {
+            metalType: 'GOLD',
+            purity: '18K',
+            ratePerGramInr: 12300,
+            source: 'RBAC_TEST',
+            isPlaceholder: false,
+            confirmPublish: true,
+          },
+        });
+        expect(metalRes.status).toBe(403);
+
+        const diamondRes = await invokeApp(app, {
+          method: 'POST',
+          url: '/api/admin/rates/diamonds',
+          headers: { authorization: `Bearer ${token}` },
+          body: {
+            shape: 'ROUND',
+            sieveRange: 'Under 1 ct',
+            sizeMinCarat: '0.010',
+            sizeMaxCarat: '0.990',
+            colorGrade: 'EF',
+            clarityGrade: 'VVS',
+            rateInr: 30000,
+            confirmPublish: true,
+          },
+        });
+        expect(diamondRes.status).toBe(403);
+      }
+
+      const ownerMetalRes = await invokeApp(app, {
+        method: 'POST',
+        url: '/api/admin/rates/metals',
+        headers: { authorization: `Bearer ${ownerToken}` },
+        body: {
+          metalType: 'GOLD',
+          purity: '18K',
+          ratePerGramInr: 12300,
+          source: 'OWNER_RBAC_VERIFICATION',
+          isPlaceholder: false,
+          confirmPublish: true,
+        },
+      });
+      expect(ownerMetalRes.status).toBe(200);
     });
 
     it('8. denies tokens or accounts with an unknown role with 401', async () => {

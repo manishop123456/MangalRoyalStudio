@@ -55,7 +55,6 @@ export const ROLE_PERMISSIONS: Record<AdminRoleName, PermissionCode[]> = {
   ],
   MANAGER: [
     'RATES_VIEW',
-    'RATES_WRITE',
     'PRICING_PREVIEW',
     'PRICING_VALIDATE',
     'PRODUCTS_VIEW',
@@ -75,7 +74,6 @@ export const ROLE_PERMISSIONS: Record<AdminRoleName, PermissionCode[]> = {
   ],
   PRICING_OPERATOR: [
     'RATES_VIEW',
-    'RATES_WRITE',
     'PRICING_PREVIEW',
     'PRICING_VALIDATE',
     'PRODUCTS_VIEW',
