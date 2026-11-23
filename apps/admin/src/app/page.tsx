@@ -346,7 +346,11 @@ export default function MangalRoyalAdminPage() {
       setAuthUser(verifiedUser);
       setActiveRole(verifiedUser.role);
       setLoginPassword('');
-      await syncWithBackend(data.csrfToken, verifiedUser);
+      const synced = await syncWithBackend(data.csrfToken, verifiedUser);
+      if (!synced) {
+        setLoginError('Session cookie was not accepted by the browser. Ensure both Admin (:3101) and API (:4100) SSH tunnels are active.');
+        return;
+      }
       showToast(`Signed in as ${verifiedUser.displayName || verifiedUser.email} (${verifiedUser.role}).`);
     } catch {
       setLoginError('Unable to reach the Mangal Royal Studio API (:4000). Ensure the API server is running.');
@@ -364,12 +368,12 @@ export default function MangalRoyalAdminPage() {
   async function syncWithBackend(
     tokenOverride?: string | null,
     userOverride?: AuthenticatedAdminUser | null
-  ) {
+  ): Promise<boolean> {
     // The argument is only a "session present" marker; credentials travel in the HttpOnly cookie.
     const sessionMarker = tokenOverride ?? authToken;
     if (!sessionMarker) {
       setApiConnected(false);
-      return;
+      return false;
     }
 
     try {
@@ -379,7 +383,7 @@ export default function MangalRoyalAdminPage() {
       const meRes = await adminFetch(`${API_BASE}/api/auth/me`);
       if (meRes.status === 401) {
         clearAdminSession();
-        return;
+        return false;
       }
       if (!meRes.ok) {
         throw new Error('Failed to verify admin session');
@@ -500,8 +504,10 @@ export default function MangalRoyalAdminPage() {
         const us = await usrRes.json();
         setAdminUsers(us.users || []);
       }
+      return true;
     } catch {
       setApiConnected(false);
+      return false;
     }
   }
 

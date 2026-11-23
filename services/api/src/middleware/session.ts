@@ -65,7 +65,15 @@ export function getAllowedOrigins(env: NodeJS.ProcessEnv = process.env): string[
   return env.NODE_ENV === 'production' ? [] : DEFAULT_DEV_ORIGINS;
 }
 
-export function cookiesAreSecure(env: NodeJS.ProcessEnv = process.env): boolean {
+export function cookiesAreSecure(env: NodeJS.ProcessEnv = process.env, req?: Request): boolean {
+  const isLocalHttpTunnel =
+    Boolean(req) &&
+    (req!.hostname === 'localhost' || req!.hostname === '127.0.0.1') &&
+    !req!.secure &&
+    String(req!.headers?.['x-forwarded-proto'] || '').toLowerCase() !== 'https';
+  if (isLocalHttpTunnel && env.COOKIE_SECURE !== 'force') {
+    return false;
+  }
   return env.NODE_ENV === 'production' || env.COOKIE_SECURE === 'true';
 }
 
@@ -120,7 +128,7 @@ export function issueSessionCookie(res: Response, kind: SessionKind, token: stri
     serializeCookie(cookieName(kind), token, {
       maxAgeSeconds,
       sameSite: sameSiteFor(kind, env),
-      secure: cookiesAreSecure(env),
+      secure: cookiesAreSecure(env, res.req),
     })
   );
 }
@@ -128,7 +136,7 @@ export function issueSessionCookie(res: Response, kind: SessionKind, token: stri
 export function clearSessionCookie(res: Response, kind: SessionKind, env: NodeJS.ProcessEnv = process.env): void {
   appendSetCookie(
     res,
-    serializeCookie(cookieName(kind), '', { maxAgeSeconds: 0, sameSite: sameSiteFor(kind, env), secure: cookiesAreSecure(env) })
+    serializeCookie(cookieName(kind), '', { maxAgeSeconds: 0, sameSite: sameSiteFor(kind, env), secure: cookiesAreSecure(env, res.req) })
   );
 }
 
