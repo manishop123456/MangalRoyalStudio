@@ -13,7 +13,11 @@ const normalizedStorefrontApiUrl =
 
 // Staging builds use a relative API URL (/api/v1). The storefront server then forwards /api/* to the API
 // container on the private Docker network (merged from the staging-only config, 2026-11-19).
-const internalApiOrigin = (process.env.INTERNAL_API_ORIGIN || 'http://mrs_api:4000').replace(/\/$/, '');
+const rawInternalOrigin =
+  process.env.INTERNAL_API_ORIGIN ||
+  (process.env.API_INTERNAL_URL ? process.env.API_INTERNAL_URL.replace(/\/api(\/v1)?\/?$/, '') : '') ||
+  'http://mrs_api:4000';
+const internalApiOrigin = rawInternalOrigin.replace(/\/$/, '');
 const useInternalApiRewrite = normalizedStorefrontApiUrl.startsWith('/');
 
 const nextConfig: NextConfig = {

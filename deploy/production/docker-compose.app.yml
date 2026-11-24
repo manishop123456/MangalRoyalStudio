@@ -34,6 +34,7 @@ services:
         NEXT_PUBLIC_STOREFRONT_API_URL: /api/v1
         NEXT_PUBLIC_API_BASE_URL: /api/v1
         NEXT_PUBLIC_ONLINE_CHECKOUT_ENABLED: "false"
+        INTERNAL_API_ORIGIN: http://mrs_prod_api:4000
     image: mrs-storefront:prod
     container_name: mrs_prod_storefront
     restart: unless-stopped
@@ -46,6 +47,7 @@ services:
       NEXT_PUBLIC_STOREFRONT_API_URL: /api/v1
       NEXT_PUBLIC_API_BASE_URL: /api/v1
       NEXT_PUBLIC_ONLINE_CHECKOUT_ENABLED: "false"
+      INTERNAL_API_ORIGIN: http://mrs_prod_api:4000
       API_INTERNAL_URL: http://mrs_prod_api:4000/api
     ports:
       - "127.0.0.1:3100:3000"
