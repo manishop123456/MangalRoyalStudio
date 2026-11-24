@@ -1001,6 +1001,7 @@ export function createApp(storeOrOptions?: CreateAppOptions) {
       const paginated = paginateList(filtered, {
         page: query.page,
         pageSize: query.pageSize || query.limit || 25,
+        maxPageSize: 500,
         sortBy: query.sortBy,
         sortDirection: query.sortDirection || query.sortOrder || 'asc',
         sortMap: {
@@ -1181,6 +1182,7 @@ export function createApp(storeOrOptions?: CreateAppOptions) {
       const paginated = paginateList(filtered, {
         page: query.page,
         pageSize: query.pageSize || query.limit || 25,
+        maxPageSize: 500,
         sortBy: query.sortBy,
         sortDirection: query.sortDirection || query.sortOrder || 'asc',
         sortMap: {

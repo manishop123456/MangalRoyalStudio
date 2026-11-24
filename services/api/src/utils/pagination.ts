@@ -9,6 +9,7 @@ export interface PaginationOptions<T> {
   sortOrder?: 'asc' | 'desc';
   sortDirection?: 'asc' | 'desc';
   sortMap?: Record<string, (a: T, b: T) => number>;
+  maxPageSize?: number;
 }
 
 export interface PaginatedResult<T> {
@@ -50,7 +51,8 @@ export function paginateList<T>(items: T[], options: PaginationOptions<T> = {}):
 
   // 4. Paginate
   const page = Math.max(1, Number(options.page) || 1);
-  const pageSize = Math.min(100, Math.max(1, Number(options.pageSize || options.limit) || 25));
+  const maxPageSize = Math.max(1, options.maxPageSize ?? 100);
+  const pageSize = Math.min(maxPageSize, Math.max(1, Number(options.pageSize || options.limit) || 25));
   const total = filtered.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const offset = (page - 1) * pageSize;
