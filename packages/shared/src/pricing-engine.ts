@@ -96,8 +96,9 @@ export function matchDiamondRate(
   const activeRates = diamondRates.filter((r) => r.isActive);
 
   // Exact shape + carat bracket (with explicit inclusive/exclusive bounds) + color + clarity match.
+  // Prefer specific (non-ANY) matches over ANY wildcards regardless of effectiveAt ordering.
   // Never silently fall back across different shapes, colors, or clarity grades.
-  const exactMatch = activeRates.find((r) => {
+  const matching = activeRates.filter((r) => {
     const shapeMatches = r.shape === component.shape || r.shape === 'ANY';
     const sizeMatches = isCaratInSlab(averageStoneCarat, r);
     const colorMatches =
@@ -107,8 +108,13 @@ export function matchDiamondRate(
     return shapeMatches && sizeMatches && colorMatches && clarityMatches;
   });
 
-  if (exactMatch) {
-    return { rateEntry: exactMatch, averageStoneCarat };
+  if (matching.length > 0) {
+    const specificity = (r: DiamondRateMatrixEntry) =>
+      (r.shape !== 'ANY' ? 4 : 0) +
+      (r.colorGrade.toUpperCase() !== 'ANY' ? 2 : 0) +
+      (r.clarityGrade.toUpperCase() !== 'ANY' ? 1 : 0);
+    matching.sort((a, b) => specificity(b) - specificity(a));
+    return { rateEntry: matching[0]!, averageStoneCarat };
   }
 
   // Never fall back to an arbitrary diamond rate when no bracket matches.

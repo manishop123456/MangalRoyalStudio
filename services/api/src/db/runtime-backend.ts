@@ -1,6 +1,8 @@
 import crypto from 'node:crypto';
 import type { PrismaClient } from '@prisma/client';
 import {
+  buildOwnerMarketRateCard,
+  OWNER_MARKET_RATE_CARD_LABEL,
   ROLE_PERMISSIONS,
   type AdminRoleName,
   type CustomerDesignRecord,
@@ -223,6 +225,9 @@ export interface RuntimeBackend {
   listPricingRules(): Promise<PricingFormulaRule[]>;
   getActivePricingRule(): Promise<PricingFormulaRule | null>;
   createPricingRule(params: Parameters<PostgresPricingRepository['createPricingRule']>[0]): Promise<PricingFormulaRule>;
+  publishOwnerMarketRateCard(
+    params: Parameters<PostgresPricingRepository['publishOwnerMarketRateCard']>[0]
+  ): ReturnType<PostgresPricingRepository['publishOwnerMarketRateCard']>;
   listPricingRuns(): Promise<PricingRunRecord[]>;
   findPricingRunById(runId: string): Promise<PricingRunRecord | null>;
   createPricingRun(params: {
@@ -614,6 +619,9 @@ export class PostgresRuntimeBackend implements RuntimeBackend {
   }
   createPricingRule(params: Parameters<PostgresPricingRepository['createPricingRule']>[0]) {
     return this.pricing.createPricingRule(params);
+  }
+  publishOwnerMarketRateCard(params: Parameters<PostgresPricingRepository['publishOwnerMarketRateCard']>[0]) {
+    return this.pricing.publishOwnerMarketRateCard(params);
   }
   listPricingRuns() {
     return this.pricing.listPricingRuns();
@@ -1777,6 +1785,87 @@ export class JsonRuntimeBackend implements RuntimeBackend {
     });
     this.persistOrThrow();
     return created;
+  }
+  async publishOwnerMarketRateCard(
+    params: Parameters<PostgresPricingRepository['publishOwnerMarketRateCard']>[0]
+  ) {
+    for (const [metalType, purity, rate] of [
+      ['GOLD', '14K', params.gold14kPerGramInr],
+      ['GOLD', '18K', params.gold18kPerGramInr],
+      ['GOLD', '22K', params.gold22kPerGramInr],
+      ['PLATINUM', '950_PLATINUM', params.platinum950PerGramInr],
+    ] as const) {
+      await this.recordGoldRate({
+        metalType,
+        purity,
+        ratePerGramInr: rate,
+        source: OWNER_MARKET_RATE_CARD_LABEL,
+        isPlaceholder: false,
+        createdBy: params.actorEmail,
+        actorRole: params.actorRole,
+      });
+    }
+    await this.recordDiamondRate({
+      shape: 'ANY',
+      caratMin: '0.0001',
+      caratMax: '0.9999',
+      colorGrade: 'ANY',
+      clarityGrade: 'ANY',
+      cutGrade: 'EXCELLENT',
+      ratePerCaratInr: params.diamondUnder1CaratPerCaratInr,
+      isPlaceholder: false,
+      createdBy: params.actorEmail,
+      actorRole: params.actorRole,
+    });
+    await this.recordDiamondRate({
+      shape: 'ANY',
+      caratMin: '1.0001',
+      caratMax: '99.0000',
+      colorGrade: 'ANY',
+      clarityGrade: 'ANY',
+      cutGrade: 'EXCELLENT',
+      ratePerCaratInr: params.diamondOver1CaratPerCaratInr,
+      isPlaceholder: false,
+      createdBy: params.actorEmail,
+      actorRole: params.actorRole,
+    });
+    const prevRule = await this.getActivePricingRule();
+    const newRule = await this.createPricingRule({
+      name: OWNER_MARKET_RATE_CARD_LABEL,
+      description: `${
+        params.notes || 'Owner-updated market rates published via Admin'
+      } [MAKING_CHARGE_PER_GRAM_INR:${Number(params.makingChargePerGramInr).toFixed(2)}]`,
+      stoneWeightToGramsFactor: prevRule?.stoneWeightToGramsFactor || '0.2000',
+      gstRatePercent: '3.00',
+      gstMode: prevRule?.gstMode || 'INCLUSIVE',
+      roundingMode: prevRule?.roundingMode || 'NEAREST_1',
+      maxPriceDeltaPercentThreshold: prevRule?.maxPriceDeltaPercentThreshold || '15.00',
+      defaultCertificationFeeInr: '0.00',
+      defaultHallmarkFeeInr: '0.00',
+      isPlaceholderFormula: false,
+      createdBy: params.actorEmail,
+      actorRole: params.actorRole,
+    });
+    const [nextMetalRates, nextDiamondRates] = await Promise.all([
+      this.getActiveMetalRates(),
+      this.getActiveDiamondRates(),
+    ]);
+    const afterRateCard = buildOwnerMarketRateCard({
+      metalRates: nextMetalRates,
+      diamondRates: nextDiamondRates,
+      rule: newRule,
+    });
+    await this.addAuditLog({
+      actorEmail: params.actorEmail,
+      actorRole: params.actorRole as AdminRoleName,
+      action: 'OWNER_MARKET_RATE_CARD_UPDATED',
+      entityType: 'OwnerMarketRateCard',
+      entityId: `v${afterRateCard.version}`,
+      summary: `Updated "${OWNER_MARKET_RATE_CARD_LABEL}" to v${afterRateCard.version} (14K ₹${params.gold14kPerGramInr}/g, 18K ₹${params.gold18kPerGramInr}/g, 22K ₹${params.gold22kPerGramInr}/g, Pt950 ₹${params.platinum950PerGramInr}/g, Making ₹${params.makingChargePerGramInr}/g, Diamond <1ct ₹${params.diamondUnder1CaratPerCaratInr}/ct, >1ct ₹${params.diamondOver1CaratPerCaratInr}/ct)`,
+      beforeData: params.beforeRateCard,
+      afterData: afterRateCard,
+    });
+    return { rateCard: afterRateCard, pricingRule: newRule };
   }
   async listPricingRuns() {
     return this.store.getState().pricingRuns;

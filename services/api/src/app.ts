@@ -1764,107 +1764,25 @@ export function createApp(storeOrOptions?: CreateAppOptions) {
       const actorEmail = req.adminUser!.email;
       const actorRole = req.adminUser!.role;
 
-      await backend.recordGoldRate({
-        metalType: 'GOLD',
-        purity: '14K',
-        ratePerGramInr: input.gold14kPerGramInr,
-        source: OWNER_MARKET_RATE_CARD_LABEL,
-        isPlaceholder: false,
-        createdBy: actorEmail,
-        actorRole,
-      });
-      await backend.recordGoldRate({
-        metalType: 'GOLD',
-        purity: '18K',
-        ratePerGramInr: input.gold18kPerGramInr,
-        source: OWNER_MARKET_RATE_CARD_LABEL,
-        isPlaceholder: false,
-        createdBy: actorEmail,
-        actorRole,
-      });
-      await backend.recordGoldRate({
-        metalType: 'GOLD',
-        purity: '22K',
-        ratePerGramInr: input.gold22kPerGramInr,
-        source: OWNER_MARKET_RATE_CARD_LABEL,
-        isPlaceholder: false,
-        createdBy: actorEmail,
-        actorRole,
-      });
-      await backend.recordGoldRate({
-        metalType: 'PLATINUM',
-        purity: '950_PLATINUM',
-        ratePerGramInr: input.platinum950PerGramInr,
-        source: OWNER_MARKET_RATE_CARD_LABEL,
-        isPlaceholder: false,
-        createdBy: actorEmail,
-        actorRole,
-      });
-
-      await backend.recordDiamondRate({
-        shape: 'ANY',
-        caratMin: '0.0001',
-        caratMax: '0.9999',
-        colorGrade: 'ANY',
-        clarityGrade: 'ANY',
-        cutGrade: 'EXCELLENT',
-        ratePerCaratInr: input.diamondUnder1CaratPerCaratInr,
-        isPlaceholder: false,
-        createdBy: actorEmail,
-        actorRole,
-      });
-      await backend.recordDiamondRate({
-        shape: 'ANY',
-        caratMin: '1.0001',
-        caratMax: '99.0000',
-        colorGrade: 'ANY',
-        clarityGrade: 'ANY',
-        cutGrade: 'EXCELLENT',
-        ratePerCaratInr: input.diamondOver1CaratPerCaratInr,
-        isPlaceholder: false,
-        createdBy: actorEmail,
-        actorRole,
-      });
-
-      const newRule = await backend.createPricingRule({
-        name: `${OWNER_MARKET_RATE_CARD_LABEL}`,
-        description: `${
-          input.notes || 'Owner-updated market rates published via Admin'
-        } [MAKING_CHARGE_PER_GRAM_INR:${Number(input.makingChargePerGramInr).toFixed(2)}]`,
-        stoneWeightToGramsFactor: prevRule?.stoneWeightToGramsFactor || '0.2000',
-        gstRatePercent: '3.00',
-        gstMode: prevRule?.gstMode || 'INCLUSIVE',
-        roundingMode: prevRule?.roundingMode || 'NEAREST_1',
-        maxPriceDeltaPercentThreshold: prevRule?.maxPriceDeltaPercentThreshold || '15.00',
-        defaultCertificationFeeInr: '0.00',
-        defaultHallmarkFeeInr: '0.00',
-        isPlaceholderFormula: false,
-        createdBy: actorEmail,
-        actorRole,
-      });
-
-      const [nextMetalRates, nextDiamondRates] = await Promise.all([
-        backend.getActiveMetalRates(),
-        backend.getActiveDiamondRates(),
-      ]);
-      const afterRateCard = buildOwnerMarketRateCard({
-        metalRates: nextMetalRates,
-        diamondRates: nextDiamondRates,
-        rule: newRule,
-      });
-
-      await backend.addAuditLog({
+      const { rateCard: afterRateCard, pricingRule: newRule } = await backend.publishOwnerMarketRateCard({
+        gold14kPerGramInr: input.gold14kPerGramInr,
+        gold18kPerGramInr: input.gold18kPerGramInr,
+        gold22kPerGramInr: input.gold22kPerGramInr,
+        platinum950PerGramInr: input.platinum950PerGramInr,
+        makingChargePerGramInr: input.makingChargePerGramInr,
+        diamondUnder1CaratPerCaratInr: input.diamondUnder1CaratPerCaratInr,
+        diamondOver1CaratPerCaratInr: input.diamondOver1CaratPerCaratInr,
+        notes: input.notes,
+        beforeRateCard,
         actorEmail,
         actorRole,
-        action: 'OWNER_MARKET_RATE_CARD_UPDATED',
-        entityType: 'OwnerMarketRateCard',
-        entityId: `v${afterRateCard.version}`,
-        summary: `Updated "${OWNER_MARKET_RATE_CARD_LABEL}" to v${afterRateCard.version} (14K ₹${input.gold14kPerGramInr}/g, 18K ₹${input.gold18kPerGramInr}/g, 22K ₹${input.gold22kPerGramInr}/g, Pt950 ₹${input.platinum950PerGramInr}/g, Making ₹${input.makingChargePerGramInr}/g, Diamond <1ct ₹${input.diamondUnder1CaratPerCaratInr}/ct, >1ct ₹${input.diamondOver1CaratPerCaratInr}/ct)`,
-        beforeData: beforeRateCard,
-        afterData: afterRateCard,
       });
 
-      const auditLogs = await backend.listAuditLogs();
+      const [nextMetalRates, nextDiamondRates, auditLogs] = await Promise.all([
+        backend.getActiveMetalRates(),
+        backend.getActiveDiamondRates(),
+        backend.listAuditLogs(),
+      ]);
       const rateAuditHistory = auditLogs
         .filter((l) =>
           [

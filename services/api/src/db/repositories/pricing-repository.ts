@@ -1,10 +1,13 @@
 import type { Prisma, PrismaClient } from '@prisma/client';
 import { Decimal } from 'decimal.js';
 import {
+  buildOwnerMarketRateCard,
   doDiamondSlabsOverlap,
   doesDiamondSlabCoverExactOneCarat,
+  OWNER_MARKET_RATE_CARD_LABEL,
   type DiamondRateMatrixEntry,
   type MetalRateRecord,
+  type OwnerMarketRateCard,
   type PriceCalculationBreakdown,
   type PricingFormulaRule,
 } from '@mrs/shared';
@@ -183,6 +186,73 @@ export class PostgresPricingRepository {
     };
   }
 
+  private async recordGoldRateInTx(
+    tx: Prisma.TransactionClient,
+    params: {
+      metalType: string;
+      purity: string;
+      ratePerGramInr: number | string;
+      source?: string;
+      isPlaceholder?: boolean;
+      createdBy: string;
+      actorRole?: string;
+    }
+  ): Promise<MetalRateRecord> {
+    const previous = await tx.goldRate.findFirst({
+      where: { metalType: params.metalType, purity: params.purity },
+      orderBy: { effectiveAt: 'desc' },
+    });
+    const existingCount = await tx.goldRate.count({
+      where: { metalType: params.metalType, purity: params.purity },
+    });
+    const rateVersion = existingCount + 1;
+
+    const created = await tx.goldRate.create({
+      data: {
+        metalType: params.metalType,
+        purity: params.purity,
+        ratePerGramInr: Number(params.ratePerGramInr),
+        currency: 'INR',
+        source: params.source || 'Owner-updated market rates',
+        isPlaceholder: params.isPlaceholder ?? false,
+        createdBy: params.createdBy,
+      },
+    });
+
+    await tx.auditLog.create({
+      data: {
+        actorEmail: params.createdBy,
+        actorRole: params.actorRole || 'PRICING_OPERATOR',
+        action: 'METAL_RATE_UPDATED',
+        entityType: 'GoldRate',
+        entityId: created.id,
+        summary: `Recorded ${params.metalType} ${params.purity} rate ₹${Number(params.ratePerGramInr).toFixed(2)}/g (v${rateVersion})`,
+        beforeData: previous
+          ? {
+              id: previous.id,
+              metalType: previous.metalType,
+              purity: previous.purity,
+              ratePerGramInr: Number(previous.ratePerGramInr),
+              source: previous.source,
+              effectiveAt: previous.effectiveAt.toISOString(),
+            }
+          : undefined,
+        afterData: {
+          id: created.id,
+          metalType: params.metalType,
+          purity: params.purity,
+          ratePerGramInr: Number(params.ratePerGramInr),
+          source: created.source,
+          rateVersion,
+          changedBy: params.createdBy,
+          effectiveAt: created.effectiveAt.toISOString(),
+        },
+      },
+    });
+
+    return mapMetalRate(created);
+  }
+
   async recordGoldRate(params: {
     metalType: string;
     purity: string;
@@ -192,79 +262,28 @@ export class PostgresPricingRepository {
     createdBy: string;
     actorRole?: string;
   }): Promise<MetalRateRecord> {
-    return this.prisma.$transaction(async (tx) => {
-      const previous = await tx.goldRate.findFirst({
-        where: { metalType: params.metalType, purity: params.purity },
-        orderBy: { effectiveAt: 'desc' },
-      });
-      const existingCount = await tx.goldRate.count({
-        where: { metalType: params.metalType, purity: params.purity },
-      });
-      const rateVersion = existingCount + 1;
-
-      const created = await tx.goldRate.create({
-        data: {
-          metalType: params.metalType,
-          purity: params.purity,
-          ratePerGramInr: Number(params.ratePerGramInr),
-          currency: 'INR',
-          source: params.source || 'Owner-updated market rates',
-          isPlaceholder: params.isPlaceholder ?? false,
-          createdBy: params.createdBy,
-        },
-      });
-
-      await tx.auditLog.create({
-        data: {
-          actorEmail: params.createdBy,
-          actorRole: params.actorRole || 'PRICING_OPERATOR',
-          action: 'METAL_RATE_UPDATED',
-          entityType: 'GoldRate',
-          entityId: created.id,
-          summary: `Recorded ${params.metalType} ${params.purity} rate ₹${Number(params.ratePerGramInr).toFixed(2)}/g (v${rateVersion})`,
-          beforeData: previous
-            ? {
-                id: previous.id,
-                metalType: previous.metalType,
-                purity: previous.purity,
-                ratePerGramInr: Number(previous.ratePerGramInr),
-                source: previous.source,
-                effectiveAt: previous.effectiveAt.toISOString(),
-              }
-            : undefined,
-          afterData: {
-            id: created.id,
-            metalType: params.metalType,
-            purity: params.purity,
-            ratePerGramInr: Number(params.ratePerGramInr),
-            source: created.source,
-            rateVersion,
-            changedBy: params.createdBy,
-            effectiveAt: created.effectiveAt.toISOString(),
-          },
-        },
-      });
-
-      return mapMetalRate(created);
-    });
+    return this.prisma.$transaction((tx) => this.recordGoldRateInTx(tx, params));
   }
 
-  async recordDiamondRate(params: {
-    shape: string;
-    sieveRange?: string;
-    caratMin: number | string;
-    caratMax: number | string;
-    minInclusive?: boolean;
-    maxInclusive?: boolean;
-    colorGrade: string;
-    clarityGrade: string;
-    cutGrade?: string;
-    ratePerCaratInr: number | string;
-    isPlaceholder?: boolean;
-    isActive?: boolean;
-    createdBy: string;
-    actorRole?: string;
-  }): Promise<DiamondRateMatrixEntry> {
+  private async recordDiamondRateInTx(
+    tx: Prisma.TransactionClient,
+    params: {
+      shape: string;
+      sieveRange?: string;
+      caratMin: number | string;
+      caratMax: number | string;
+      minInclusive?: boolean;
+      maxInclusive?: boolean;
+      colorGrade: string;
+      clarityGrade: string;
+      cutGrade?: string;
+      ratePerCaratInr: number | string;
+      isPlaceholder?: boolean;
+      isActive?: boolean;
+      createdBy: string;
+      actorRole?: string;
+    }
+  ): Promise<DiamondRateMatrixEntry> {
     const minDec = new Decimal(params.caratMin);
     const maxDec = new Decimal(params.caratMax);
     const rateDec = new Decimal(params.ratePerCaratInr);
@@ -290,106 +309,119 @@ export class PostgresPricingRepository {
       throw new Error('EXACT_1CT_PRICE_ON_REQUEST_REQUIRED: Exactly 1.0000 ct must remain Price on Request and cannot be covered by an active slab.');
     }
 
-    return this.prisma.$transaction(async (tx) => {
-      if (isActive) {
-        // Supersede (rather than reject) the previous version of this exact slab, and any
-        // placeholder slabs when an owner-confirmed (non-placeholder) rate is being published.
-        // This mirrors the in-memory backend, so re-publishing the owner rate card is idempotent
-        // instead of failing with OVERLAPPING_DIAMOND_SLAB after the metal rates were already saved.
+    if (isActive) {
+      await tx.diamondRate.updateMany({
+        where: {
+          isActive: true,
+          shape: params.shape,
+          colorGrade: params.colorGrade.toUpperCase(),
+          clarityGrade: params.clarityGrade.toUpperCase(),
+          sizeMinCarat: minDec.toFixed(4),
+          sizeMaxCarat: maxDec.toFixed(4),
+        },
+        data: { isActive: false },
+      });
+      if (params.isPlaceholder === false) {
         await tx.diamondRate.updateMany({
-          where: {
-            isActive: true,
-            shape: params.shape,
-            colorGrade: params.colorGrade.toUpperCase(),
-            clarityGrade: params.clarityGrade.toUpperCase(),
-            sizeMinCarat: minDec.toFixed(4),
-            sizeMaxCarat: maxDec.toFixed(4),
-          },
+          where: { isActive: true, isPlaceholder: true },
           data: { isActive: false },
         });
-        if (params.isPlaceholder === false) {
-          await tx.diamondRate.updateMany({
-            where: { isActive: true, isPlaceholder: true },
-            data: { isActive: false },
-          });
-        }
-        const existingSameGroup = await tx.diamondRate.findMany({
-          where: {
-            isActive: true,
-            shape: params.shape,
-            colorGrade: params.colorGrade.toUpperCase(),
-            clarityGrade: params.clarityGrade.toUpperCase(),
-          },
-        });
-        for (const existing of existingSameGroup) {
-          if (
-            doDiamondSlabsOverlap(
-              {
-                sizeMinCarat: minDec.toFixed(4),
-                sizeMaxCarat: maxDec.toFixed(4),
-                minInclusive,
-                maxInclusive,
-              },
-              {
-                sizeMinCarat: existing.sizeMinCarat.toFixed(4),
-                sizeMaxCarat: existing.sizeMaxCarat.toFixed(4),
-                minInclusive: existing.minInclusive,
-                maxInclusive: existing.maxInclusive,
-              }
-            )
-          ) {
-            throw new Error(
-              `OVERLAPPING_DIAMOND_SLAB: Active slab overlaps existing ${existing.shape} ${existing.colorGrade}-${existing.clarityGrade} slab (${existing.sizeMinCarat.toFixed(4)}–${existing.sizeMaxCarat.toFixed(4)} ct).`
-            );
-          }
+      }
+      const existingSameGroup = await tx.diamondRate.findMany({
+        where: {
+          isActive: true,
+          shape: params.shape,
+          colorGrade: params.colorGrade.toUpperCase(),
+          clarityGrade: params.clarityGrade.toUpperCase(),
+        },
+      });
+      for (const existing of existingSameGroup) {
+        if (
+          doDiamondSlabsOverlap(
+            {
+              sizeMinCarat: minDec.toFixed(4),
+              sizeMaxCarat: maxDec.toFixed(4),
+              minInclusive,
+              maxInclusive,
+            },
+            {
+              sizeMinCarat: existing.sizeMinCarat.toFixed(4),
+              sizeMaxCarat: existing.sizeMaxCarat.toFixed(4),
+              minInclusive: existing.minInclusive,
+              maxInclusive: existing.maxInclusive,
+            }
+          )
+        ) {
+          throw new Error(
+            `OVERLAPPING_DIAMOND_SLAB: Active slab overlaps existing ${existing.shape} ${existing.colorGrade}-${existing.clarityGrade} slab (${existing.sizeMinCarat.toFixed(4)}–${existing.sizeMaxCarat.toFixed(4)} ct).`
+          );
         }
       }
+    }
 
-      const previous = await tx.diamondRate.findFirst({
-        where: {
-          shape: params.shape,
-          colorGrade: params.colorGrade.toUpperCase(),
-          clarityGrade: params.clarityGrade.toUpperCase(),
-          sizeMinCarat: minDec.toFixed(4),
-          sizeMaxCarat: maxDec.toFixed(4),
-        },
-        orderBy: { effectiveAt: 'desc' },
-      });
-      const nextVersion = (previous?.version ?? 0) + 1;
-
-      const created = await tx.diamondRate.create({
-        data: {
-          shape: params.shape,
-          sieveRange: params.sieveRange || null,
-          sizeMinCarat: minDec.toFixed(4),
-          sizeMaxCarat: maxDec.toFixed(4),
-          minInclusive,
-          maxInclusive,
-          colorGrade: params.colorGrade.toUpperCase(),
-          clarityGrade: params.clarityGrade.toUpperCase(),
-          cutGrade: params.cutGrade || 'EXCELLENT',
-          rateInr: rateDec.toFixed(4),
-          version: nextVersion,
-          isPlaceholder: params.isPlaceholder ?? false,
-          isActive,
-          createdBy: params.createdBy,
-        },
-      });
-
-      await tx.auditLog.create({
-        data: {
-          actorEmail: params.createdBy,
-          actorRole: params.actorRole || 'OWNER',
-          action: 'DIAMOND_RATE_CREATED',
-          entityType: 'DiamondRate',
-          entityId: created.id,
-          summary: `Created ${created.shape} ${created.colorGrade}-${created.clarityGrade} (${minInclusive ? '[' : '('}${minDec.toFixed(4)}, ${maxDec.toFixed(4)}${maxInclusive ? ']' : ')'} ct) @ ₹${rateDec.toFixed(2)}/ct (active=${isActive})`,
-          afterData: created as unknown as Prisma.InputJsonValue,
-        },
-      });
-
-      return mapDiamondRate(created);
+    const previous = await tx.diamondRate.findFirst({
+      where: {
+        shape: params.shape,
+        colorGrade: params.colorGrade.toUpperCase(),
+        clarityGrade: params.clarityGrade.toUpperCase(),
+        sizeMinCarat: minDec.toFixed(4),
+        sizeMaxCarat: maxDec.toFixed(4),
+      },
+      orderBy: { effectiveAt: 'desc' },
     });
+    const nextVersion = (previous?.version ?? 0) + 1;
+
+    const created = await tx.diamondRate.create({
+      data: {
+        shape: params.shape,
+        sieveRange: params.sieveRange || null,
+        sizeMinCarat: minDec.toFixed(4),
+        sizeMaxCarat: maxDec.toFixed(4),
+        minInclusive,
+        maxInclusive,
+        colorGrade: params.colorGrade.toUpperCase(),
+        clarityGrade: params.clarityGrade.toUpperCase(),
+        cutGrade: params.cutGrade || 'EXCELLENT',
+        rateInr: rateDec.toFixed(4),
+        version: nextVersion,
+        isPlaceholder: params.isPlaceholder ?? false,
+        isActive,
+        createdBy: params.createdBy,
+      },
+    });
+
+    await tx.auditLog.create({
+      data: {
+        actorEmail: params.createdBy,
+        actorRole: params.actorRole || 'OWNER',
+        action: 'DIAMOND_RATE_CREATED',
+        entityType: 'DiamondRate',
+        entityId: created.id,
+        summary: `Created ${created.shape} ${created.colorGrade}-${created.clarityGrade} (${minInclusive ? '[' : '('}${minDec.toFixed(4)}, ${maxDec.toFixed(4)}${maxInclusive ? ']' : ')'} ct) @ ₹${rateDec.toFixed(2)}/ct (active=${isActive})`,
+        afterData: created as unknown as Prisma.InputJsonValue,
+      },
+    });
+
+    return mapDiamondRate(created);
+  }
+
+  async recordDiamondRate(params: {
+    shape: string;
+    sieveRange?: string;
+    caratMin: number | string;
+    caratMax: number | string;
+    minInclusive?: boolean;
+    maxInclusive?: boolean;
+    colorGrade: string;
+    clarityGrade: string;
+    cutGrade?: string;
+    ratePerCaratInr: number | string;
+    isPlaceholder?: boolean;
+    isActive?: boolean;
+    createdBy: string;
+    actorRole?: string;
+  }): Promise<DiamondRateMatrixEntry> {
+    return this.prisma.$transaction((tx) => this.recordDiamondRateInTx(tx, params));
   }
 
   async updateDiamondRate(params: {
@@ -513,6 +545,63 @@ export class PostgresPricingRepository {
     });
   }
 
+  private async createPricingRuleInTx(
+    tx: Prisma.TransactionClient,
+    params: {
+      name: string;
+      description: string;
+      stoneWeightToGramsFactor: number | string;
+      gstRatePercent: number | string;
+      gstMode: string;
+      roundingMode: string;
+      maxPriceDeltaPercentThreshold: number | string;
+      defaultCertificationFeeInr?: number | string;
+      defaultHallmarkFeeInr?: number | string;
+      isPlaceholderFormula?: boolean;
+      createdBy: string;
+      actorRole: string;
+    }
+  ): Promise<PricingFormulaRule> {
+    const latest = await tx.pricingRule.findFirst({ orderBy: { version: 'desc' } });
+    const nextVersion = (latest?.version ?? 0) + 1;
+
+    const created = await tx.pricingRule.create({
+      data: {
+        version: nextVersion,
+        name: params.name,
+        description: params.description,
+        status: 'APPROVED',
+        isPlaceholderFormula: params.isPlaceholderFormula ?? false,
+        stoneWeightToGramsFactor: Number(params.stoneWeightToGramsFactor),
+        gstRatePercent: Number(params.gstRatePercent),
+        gstMode: params.gstMode,
+        roundingMode: params.roundingMode,
+        maxPriceDeltaPercentThreshold: Number(params.maxPriceDeltaPercentThreshold),
+        defaultCertificationFeeInr: Number(params.defaultCertificationFeeInr ?? 0),
+        defaultHallmarkFeeInr: Number(params.defaultHallmarkFeeInr ?? 0),
+        approvedBy: params.createdBy,
+        approvedAt: new Date(),
+      },
+    });
+
+    await tx.auditLog.create({
+      data: {
+        actorEmail: params.createdBy,
+        actorRole: params.actorRole,
+        action: 'PRICING_RULE_CREATED',
+        entityType: 'PricingRule',
+        entityId: created.id,
+        summary: `Created pricing rule v${created.version}: ${created.name}`,
+        beforeData: latest
+          ? { version: latest.version, name: latest.name, description: latest.description }
+          : undefined,
+        afterData: { version: created.version, name: created.name, description: created.description },
+      },
+    });
+
+    return this.enrichPricingRule(mapPricingRule(created));
+  }
+
   async createPricingRule(params: {
     name: string;
     description: string;
@@ -527,45 +616,125 @@ export class PostgresPricingRepository {
     createdBy: string;
     actorRole: string;
   }): Promise<PricingFormulaRule> {
-    return this.prisma.$transaction(async (tx) => {
-      const latest = await tx.pricingRule.findFirst({ orderBy: { version: 'desc' } });
-      const nextVersion = (latest?.version ?? 0) + 1;
+    return this.prisma.$transaction((tx) => this.createPricingRuleInTx(tx, params));
+  }
 
-      const created = await tx.pricingRule.create({
-        data: {
-          version: nextVersion,
-          name: params.name,
-          description: params.description,
-          status: 'APPROVED',
-          isPlaceholderFormula: params.isPlaceholderFormula ?? false,
-          stoneWeightToGramsFactor: Number(params.stoneWeightToGramsFactor),
-          gstRatePercent: Number(params.gstRatePercent),
-          gstMode: params.gstMode,
-          roundingMode: params.roundingMode,
-          maxPriceDeltaPercentThreshold: Number(params.maxPriceDeltaPercentThreshold),
-          defaultCertificationFeeInr: Number(params.defaultCertificationFeeInr ?? 0),
-          defaultHallmarkFeeInr: Number(params.defaultHallmarkFeeInr ?? 0),
-          approvedBy: params.createdBy,
-          approvedAt: new Date(),
-        },
+  async publishOwnerMarketRateCard(params: {
+    gold14kPerGramInr: string;
+    gold18kPerGramInr: string;
+    gold22kPerGramInr: string;
+    platinum950PerGramInr: string;
+    makingChargePerGramInr: string;
+    diamondUnder1CaratPerCaratInr: string;
+    diamondOver1CaratPerCaratInr: string;
+    notes?: string;
+    beforeRateCard: OwnerMarketRateCard;
+    actorEmail: string;
+    actorRole: string;
+  }): Promise<{ rateCard: OwnerMarketRateCard; pricingRule: PricingFormulaRule }> {
+    return this.prisma.$transaction(async (tx) => {
+      for (const [metalType, purity, rate] of [
+        ['GOLD', '14K', params.gold14kPerGramInr],
+        ['GOLD', '18K', params.gold18kPerGramInr],
+        ['GOLD', '22K', params.gold22kPerGramInr],
+        ['PLATINUM', '950_PLATINUM', params.platinum950PerGramInr],
+      ] as const) {
+        await this.recordGoldRateInTx(tx, {
+          metalType,
+          purity,
+          ratePerGramInr: rate,
+          source: OWNER_MARKET_RATE_CARD_LABEL,
+          isPlaceholder: false,
+          createdBy: params.actorEmail,
+          actorRole: params.actorRole,
+        });
+      }
+
+      await this.recordDiamondRateInTx(tx, {
+        shape: 'ANY',
+        sieveRange: '> 0.0000 ct to < 1.0000 ct',
+        caratMin: '0.0001',
+        caratMax: '0.9999',
+        minInclusive: true,
+        maxInclusive: true,
+        colorGrade: 'ANY',
+        clarityGrade: 'ANY',
+        cutGrade: 'EXCELLENT',
+        ratePerCaratInr: params.diamondUnder1CaratPerCaratInr,
+        isPlaceholder: false,
+        createdBy: params.actorEmail,
+        actorRole: params.actorRole,
+      });
+
+      await this.recordDiamondRateInTx(tx, {
+        shape: 'ANY',
+        sieveRange: '> 1.0000 ct to <= 99.0000 ct',
+        caratMin: '1.0001',
+        caratMax: '99.0000',
+        minInclusive: true,
+        maxInclusive: true,
+        colorGrade: 'ANY',
+        clarityGrade: 'ANY',
+        cutGrade: 'EXCELLENT',
+        ratePerCaratInr: params.diamondOver1CaratPerCaratInr,
+        isPlaceholder: false,
+        createdBy: params.actorEmail,
+        actorRole: params.actorRole,
+      });
+
+      const prevRule = await tx.pricingRule.findFirst({
+        where: { status: 'APPROVED' },
+        orderBy: { version: 'desc' },
+      });
+
+      const newRule = await this.createPricingRuleInTx(tx, {
+        name: OWNER_MARKET_RATE_CARD_LABEL,
+        description: `${
+          params.notes || 'Owner-updated market rates published via Admin'
+        } [MAKING_CHARGE_PER_GRAM_INR:${Number(params.makingChargePerGramInr).toFixed(2)}]`,
+        stoneWeightToGramsFactor: prevRule?.stoneWeightToGramsFactor.toString() || '0.2000',
+        gstRatePercent: '3.00',
+        gstMode: prevRule?.gstMode || 'INCLUSIVE',
+        roundingMode: prevRule?.roundingMode || 'NEAREST_1',
+        maxPriceDeltaPercentThreshold: prevRule?.maxPriceDeltaPercentThreshold.toString() || '15.00',
+        defaultCertificationFeeInr: '0.00',
+        defaultHallmarkFeeInr: '0.00',
+        isPlaceholderFormula: false,
+        createdBy: params.actorEmail,
+        actorRole: params.actorRole,
+      });
+
+      const [metalRows, diamondRows] = await Promise.all([
+        tx.goldRate.findMany({ orderBy: { effectiveAt: 'desc' } }),
+        tx.diamondRate.findMany({ where: { isActive: true }, orderBy: { effectiveAt: 'desc' } }),
+      ]);
+      const latestMetals = new Map<string, MetalRateRecord>();
+      for (const row of metalRows) {
+        const mapped = mapMetalRate(row);
+        const key = `${mapped.metalType}:${mapped.purity}`;
+        if (!latestMetals.has(key)) latestMetals.set(key, mapped);
+      }
+
+      const afterRateCard = buildOwnerMarketRateCard({
+        metalRates: [...latestMetals.values()],
+        diamondRates: diamondRows.map(mapDiamondRate),
+        rule: newRule,
       });
 
       await tx.auditLog.create({
         data: {
-          actorEmail: params.createdBy,
+          actorEmail: params.actorEmail,
           actorRole: params.actorRole,
-          action: 'PRICING_RULE_CREATED',
-          entityType: 'PricingRule',
-          entityId: created.id,
-          summary: `Created pricing rule v${created.version}: ${created.name}`,
-          beforeData: latest
-            ? { version: latest.version, name: latest.name, description: latest.description }
-            : undefined,
-          afterData: { version: created.version, name: created.name, description: created.description },
+          action: 'OWNER_MARKET_RATE_CARD_UPDATED',
+          entityType: 'OwnerMarketRateCard',
+          entityId: `v${afterRateCard.version}`,
+          summary: `Updated "${OWNER_MARKET_RATE_CARD_LABEL}" to v${afterRateCard.version} (14K ₹${params.gold14kPerGramInr}/g, 18K ₹${params.gold18kPerGramInr}/g, 22K ₹${params.gold22kPerGramInr}/g, Pt950 ₹${params.platinum950PerGramInr}/g, Making ₹${params.makingChargePerGramInr}/g, Diamond <1ct ₹${params.diamondUnder1CaratPerCaratInr}/ct, >1ct ₹${params.diamondOver1CaratPerCaratInr}/ct)`,
+          beforeData: params.beforeRateCard as unknown as Prisma.InputJsonValue,
+          afterData: afterRateCard as unknown as Prisma.InputJsonValue,
         },
       });
 
-      return this.enrichPricingRule(mapPricingRule(created));
+      return { rateCard: afterRateCard, pricingRule: newRule };
     });
   }
 
