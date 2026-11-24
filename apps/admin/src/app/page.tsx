@@ -17,6 +17,7 @@ import {
 } from '@mrs/shared';
 import AdminPhase2Modules from '../components/AdminPhase2Modules';
 import { getPermittedModules, resolveVisibleModule } from '../lib/admin-navigation';
+import { filterAdminProducts } from '../lib/admin-products';
 
 const API_BASE = (
   process.env.NEXT_PUBLIC_ADMIN_API_URL ||
@@ -619,27 +620,10 @@ export default function MangalRoyalAdminPage() {
   ]);
 
   const filteredProducts = useMemo(() => {
-    return products.filter((p) => {
-      if (
-        productSearch &&
-        !p.sku.toLowerCase().includes(productSearch.toLowerCase()) &&
-        !p.title.toLowerCase().includes(productSearch.toLowerCase())
-      ) {
-        return false;
-      }
-      if (
-        productCategoryFilter &&
-        p.category?.toLowerCase() !== productCategoryFilter.toLowerCase()
-      ) {
-        return false;
-      }
-      if (
-        productStatusFilter &&
-        (p.status || 'ACTIVE').toUpperCase() !== productStatusFilter.toUpperCase()
-      ) {
-        return false;
-      }
-      return true;
+    return filterAdminProducts(products, {
+      search: productSearch,
+      category: productCategoryFilter,
+      status: productStatusFilter,
     });
   }, [products, productSearch, productCategoryFilter, productStatusFilter]);
 
@@ -1492,6 +1476,7 @@ export default function MangalRoyalAdminPage() {
                     <option value="">All Products ({products.length})</option>
                     <option value="ACTIVE">Active</option>
                     <option value="DRAFT">Draft</option>
+                    <option value="PRICE_ON_REQUEST">Price on Request</option>
                     <option value="ARCHIVED">Archived</option>
                   </select>
                   <select
