@@ -2,7 +2,11 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { THEME_IMAGES } from '../lib/storefront-data';
+import {
+  buildShopifyImageSrcSet,
+  THEME_IMAGES,
+  withShopifyImageWidth,
+} from '../lib/storefront-data';
 import { useStorefront } from '../components/StorefrontShell';
 import { ProductCard } from '../components/ProductCard';
 
@@ -79,9 +83,13 @@ export default function HomePage() {
       {/* 3. HERO SLIDESHOW (sections/slideshow.liquid) */}
       <section className="mrs-hero" aria-label="Hero Banner">
         <img
-          src={THEME_IMAGES.heroSlide1}
+          src={withShopifyImageWidth(THEME_IMAGES.heroSlide1, 2000)}
+          srcSet={buildShopifyImageSrcSet(THEME_IMAGES.heroSlide1, [800, 1200, 1600, 2000])}
+          sizes="100vw"
           alt="Tradition in Trust — Brilliance For Today"
           className="mrs-hero__img"
+          loading="eager"
+          fetchPriority="high"
         />
         <div className="mrs-hero__overlay">
           <div className="mrs-hero__content">
@@ -114,8 +122,8 @@ export default function HomePage() {
             gap: '36px',
           }}
         >
-          {bestsellers.map((prod) => (
-            <ProductCard key={prod.sku} product={prod} customBadge="BEST SELLER" />
+          {bestsellers.map((prod, idx) => (
+            <ProductCard key={prod.sku} product={prod} customBadge="BEST SELLER" priority={idx < 4} />
           ))}
         </div>
 

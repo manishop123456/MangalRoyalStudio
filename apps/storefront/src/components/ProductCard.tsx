@@ -4,22 +4,36 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { resolveProductImageUrl, type JewelleryProductSpec } from '@mrs/shared';
-import { API_ORIGIN, formatInr, formatProductPrice, PRODUCT_IMAGE_PLACEHOLDER } from '../lib/storefront-data';
+import {
+  API_ORIGIN,
+  buildShopifyImageSrcSet,
+  formatInr,
+  formatProductPrice,
+  PRODUCT_IMAGE_PLACEHOLDER,
+  withShopifyImageWidth,
+} from '../lib/storefront-data';
 import { useStorefront } from './StorefrontShell';
 
 export function ProductCard({
   product,
   customBadge,
+  priority = false,
 }: {
   product: JewelleryProductSpec;
   customBadge?: string;
+  priority?: boolean;
 }) {
   const router = useRouter();
   const { addToCart, wishlistHandles, toggleWishlist } = useStorefront();
   const isWished = wishlistHandles.includes(product.handle);
 
-  const mainImg = resolveProductImageUrl(product.imageUrl, API_ORIGIN) || PRODUCT_IMAGE_PLACEHOLDER;
-  const altImg = resolveProductImageUrl(product.altImageUrl, API_ORIGIN);
+  const rawMainImg = resolveProductImageUrl(product.imageUrl, API_ORIGIN) || PRODUCT_IMAGE_PLACEHOLDER;
+  const rawAltImg = resolveProductImageUrl(product.altImageUrl, API_ORIGIN);
+  const mainImg = withShopifyImageWidth(rawMainImg, 1200);
+  const mainSrcSet = buildShopifyImageSrcSet(rawMainImg);
+  const altImg = rawAltImg ? withShopifyImageWidth(rawAltImg, 1200) : '';
+  const altSrcSet = rawAltImg ? buildShopifyImageSrcSet(rawAltImg) : undefined;
+  const cardSizes = '(min-width: 1200px) 320px, (min-width: 750px) 33vw, 50vw';
   const isPriceOnRequest = Boolean(product.priceOnRequest || product.priceBreakup?.priceOnRequest);
   const displayPrice = formatProductPrice(product);
   const effectiveNumericPrice = Number(
@@ -37,17 +51,24 @@ export function ProductCard({
       <Link href={`/products/${product.handle}`} className="pc-card__media">
         <img
           src={mainImg}
+          srcSet={mainSrcSet}
+          sizes={mainSrcSet ? cardSizes : undefined}
           alt={product.title}
           className={`pc-card__img pc-card__img--main ${altImg ? 'pc-has-alt' : ''}`}
-          loading="lazy"
+          loading={priority ? 'eager' : 'lazy'}
+          fetchPriority={priority ? 'high' : undefined}
+          decoding="async"
         />
         {altImg && (
           <img
             src={altImg}
+            srcSet={altSrcSet}
+            sizes={altSrcSet ? cardSizes : undefined}
             alt=""
             aria-hidden="true"
             className="pc-card__img pc-card__img--alt"
             loading="lazy"
+            decoding="async"
           />
         )}
         {(customBadge || product.isFeaturedBestseller) && (

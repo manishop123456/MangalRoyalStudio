@@ -233,7 +233,7 @@ textarea:focus-visible {
   --pc-ink: #190303;
   --pc-muted: #6B5B5B;
   --pc-line: #E7E1E1;
-  --pc-ratio: 285 / 397;
+  --pc-ratio: 1 / 1;
   --pc-inset: 7.37%;
   --pc-gap: 15px;
   --pc-radius: 0px;
@@ -276,7 +276,8 @@ textarea:focus-visible {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  padding: 10px;
+  object-fit: contain;
   object-position: center;
   display: block;
   transition: transform 0.9s var(--pc-ease), opacity 0.5s var(--pc-ease);
@@ -288,11 +289,11 @@ textarea:focus-visible {
 
 @media (hover: hover) {
   .pc-card:hover .pc-card__img--main {
-    transform: scale(1.055);
+    transform: scale(1.04);
   }
   .pc-card:hover .pc-card__img--alt {
     opacity: 1;
-    transform: scale(1.055);
+    transform: scale(1.04);
   }
   .pc-card:hover .pc-card__img--main.pc-has-alt {
     opacity: 0;

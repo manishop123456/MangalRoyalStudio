@@ -34,6 +34,29 @@ export function storefrontFetch(input: string, init: RequestInit = {}): Promise<
 
 export const CDN_BASE = 'https://i1dtfi-iv.myshopify.com/cdn/shop/files/';
 
+export function isShopifyCdnUrl(url: string): boolean {
+  return /^https?:\/\/[^/]+\/cdn\/shop\//i.test(url);
+}
+
+export function withShopifyImageWidth(url: string, width: number): string {
+  if (!url || !isShopifyCdnUrl(url)) return url;
+  try {
+    const parsed = new URL(url);
+    parsed.searchParams.set('width', String(width));
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
+export function buildShopifyImageSrcSet(
+  url: string,
+  widths: readonly number[] = [400, 800, 1200, 1600, 2000]
+): string | undefined {
+  if (!url || !isShopifyCdnUrl(url)) return undefined;
+  return widths.map((w) => `${withShopifyImageWidth(url, w)} ${w}w`).join(', ');
+}
+
 /** Neutral "image coming soon" artwork — never another SKU's photograph. */
 export const PRODUCT_IMAGE_PLACEHOLDER =
   'data:image/svg+xml;charset=utf-8,' +

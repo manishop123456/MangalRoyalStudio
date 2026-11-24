@@ -14,10 +14,12 @@ import {
 import {
   API_BASE_URL,
   API_ORIGIN,
+  buildShopifyImageSrcSet,
   computeLiveProductBreakup,
   formatInr,
   PRODUCT_IMAGE_PLACEHOLDER,
   storefrontFetch,
+  withShopifyImageWidth,
 } from '../../../lib/storefront-data';
 import {
   CustomerFacingError,
@@ -279,9 +281,11 @@ export default function ProductDetailPage() {
                   }}
                 >
                   <img
-                    src={gallery[activeImageIdx] || gallery[0]}
+                    src={withShopifyImageWidth(gallery[activeImageIdx] || gallery[0], 1600)}
+                    srcSet={buildShopifyImageSrcSet(gallery[activeImageIdx] || gallery[0])}
+                    sizes="(min-width: 1024px) 520px, 100vw"
                     alt={product.title}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '12px', display: 'block' }}
                   />
                   <span
                     style={{
@@ -315,9 +319,11 @@ export default function ProductDetailPage() {
                       }}
                     >
                       <img
-                        src={imgUrl}
+                        src={withShopifyImageWidth(imgUrl, 400)}
+                        srcSet={buildShopifyImageSrcSet(imgUrl, [200, 400, 800])}
+                        sizes="120px"
                         alt={`${product.title} view ${idx + 1}`}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                        style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px', display: 'block' }}
                       />
                     </button>
                   ))}
