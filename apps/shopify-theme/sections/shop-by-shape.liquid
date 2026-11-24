@@ -258,7 +258,9 @@
               
               <div class="sbs-image-wrapper">
                 {%- if block.settings.image != blank -%}
-                  <img src="{{ block.settings.image | image_url: width: 160 }}" 
+                  <img src="{{ block.settings.image | image_url: width: 320 }}"
+                       srcset="{{ block.settings.image | image_url: width: 160 }} 160w, {{ block.settings.image | image_url: width: 320 }} 320w"
+                       sizes="80px"
                        alt="{{ block.settings.image.alt | default: block.settings.title | escape }}" 
                        loading="lazy" 
                        width="80" 

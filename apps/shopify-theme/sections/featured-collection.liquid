@@ -16,6 +16,11 @@
 {%- liquid
   assign s = section.settings
   assign products = s.collection.products
+  if s.product_list != blank
+    if products == blank or products.size == 0
+      assign products = s.product_list
+    endif
+  endif
   assign limit = s.products_to_show
   assign count = products.size
   if count > limit
@@ -267,10 +272,18 @@
           {%- assign card_styles_rendered = false -%}
           {%- for product in products limit: limit -%}
             <li>
+              {%- liquid
+                assign is_above_fold = false
+                if forloop.index <= 4 and section.index <= 2
+                  assign is_above_fold = true
+                endif
+              -%}
               {% render 'card-product',
                 card_product: product,
                 section_id: section.id,
                 index: forloop.index,
+                eager_load: is_above_fold,
+                columns_desktop: s.columns_desktop,
                 skip_card_styles: card_styles_rendered,
                 image_ratio: s.image_ratio,
                 show_title: s.show_title,
@@ -390,6 +403,7 @@
   "settings": [
     { "type": "header", "content": "Content" },
     { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "product_list", "id": "product_list", "limit": 12, "label": "Flagship products (fallback if collection is empty)" },
     {
       "type": "range",
       "id": "products_to_show",

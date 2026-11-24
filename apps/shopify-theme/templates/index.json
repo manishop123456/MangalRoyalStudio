@@ -105,6 +105,16 @@
       "name": "Featured Collection",
       "settings": {
         "collection": "best-sellers",
+        "product_list": [
+          "royal-celeste-1-50-ct-igi-lab-grown-solitaire-ring",
+          "imperial-emerald-cut-halo-engagement-ring",
+          "lumiere-1-00-ct-tw-classic-solitaire-diamond-studs",
+          "eternity-riviera-4-00-ct-lab-grown-tennis-bracelet",
+          "aria-pear-drop-daily-diamond-pendant",
+          "maharani-heritage-lab-grown-diamond-kada-bangle",
+          "regal-cascade-bridal-lab-grown-diamond-necklace",
+          "1975-founder-edition-antique-polki-diamond-choker"
+        ],
         "products_to_show": 8,
         "eyebrow": "The most loved",
         "title": "Our Bestsellers",
@@ -136,7 +146,7 @@
         "badge_bg": "#7d132a",
         "badge_color": "#ffffff",
         "badge_radius": 0,
-        "image_ratio": "portrait",
+        "image_ratio": "square",
         "card_radius": 0,
         "image_radius": 0,
         "card_shadow": false,

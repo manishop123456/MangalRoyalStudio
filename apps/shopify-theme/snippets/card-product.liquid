@@ -206,7 +206,8 @@
       inset:0;
       width:100%;
       height:100%;
-      object-fit:cover;
+      padding:8px;
+      object-fit:contain;
       object-position:center;
       display:block;
       transition:transform .9s var(--pc-ease),opacity .5s var(--pc-ease);
@@ -214,8 +215,8 @@
     }
     .pc-card__img--alt{opacity:0;}
     @media (hover:hover){
-      .pc-card:hover .pc-card__img--main{transform:scale(1.055);}
-      .pc-card:hover .pc-card__img--alt{opacity:1;transform:scale(1.055);}
+      .pc-card:hover .pc-card__img--main{transform:scale(1.045);}
+      .pc-card:hover .pc-card__img--alt{opacity:1;transform:scale(1.045);}
       .pc-card:hover .pc-card__img--main.pc-has-alt{opacity:0;}
     }
     .pc-card__placeholder{width:100%;height:100%;background:#F1ECEA;}
@@ -693,34 +694,54 @@
       tabindex="-1"
     >
       {%- if p.featured_media -%}
+        {%- liquid
+          assign card_cols = columns_desktop | default: 4
+          assign card_sizes = '(min-width: 990px) calc((min(100vw, 1400px) - 120px) / ' | append: card_cols | append: '), (min-width: 750px) 33vw, 50vw'
+          assign is_eager = false
+          if eager_load or index and index <= 4 and lazy_load != true
+            assign is_eager = true
+          endif
+          assign show_alt = show_hover_image
+          if show_secondary_image != nil
+            assign show_alt = show_secondary_image
+          endif
+          assign main_alt = p.featured_media.alt | strip
+          if main_alt == blank
+            assign main_alt = p.title
+          endif
+        -%}
         <img
-          class="pc-card__img pc-card__img--main{% if alt_media and show_hover_image %} pc-has-alt{% endif %}"
-          src="{{ p.featured_media | image_url: width: 600 }}"
+          class="pc-card__img pc-card__img--main{% if alt_media and show_alt %} pc-has-alt{% endif %}"
+          src="{{ p.featured_media | image_url: width: 1600 }}"
           srcset="
-            {{ p.featured_media | image_url: width: 285 }} 285w,
-            {{ p.featured_media | image_url: width: 400 }} 400w,
-            {{ p.featured_media | image_url: width: 570 }} 570w,
-            {{ p.featured_media | image_url: width: 760 }} 760w,
-            {{ p.featured_media | image_url: width: 1000 }} 1000w
+            {%- if p.featured_media.width >= 400 -%}{{ p.featured_media | image_url: width: 400 }} 400w,{%- endif -%}
+            {%- if p.featured_media.width >= 800 -%}{{ p.featured_media | image_url: width: 800 }} 800w,{%- endif -%}
+            {%- if p.featured_media.width >= 1200 -%}{{ p.featured_media | image_url: width: 1200 }} 1200w,{%- endif -%}
+            {%- if p.featured_media.width >= 1600 -%}{{ p.featured_media | image_url: width: 1600 }} 1600w,{%- endif -%}
+            {%- if p.featured_media.width >= 2000 -%}{{ p.featured_media | image_url: width: 2000 }} 2000w,{%- endif -%}
+            {{ p.featured_media | image_url }} {{ p.featured_media.width }}w
           "
-          sizes="(min-width: 990px) 285px, (min-width: 750px) 33vw, 46vw"
-          alt="{{ p.featured_media.alt | default: p.title | escape }}"
+          sizes="{{ card_sizes }}"
+          alt="{{ main_alt | strip_html | escape }}"
           width="{{ p.featured_media.width }}"
           height="{{ p.featured_media.height }}"
-          {% if index and index <= 4 %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}
+          {% if is_eager %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}
           decoding="async"
         >
-        {%- if alt_media and show_hover_image -%}
+        {%- if alt_media and show_alt -%}
           <img
             class="pc-card__img pc-card__img--alt"
-            src="{{ alt_media | image_url: width: 600 }}"
+            src="{{ alt_media | image_url: width: 1600 }}"
             srcset="
-              {{ alt_media | image_url: width: 285 }} 285w,
-              {{ alt_media | image_url: width: 570 }} 570w,
-              {{ alt_media | image_url: width: 760 }} 760w
+              {%- if alt_media.width >= 400 -%}{{ alt_media | image_url: width: 400 }} 400w,{%- endif -%}
+              {%- if alt_media.width >= 800 -%}{{ alt_media | image_url: width: 800 }} 800w,{%- endif -%}
+              {%- if alt_media.width >= 1200 -%}{{ alt_media | image_url: width: 1200 }} 1200w,{%- endif -%}
+              {%- if alt_media.width >= 1600 -%}{{ alt_media | image_url: width: 1600 }} 1600w,{%- endif -%}
+              {%- if alt_media.width >= 2000 -%}{{ alt_media | image_url: width: 2000 }} 2000w,{%- endif -%}
+              {{ alt_media | image_url }} {{ alt_media.width }}w
             "
-            sizes="(min-width: 990px) 285px, (min-width: 750px) 33vw, 46vw"
-            alt=""
+            sizes="{{ card_sizes }}"
+            alt="{{ alt_media.alt | default: p.title | strip_html | escape }}"
             aria-hidden="true"
             width="{{ alt_media.width }}"
             height="{{ alt_media.height }}"
