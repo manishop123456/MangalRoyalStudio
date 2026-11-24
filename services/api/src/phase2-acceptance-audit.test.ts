@@ -42,9 +42,40 @@ describe.skipIf(!hasDb)('Phase 2 Final End-to-End Acceptance Audit Suite', () =>
   let createdModelAssetSku = '';
   let committedImportJobId = '';
   let dryRunImportJobId = '';
+  const createdDiamondRateIds: string[] = [];
 
   beforeAll(async () => {
     await assertIsolatedTestDatabase(prisma);
+    // Ensure FG/VS1 and EF/VVS1 diamond grades used by BESPOKE_RINGS customization options have explicit slabs
+    const testRates = [
+      { shape: 'ANY', sieveRange: 'Audit Under 1ct FG-VS1', sizeMinCarat: 0, sizeMaxCarat: 1, minInclusive: false, maxInclusive: false, colorGrade: 'FG', clarityGrade: 'VS1', rateInr: 22000 },
+      { shape: 'ANY', sieveRange: 'Audit Over 1ct FG-VS1', sizeMinCarat: 1, sizeMaxCarat: 5, minInclusive: false, maxInclusive: true, colorGrade: 'FG', clarityGrade: 'VS1', rateInr: 36000 },
+      { shape: 'ANY', sieveRange: 'Audit Under 1ct EF-VVS1', sizeMinCarat: 0, sizeMaxCarat: 1, minInclusive: false, maxInclusive: false, colorGrade: 'EF', clarityGrade: 'VVS1', rateInr: 30000 },
+      { shape: 'ANY', sieveRange: 'Audit Over 1ct EF-VVS1', sizeMinCarat: 1, sizeMaxCarat: 5, minInclusive: false, maxInclusive: true, colorGrade: 'EF', clarityGrade: 'VVS1', rateInr: 45000 },
+    ] as const;
+    for (const r of testRates) {
+      const created = await prisma.diamondRate.create({
+        data: {
+          shape: r.shape,
+          sieveRange: r.sieveRange,
+          sizeMinCarat: r.sizeMinCarat,
+          sizeMaxCarat: r.sizeMaxCarat,
+          minInclusive: r.minInclusive,
+          maxInclusive: r.maxInclusive,
+          colorGrade: r.colorGrade,
+          clarityGrade: r.clarityGrade,
+          cutGrade: 'EXCELLENT',
+          pricingType: 'PER_CARAT',
+          rateInr: r.rateInr,
+          currency: 'INR',
+          isPlaceholder: false,
+          isActive: true,
+          effectiveAt: new Date(),
+          createdBy: 'audit-test@mangalroyalstudio.com',
+        },
+      });
+      createdDiamondRateIds.push(created.id);
+    }
     // 1. Authenticate Admin Owner
     ownerAgent = request.agent(app);
     const adminLoginRes = await ownerAgent
@@ -149,6 +180,11 @@ describe.skipIf(!hasDb)('Phase 2 Final End-to-End Acceptance Audit Suite', () =>
     }
     if (dryRunImportJobId) {
       await prisma.importJob.deleteMany({ where: { id: dryRunImportJobId } });
+    }
+    if (createdDiamondRateIds.length > 0) {
+      await prisma.diamondRate.deleteMany({
+        where: { id: { in: createdDiamondRateIds } },
+      });
     }
     // Clean up any stray test SKU
     await prisma.productMetadata.deleteMany({

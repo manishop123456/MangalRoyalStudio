@@ -1362,7 +1362,7 @@ describe('Mangal Royal Studio API (@mrs/api)', () => {
       );
 
       // Create an unfulfilled order for Rohan Mehta
-      const prod = dbStore.getState().products.find((p) => p.sku === 'MRS-RNG-1002')!;
+      const prod = dbStore.getState().products.find((p) => p.sku === 'MRS-EAR-2001')!;
       const stockBeforeOrder = prod.inventoryQuantity;
 
       const createOrderRes = await invokeApp(app, {
@@ -1379,7 +1379,7 @@ describe('Mangal Royal Studio API (@mrs/api)', () => {
             state: 'Delhi',
             pincode: '110003',
           },
-          items: [{ sku: 'MRS-RNG-1002', quantity: 1 }],
+          items: [{ sku: 'MRS-EAR-2001', quantity: 1 }],
         },
       });
       expect(createOrderRes.status).toBe(201);
@@ -1835,7 +1835,7 @@ describe('Mangal Royal Studio API (@mrs/api)', () => {
     });
 
     it('10d. concurrent checkout requests for one SKU do not double-reserve within one API process', async () => {
-      const product = dbStore.getState().products.find((entry) => entry.sku === 'MRS-RNG-1002')!;
+      const product = dbStore.getState().products.find((entry) => entry.sku === 'MRS-EAR-2001')!;
       const stockBefore = product.inventoryQuantity;
       providerOrderDelayMs = 40;
       try {
@@ -1844,7 +1844,7 @@ describe('Mangal Royal Studio API (@mrs/api)', () => {
           body: {
             customerEmail: `checkout-${crypto.randomUUID()}@example.net`, customerName: 'Test Buyer', customerPhone: '+91 9800012345',
             shippingAddress: { line1: '1 Test Road', city: 'Mumbai', state: 'Maharashtra', pincode: '400050' },
-            items: [{ sku: 'MRS-RNG-1002', quantity: 1 }],
+            items: [{ sku: 'MRS-EAR-2001', quantity: 1 }],
           },
         });
         const responses = await Promise.all([createOrder(), createOrder()]);
@@ -2262,6 +2262,214 @@ describe('Mangal Royal Studio API (@mrs/api)', () => {
         expect(fs.readFileSync(store.getFilePath(), 'utf8')).toBe(before);
       } finally {
         vi.restoreAllMocks();
+        store.releaseLock();
+        fs.rmSync(directory, { recursive: true, force: true });
+      }
+    });
+  });
+
+  describe('Diamond Rate Matrix boundary & overlap enforcement', () => {
+    it('enforces OWNER RBAC, rejects invalid min>=max (400), rejects 1.0000ct and overlapping slabs (409), and supports PATCH lifecycle', async () => {
+      const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'mrs-diamond-matrix-'));
+      const store = new DataStore({
+        filePath: path.join(directory, 'platform-state.json'),
+        testMode: true,
+        enforceLock: false,
+      });
+      try {
+        const isolatedApp = createApp(store);
+        const ownerLogin = await invokeApp(isolatedApp, {
+          method: 'POST',
+          url: '/api/auth/login',
+          body: { email: 'owner@mangalroyalstudio.com', password: testSeedAdminPassword('OWNER') },
+        });
+        expect(ownerLogin.status).toBe(200);
+        const ownerToken = ownerLogin.body.token as string;
+
+        const opsLogin = await invokeApp(isolatedApp, {
+          method: 'POST',
+          url: '/api/auth/login',
+          body: { email: 'manager@mangalroyalstudio.com', password: testSeedAdminPassword('MANAGER') },
+        });
+        expect(opsLogin.status).toBe(200);
+        const opsToken = opsLogin.body.token as string;
+
+        // Non-OWNER rejected with 403
+        const forbiddenCreate = await invokeApp(isolatedApp, {
+          method: 'POST',
+          url: '/api/admin/rates/diamonds',
+          headers: { authorization: `Bearer ${opsToken}` },
+          body: {
+            shape: 'PRINCESS',
+            sieveRange: 'Under 1.00 ct',
+            sizeMinCarat: '0',
+            sizeMaxCarat: '1',
+            minInclusive: false,
+            maxInclusive: false,
+            colorGrade: 'EF',
+            clarityGrade: 'VVS',
+            cutGrade: 'EXCELLENT',
+            pricingType: 'PER_CARAT',
+            rateInr: '32000',
+            isActive: true,
+          },
+        });
+        expect(forbiddenCreate.status).toBe(403);
+
+        // min >= max rejected with 400
+        const badRange = await invokeApp(isolatedApp, {
+          method: 'POST',
+          url: '/api/admin/rates/diamonds',
+          headers: { authorization: `Bearer ${ownerToken}` },
+          body: {
+            shape: 'PRINCESS',
+            sieveRange: 'Invalid Range',
+            sizeMinCarat: '2',
+            sizeMaxCarat: '1',
+            minInclusive: false,
+            maxInclusive: true,
+            colorGrade: 'EF',
+            clarityGrade: 'VVS',
+            cutGrade: 'EXCELLENT',
+            pricingType: 'PER_CARAT',
+            rateInr: '32000',
+          },
+        });
+        expect(badRange.status).toBe(400);
+
+        // Slab covering exact 1.0000 ct rejected with 409
+        const coversOneCt = await invokeApp(isolatedApp, {
+          method: 'POST',
+          url: '/api/admin/rates/diamonds',
+          headers: { authorization: `Bearer ${ownerToken}` },
+          body: {
+            shape: 'PRINCESS',
+            sieveRange: 'Covers 1ct',
+            sizeMinCarat: '0.5',
+            sizeMaxCarat: '2',
+            minInclusive: true,
+            maxInclusive: true,
+            colorGrade: 'EF',
+            clarityGrade: 'VVS',
+            cutGrade: 'EXCELLENT',
+            pricingType: 'PER_CARAT',
+            rateInr: '32000',
+          },
+        });
+        expect(coversOneCt.status).toBe(409);
+
+        // Create valid < 1.0000 ct slab (> 0 to < 1)
+        const createUnder = await invokeApp(isolatedApp, {
+          method: 'POST',
+          url: '/api/admin/rates/diamonds',
+          headers: { authorization: `Bearer ${ownerToken}` },
+          body: {
+            shape: 'PRINCESS',
+            sieveRange: 'Above 0 ct to Below 1.0000 ct',
+            sizeMinCarat: '0',
+            sizeMaxCarat: '1',
+            minInclusive: false,
+            maxInclusive: false,
+            colorGrade: 'EF',
+            clarityGrade: 'VVS',
+            cutGrade: 'EXCELLENT',
+            pricingType: 'PER_CARAT',
+            rateInr: '30000',
+          },
+        });
+        expect(createUnder.status).toBe(200);
+        const underId = createUnder.body.diamondRate.id as string;
+
+        // Overlapping active slab rejected with 409
+        const overlapCreate = await invokeApp(isolatedApp, {
+          method: 'POST',
+          url: '/api/admin/rates/diamonds',
+          headers: { authorization: `Bearer ${ownerToken}` },
+          body: {
+            shape: 'PRINCESS',
+            sieveRange: 'Overlapping',
+            sizeMinCarat: '0.5',
+            sizeMaxCarat: '0.9',
+            minInclusive: true,
+            maxInclusive: true,
+            colorGrade: 'EF',
+            clarityGrade: 'VVS',
+            cutGrade: 'EXCELLENT',
+            pricingType: 'PER_CARAT',
+            rateInr: '29000',
+          },
+        });
+        expect(overlapCreate.status).toBe(409);
+
+        // Create valid > 1.0000 ct slab (> 1 to <= 5)
+        const createOver = await invokeApp(isolatedApp, {
+          method: 'POST',
+          url: '/api/admin/rates/diamonds',
+          headers: { authorization: `Bearer ${ownerToken}` },
+          body: {
+            shape: 'PRINCESS',
+            sieveRange: 'Above 1.0000 ct to 5.0000 ct',
+            sizeMinCarat: '1',
+            sizeMaxCarat: '5',
+            minInclusive: false,
+            maxInclusive: true,
+            colorGrade: 'EF',
+            clarityGrade: 'VVS',
+            cutGrade: 'EXCELLENT',
+            pricingType: 'PER_CARAT',
+            rateInr: '45000',
+          },
+        });
+        expect(createOver.status).toBe(200);
+        const overId = createOver.body.diamondRate.id as string;
+
+        // Non-OWNER PATCH rejected with 403
+        const forbiddenPatch = await invokeApp(isolatedApp, {
+          method: 'PATCH',
+          url: `/api/admin/rates/diamonds/${overId}`,
+          headers: { authorization: `Bearer ${opsToken}` },
+          body: { isActive: false },
+        });
+        expect(forbiddenPatch.status).toBe(403);
+
+        // PATCH overId into 1.0000 ct rejected with 409
+        const patchCoversOne = await invokeApp(isolatedApp, {
+          method: 'PATCH',
+          url: `/api/admin/rates/diamonds/${overId}`,
+          headers: { authorization: `Bearer ${ownerToken}` },
+          body: { minInclusive: true },
+        });
+        expect(patchCoversOne.status).toBe(409);
+
+        // PATCH overId into overlapping range rejected with 409
+        const patchOverlap = await invokeApp(isolatedApp, {
+          method: 'PATCH',
+          url: `/api/admin/rates/diamonds/${overId}`,
+          headers: { authorization: `Bearer ${ownerToken}` },
+          body: { sizeMinCarat: '0.5', sizeMaxCarat: '0.9', minInclusive: true, maxInclusive: true },
+        });
+        expect(patchOverlap.status).toBe(409);
+
+        // Deactivate and re-activate underId via PATCH
+        const deactivate = await invokeApp(isolatedApp, {
+          method: 'PATCH',
+          url: `/api/admin/rates/diamonds/${underId}`,
+          headers: { authorization: `Bearer ${ownerToken}` },
+          body: { isActive: false },
+        });
+        expect(deactivate.status).toBe(200);
+        expect(deactivate.body.diamondRate.isActive).toBe(false);
+
+        const reactivate = await invokeApp(isolatedApp, {
+          method: 'PATCH',
+          url: `/api/admin/rates/diamonds/${underId}`,
+          headers: { authorization: `Bearer ${ownerToken}` },
+          body: { isActive: true, rateInr: '31000' },
+        });
+        expect(reactivate.status).toBe(200);
+        expect(reactivate.body.diamondRate.isActive).toBe(true);
+        expect(reactivate.body.diamondRate.rateInr).toBe('31000.00');
+      } finally {
         store.releaseLock();
         fs.rmSync(directory, { recursive: true, force: true });
       }

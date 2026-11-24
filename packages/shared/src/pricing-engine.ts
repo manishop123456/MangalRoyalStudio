@@ -45,6 +45,41 @@ export function applyInrRounding(
   return { rounded, adjustment };
 }
 
+export function isCaratInSlab(
+  carat: Decimal,
+  slab: Pick<DiamondRateMatrixEntry, 'sizeMinCarat' | 'sizeMaxCarat' | 'minInclusive' | 'maxInclusive'>
+): boolean {
+  const min = new Decimal(slab.sizeMinCarat);
+  const max = new Decimal(slab.sizeMaxCarat);
+  const minOk = slab.minInclusive !== false ? carat.greaterThanOrEqualTo(min) : carat.greaterThan(min);
+  const maxOk = slab.maxInclusive !== false ? carat.lessThanOrEqualTo(max) : carat.lessThan(max);
+  return minOk && maxOk;
+}
+
+export function doesDiamondSlabCoverExactOneCarat(
+  slab: Pick<DiamondRateMatrixEntry, 'sizeMinCarat' | 'sizeMaxCarat' | 'minInclusive' | 'maxInclusive'>
+): boolean {
+  return isCaratInSlab(new Decimal('1'), slab);
+}
+
+export function doDiamondSlabsOverlap(
+  a: Pick<DiamondRateMatrixEntry, 'sizeMinCarat' | 'sizeMaxCarat' | 'minInclusive' | 'maxInclusive'>,
+  b: Pick<DiamondRateMatrixEntry, 'sizeMinCarat' | 'sizeMaxCarat' | 'minInclusive' | 'maxInclusive'>
+): boolean {
+  const aMin = new Decimal(a.sizeMinCarat);
+  const aMax = new Decimal(a.sizeMaxCarat);
+  const bMin = new Decimal(b.sizeMinCarat);
+  const bMax = new Decimal(b.sizeMaxCarat);
+  const aMinInc = a.minInclusive !== false;
+  const aMaxInc = a.maxInclusive !== false;
+  const bMinInc = b.minInclusive !== false;
+  const bMaxInc = b.maxInclusive !== false;
+
+  const aEndsBeforeB = aMax.lessThan(bMin) || (aMax.equals(bMin) && (!aMaxInc || !bMinInc));
+  const bEndsBeforeA = bMax.lessThan(aMin) || (bMax.equals(aMin) && (!bMaxInc || !aMinInc));
+  return !aEndsBeforeB && !bEndsBeforeA;
+}
+
 export function matchDiamondRate(
   component: DiamondComponentSpec,
   diamondRates: DiamondRateMatrixEntry[]
@@ -53,14 +88,18 @@ export function matchDiamondRate(
   const totalCarats = new Decimal(component.totalCaratWeight || '0');
   const averageStoneCarat = totalCarats.dividedBy(count);
 
+  // A diamond weighing exactly 1.0000 ct is always Price on Request, even if an active row could otherwise match.
+  if (averageStoneCarat.equals(1)) {
+    return { rateEntry: null, averageStoneCarat };
+  }
+
   const activeRates = diamondRates.filter((r) => r.isActive);
 
-  // 1. Exact shape + carat bracket + color + clarity match
+  // Exact shape + carat bracket (with explicit inclusive/exclusive bounds) + color + clarity match.
+  // Never silently fall back across different shapes, colors, or clarity grades.
   const exactMatch = activeRates.find((r) => {
     const shapeMatches = r.shape === component.shape || r.shape === 'ANY';
-    const min = new Decimal(r.sizeMinCarat);
-    const max = new Decimal(r.sizeMaxCarat);
-    const sizeMatches = averageStoneCarat.greaterThanOrEqualTo(min) && averageStoneCarat.lessThanOrEqualTo(max);
+    const sizeMatches = isCaratInSlab(averageStoneCarat, r);
     const colorMatches =
       r.colorGrade.toUpperCase() === component.colorGrade.toUpperCase() || r.colorGrade.toUpperCase() === 'ANY';
     const clarityMatches =
@@ -72,19 +111,7 @@ export function matchDiamondRate(
     return { rateEntry: exactMatch, averageStoneCarat };
   }
 
-  // 2. Fallback to shape/ANY + carat bracket match
-  const bracketMatch = activeRates.find((r) => {
-    const shapeMatches = r.shape === component.shape || r.shape === 'ANY';
-    const min = new Decimal(r.sizeMinCarat);
-    const max = new Decimal(r.sizeMaxCarat);
-    return shapeMatches && averageStoneCarat.greaterThanOrEqualTo(min) && averageStoneCarat.lessThanOrEqualTo(max);
-  });
-
-  if (bracketMatch) {
-    return { rateEntry: bracketMatch, averageStoneCarat };
-  }
-
-  // Never fall back to an arbitrary diamond rate when no bracket matches (e.g., = 1.00 ct when only <1.00 and >1.00 are configured)
+  // Never fall back to an arbitrary diamond rate when no bracket matches.
   return { rateEntry: null, averageStoneCarat };
 }
 
@@ -646,9 +673,11 @@ export const OWNER_MARKET_DIAMOND_RATES: DiamondRateMatrixEntry[] = [
   {
     id: 'dr-under-1ct-ef-vvs',
     shape: 'ANY',
-    sieveRange: '< 1.00 ct (0.0001 – 0.9999 ct)',
-    sizeMinCarat: '0.0001',
-    sizeMaxCarat: '0.9999',
+    sieveRange: '> 0.0000 ct to < 1.0000 ct',
+    sizeMinCarat: '0.0000',
+    sizeMaxCarat: '1.0000',
+    minInclusive: false,
+    maxInclusive: false,
     colorGrade: 'ANY',
     clarityGrade: 'ANY',
     cutGrade: 'EXCELLENT',
@@ -665,9 +694,11 @@ export const OWNER_MARKET_DIAMOND_RATES: DiamondRateMatrixEntry[] = [
   {
     id: 'dr-over-1ct-ef-vvs',
     shape: 'ANY',
-    sieveRange: '> 1.00 ct (1.0001 – 99.0000 ct)',
-    sizeMinCarat: '1.0001',
+    sieveRange: '> 1.0000 ct to <= 99.0000 ct',
+    sizeMinCarat: '1.0000',
     sizeMaxCarat: '99.0000',
+    minInclusive: false,
+    maxInclusive: true,
     colorGrade: 'ANY',
     clarityGrade: 'ANY',
     cutGrade: 'EXCELLENT',

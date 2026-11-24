@@ -1,9 +1,12 @@
 import type { Prisma, PrismaClient } from '@prisma/client';
-import type {
-  DiamondRateMatrixEntry,
-  MetalRateRecord,
-  PriceCalculationBreakdown,
-  PricingFormulaRule,
+import { Decimal } from 'decimal.js';
+import {
+  doDiamondSlabsOverlap,
+  doesDiamondSlabCoverExactOneCarat,
+  type DiamondRateMatrixEntry,
+  type MetalRateRecord,
+  type PriceCalculationBreakdown,
+  type PricingFormulaRule,
 } from '@mrs/shared';
 import type { PricingRunRecord, PricingSnapshotRecord } from '../../store/data-store.js';
 import { getPrismaClient } from '../prisma.js';
@@ -40,6 +43,8 @@ function mapDiamondRate(r: {
   sieveRange?: string | null;
   sizeMinCarat: Prisma.Decimal;
   sizeMaxCarat: Prisma.Decimal;
+  minInclusive?: boolean;
+  maxInclusive?: boolean;
   colorGrade: string;
   clarityGrade: string;
   cutGrade: string | null;
@@ -59,6 +64,8 @@ function mapDiamondRate(r: {
     sieveRange: r.sieveRange ?? undefined,
     sizeMinCarat: r.sizeMinCarat.toFixed(4),
     sizeMaxCarat: r.sizeMaxCarat.toFixed(4),
+    minInclusive: r.minInclusive ?? true,
+    maxInclusive: r.maxInclusive ?? true,
     colorGrade: r.colorGrade,
     clarityGrade: r.clarityGrade,
     cutGrade: r.cutGrade || 'EXCELLENT',
@@ -244,55 +251,106 @@ export class PostgresPricingRepository {
 
   async recordDiamondRate(params: {
     shape: string;
+    sieveRange?: string;
     caratMin: number | string;
     caratMax: number | string;
+    minInclusive?: boolean;
+    maxInclusive?: boolean;
     colorGrade: string;
     clarityGrade: string;
     cutGrade?: string;
     ratePerCaratInr: number | string;
     isPlaceholder?: boolean;
+    isActive?: boolean;
     createdBy: string;
     actorRole?: string;
   }): Promise<DiamondRateMatrixEntry> {
+    const minDec = new Decimal(params.caratMin);
+    const maxDec = new Decimal(params.caratMax);
+    const rateDec = new Decimal(params.ratePerCaratInr);
+    const minInclusive = params.minInclusive ?? true;
+    const maxInclusive = params.maxInclusive ?? true;
+    const isActive = params.isActive ?? true;
+
+    if (!minDec.isFinite() || !maxDec.isFinite() || minDec.isNegative() || !minDec.lessThan(maxDec)) {
+      throw new Error('INVALID_CARAT_RANGE: Minimum carat must be >= 0 and strictly lower than maximum carat.');
+    }
+    if (!rateDec.isFinite() || !rateDec.greaterThan(0)) {
+      throw new Error('INVALID_DIAMOND_RATE: Rate per carat must be greater than 0.');
+    }
+    if (
+      isActive &&
+      doesDiamondSlabCoverExactOneCarat({
+        sizeMinCarat: minDec.toFixed(4),
+        sizeMaxCarat: maxDec.toFixed(4),
+        minInclusive,
+        maxInclusive,
+      })
+    ) {
+      throw new Error('EXACT_1CT_PRICE_ON_REQUEST_REQUIRED: Exactly 1.0000 ct must remain Price on Request and cannot be covered by an active slab.');
+    }
+
     return this.prisma.$transaction(async (tx) => {
+      if (isActive) {
+        const existingSameGroup = await tx.diamondRate.findMany({
+          where: {
+            isActive: true,
+            shape: params.shape,
+            colorGrade: params.colorGrade.toUpperCase(),
+            clarityGrade: params.clarityGrade.toUpperCase(),
+          },
+        });
+        for (const existing of existingSameGroup) {
+          if (
+            doDiamondSlabsOverlap(
+              {
+                sizeMinCarat: minDec.toFixed(4),
+                sizeMaxCarat: maxDec.toFixed(4),
+                minInclusive,
+                maxInclusive,
+              },
+              {
+                sizeMinCarat: existing.sizeMinCarat.toFixed(4),
+                sizeMaxCarat: existing.sizeMaxCarat.toFixed(4),
+                minInclusive: existing.minInclusive,
+                maxInclusive: existing.maxInclusive,
+              }
+            )
+          ) {
+            throw new Error(
+              `OVERLAPPING_DIAMOND_SLAB: Active slab overlaps existing ${existing.shape} ${existing.colorGrade}-${existing.clarityGrade} slab (${existing.sizeMinCarat.toFixed(4)}–${existing.sizeMaxCarat.toFixed(4)} ct).`
+            );
+          }
+        }
+      }
+
       const previous = await tx.diamondRate.findFirst({
         where: {
           shape: params.shape,
-          sizeMinCarat: Number(params.caratMin),
-          sizeMaxCarat: Number(params.caratMax),
+          colorGrade: params.colorGrade.toUpperCase(),
+          clarityGrade: params.clarityGrade.toUpperCase(),
+          sizeMinCarat: minDec.toFixed(4),
+          sizeMaxCarat: maxDec.toFixed(4),
         },
         orderBy: { effectiveAt: 'desc' },
       });
       const nextVersion = (previous?.version ?? 0) + 1;
 
-      if (params.isPlaceholder === false) {
-        await tx.diamondRate.updateMany({
-          where: {
-            OR: [
-              { isPlaceholder: true },
-              {
-                shape: params.shape,
-                sizeMinCarat: Number(params.caratMin),
-                sizeMaxCarat: Number(params.caratMax),
-              },
-            ],
-          },
-          data: { isActive: false },
-        });
-      }
-
       const created = await tx.diamondRate.create({
         data: {
           shape: params.shape,
-          sizeMinCarat: Number(params.caratMin),
-          sizeMaxCarat: Number(params.caratMax),
-          colorGrade: params.colorGrade,
-          clarityGrade: params.clarityGrade,
+          sieveRange: params.sieveRange || null,
+          sizeMinCarat: minDec.toFixed(4),
+          sizeMaxCarat: maxDec.toFixed(4),
+          minInclusive,
+          maxInclusive,
+          colorGrade: params.colorGrade.toUpperCase(),
+          clarityGrade: params.clarityGrade.toUpperCase(),
           cutGrade: params.cutGrade || 'EXCELLENT',
-          rateInr: Number(params.ratePerCaratInr),
+          rateInr: rateDec.toFixed(4),
           version: nextVersion,
           isPlaceholder: params.isPlaceholder ?? false,
-          isActive: true,
+          isActive,
           createdBy: params.createdBy,
         },
       });
@@ -300,36 +358,137 @@ export class PostgresPricingRepository {
       await tx.auditLog.create({
         data: {
           actorEmail: params.createdBy,
-          actorRole: params.actorRole || 'PRICING_OPERATOR',
-          action: 'DIAMOND_RATE_UPDATED',
+          actorRole: params.actorRole || 'OWNER',
+          action: 'DIAMOND_RATE_CREATED',
           entityType: 'DiamondRate',
           entityId: created.id,
-          summary: `Recorded diamond rate ${params.shape} ${params.caratMin}-${params.caratMax}ct ${params.colorGrade}/${params.clarityGrade} at ₹${Number(params.ratePerCaratInr).toFixed(2)}/ct (v${nextVersion})`,
-          beforeData: previous
-            ? {
-                id: previous.id,
-                shape: previous.shape,
-                sizeMinCarat: Number(previous.sizeMinCarat),
-                sizeMaxCarat: Number(previous.sizeMaxCarat),
-                ratePerCaratInr: Number(previous.rateInr),
-                version: previous.version,
-                effectiveAt: previous.effectiveAt.toISOString(),
-              }
-            : undefined,
-          afterData: {
-            id: created.id,
-            shape: params.shape,
-            sizeMinCarat: Number(params.caratMin),
-            sizeMaxCarat: Number(params.caratMax),
-            ratePerCaratInr: Number(params.ratePerCaratInr),
-            rateVersion: nextVersion,
-            changedBy: params.createdBy,
-            effectiveAt: created.effectiveAt.toISOString(),
-          },
+          summary: `Created ${created.shape} ${created.colorGrade}-${created.clarityGrade} (${minInclusive ? '[' : '('}${minDec.toFixed(4)}, ${maxDec.toFixed(4)}${maxInclusive ? ']' : ')'} ct) @ ₹${rateDec.toFixed(2)}/ct (active=${isActive})`,
+          afterData: created as unknown as Prisma.InputJsonValue,
         },
       });
 
       return mapDiamondRate(created);
+    });
+  }
+
+  async updateDiamondRate(params: {
+    id: string;
+    shape?: string;
+    sieveRange?: string;
+    caratMin?: number | string;
+    caratMax?: number | string;
+    minInclusive?: boolean;
+    maxInclusive?: boolean;
+    colorGrade?: string;
+    clarityGrade?: string;
+    cutGrade?: string;
+    ratePerCaratInr?: number | string;
+    isPlaceholder?: boolean;
+    isActive?: boolean;
+    updatedBy: string;
+    actorRole?: string;
+  }): Promise<DiamondRateMatrixEntry> {
+    return this.prisma.$transaction(async (tx) => {
+      const existing = await tx.diamondRate.findUnique({ where: { id: params.id } });
+      if (!existing) {
+        throw new Error('DIAMOND_RATE_NOT_FOUND');
+      }
+
+      const nextShape = params.shape ?? existing.shape;
+      const nextColor = (params.colorGrade ?? existing.colorGrade).toUpperCase();
+      const nextClarity = (params.clarityGrade ?? existing.clarityGrade).toUpperCase();
+      const nextMin = new Decimal(params.caratMin ?? existing.sizeMinCarat.toFixed(4));
+      const nextMax = new Decimal(params.caratMax ?? existing.sizeMaxCarat.toFixed(4));
+      const nextMinInc = params.minInclusive ?? existing.minInclusive;
+      const nextMaxInc = params.maxInclusive ?? existing.maxInclusive;
+      const nextRate = new Decimal(params.ratePerCaratInr ?? existing.rateInr.toFixed(4));
+      const nextActive = params.isActive ?? existing.isActive;
+      const nextPlaceholder = params.isPlaceholder ?? existing.isPlaceholder;
+
+      if (!nextMin.isFinite() || !nextMax.isFinite() || nextMin.isNegative() || !nextMin.lessThan(nextMax)) {
+        throw new Error('INVALID_CARAT_RANGE: Minimum carat must be >= 0 and strictly lower than maximum carat.');
+      }
+      if (!nextRate.isFinite() || !nextRate.greaterThan(0)) {
+        throw new Error('INVALID_DIAMOND_RATE: Rate per carat must be greater than 0.');
+      }
+      if (
+        nextActive &&
+        doesDiamondSlabCoverExactOneCarat({
+          sizeMinCarat: nextMin.toFixed(4),
+          sizeMaxCarat: nextMax.toFixed(4),
+          minInclusive: nextMinInc,
+          maxInclusive: nextMaxInc,
+        })
+      ) {
+        throw new Error('EXACT_1CT_PRICE_ON_REQUEST_REQUIRED: Exactly 1.0000 ct must remain Price on Request and cannot be covered by an active slab.');
+      }
+
+      if (nextActive) {
+        const others = await tx.diamondRate.findMany({
+          where: {
+            id: { not: existing.id },
+            isActive: true,
+            shape: nextShape,
+            colorGrade: nextColor,
+            clarityGrade: nextClarity,
+          },
+        });
+        for (const other of others) {
+          if (
+            doDiamondSlabsOverlap(
+              {
+                sizeMinCarat: nextMin.toFixed(4),
+                sizeMaxCarat: nextMax.toFixed(4),
+                minInclusive: nextMinInc,
+                maxInclusive: nextMaxInc,
+              },
+              {
+                sizeMinCarat: other.sizeMinCarat.toFixed(4),
+                sizeMaxCarat: other.sizeMaxCarat.toFixed(4),
+                minInclusive: other.minInclusive,
+                maxInclusive: other.maxInclusive,
+              }
+            )
+          ) {
+            throw new Error(
+              `OVERLAPPING_DIAMOND_SLAB: Active slab overlaps existing ${other.shape} ${other.colorGrade}-${other.clarityGrade} slab (${other.sizeMinCarat.toFixed(4)}–${other.sizeMaxCarat.toFixed(4)} ct).`
+            );
+          }
+        }
+      }
+
+      const updated = await tx.diamondRate.update({
+        where: { id: existing.id },
+        data: {
+          shape: nextShape,
+          sieveRange: params.sieveRange !== undefined ? params.sieveRange || null : existing.sieveRange,
+          sizeMinCarat: nextMin.toFixed(4),
+          sizeMaxCarat: nextMax.toFixed(4),
+          minInclusive: nextMinInc,
+          maxInclusive: nextMaxInc,
+          colorGrade: nextColor,
+          clarityGrade: nextClarity,
+          cutGrade: params.cutGrade ?? existing.cutGrade,
+          rateInr: nextRate.toFixed(4),
+          isPlaceholder: nextPlaceholder,
+          isActive: nextActive,
+        },
+      });
+
+      await tx.auditLog.create({
+        data: {
+          actorEmail: params.updatedBy,
+          actorRole: params.actorRole || 'OWNER',
+          action: 'DIAMOND_RATE_UPDATED',
+          entityType: 'DiamondRate',
+          entityId: updated.id,
+          summary: `Updated ${updated.shape} ${updated.colorGrade}-${updated.clarityGrade} (${nextMinInc ? '[' : '('}${nextMin.toFixed(4)}, ${nextMax.toFixed(4)}${nextMaxInc ? ']' : ')'} ct) @ ₹${nextRate.toFixed(2)}/ct (active=${nextActive})`,
+          beforeData: existing as unknown as Prisma.InputJsonValue,
+          afterData: updated as unknown as Prisma.InputJsonValue,
+        },
+      });
+
+      return mapDiamondRate(updated);
     });
   }
 

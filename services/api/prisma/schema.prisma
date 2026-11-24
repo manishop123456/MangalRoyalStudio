@@ -293,6 +293,8 @@ model DiamondRate {
   sieveRange    String?
   sizeMinCarat  Decimal  @db.Decimal(10, 4)
   sizeMaxCarat  Decimal  @db.Decimal(10, 4)
+  minInclusive  Boolean  @default(true)
+  maxInclusive  Boolean  @default(true)
   colorGrade    String
   clarityGrade  String
   cutGrade      String   @default("EXCELLENT")

@@ -271,11 +271,17 @@ export default function MangalRoyalAdminPage() {
   const [editMetalIsPlaceholder, setEditMetalIsPlaceholder] = useState<boolean>(true);
 
   // Diamond Rate update form
+  const [editDiamondId, setEditDiamondId] = useState<string | null>(null);
   const [editDiamondShape, setEditDiamondShape] = useState<string>('ROUND');
   const [editDiamondColor, setEditDiamondColor] = useState<string>('EF');
   const [editDiamondClarity, setEditDiamondClarity] = useState<string>('VVS');
-  const [editDiamondSieve, setEditDiamondSieve] = useState<string>('Solitaire (0.50 - 5.00 ct)');
-  const [editDiamondRateInr, setEditDiamondRateInr] = useState<string>('25500.00');
+  const [editDiamondMinCarat, setEditDiamondMinCarat] = useState<string>('0.0000');
+  const [editDiamondMaxCarat, setEditDiamondMaxCarat] = useState<string>('1.0000');
+  const [editDiamondMinInclusive, setEditDiamondMinInclusive] = useState<boolean>(false);
+  const [editDiamondMaxInclusive, setEditDiamondMaxInclusive] = useState<boolean>(false);
+  const [editDiamondIsActive, setEditDiamondIsActive] = useState<boolean>(true);
+  const [editDiamondSieve, setEditDiamondSieve] = useState<string>('> 0.0000 ct to < 1.0000 ct');
+  const [editDiamondRateInr, setEditDiamondRateInr] = useState<string>('30000.00');
 
   // Interactive Jewellery Price Simulator state
   const [simPurity, setSimPurity] = useState<MetalPurity>('18K');
@@ -714,29 +720,59 @@ export default function MangalRoyalAdminPage() {
     setLoadingAction(true);
     try {
       if (apiConnected && authToken) {
-        const res = await adminFetch(`${API_BASE}/api/admin/rates/diamonds`, {
-          method: 'POST',
+        const endpoint = editDiamondId
+          ? `${API_BASE}/api/admin/rates/diamonds/${encodeURIComponent(editDiamondId)}`
+          : `${API_BASE}/api/admin/rates/diamonds`;
+        const res = await adminFetch(endpoint, {
+          method: editDiamondId ? 'PATCH' : 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             shape: editDiamondShape,
-            sieveRange: editDiamondSieve,
-            sizeMinCarat: '0.010',
-            sizeMaxCarat: '5.000',
-            colorGrade: editDiamondColor,
-            clarityGrade: editDiamondClarity,
+            sieveRange:
+              editDiamondSieve ||
+              `${editDiamondMinInclusive ? '>=' : '>'} ${Number(editDiamondMinCarat).toFixed(4)} ct to ${editDiamondMaxInclusive ? '<=' : '<'} ${Number(editDiamondMaxCarat).toFixed(4)} ct`,
+            sizeMinCarat: Number(editDiamondMinCarat).toFixed(4),
+            sizeMaxCarat: Number(editDiamondMaxCarat).toFixed(4),
+            minInclusive: editDiamondMinInclusive,
+            maxInclusive: editDiamondMaxInclusive,
+            colorGrade: editDiamondColor.trim().toUpperCase(),
+            clarityGrade: editDiamondClarity.trim().toUpperCase(),
             rateInr: Number(editDiamondRateInr).toFixed(2),
-            isPlaceholder: true,
+            isPlaceholder: false,
+            isActive: editDiamondIsActive,
           }),
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Failed to update diamond rate');
+        if (!res.ok) throw new Error(data.message || 'Failed to save diamond rate slab');
+        setEditDiamondId(null);
         await syncWithBackend();
       } else {
         throw new Error('Rate changes require an authenticated API connection.');
       }
-      showToast(`Updated Diamond Rate (${editDiamondShape} • ${editDiamondColor}-${editDiamondClarity}) to ₹${Number(editDiamondRateInr).toFixed(2)}/ct.`);
+      showToast(
+        `${editDiamondId ? 'Updated' : 'Created'} Diamond Slab (${editDiamondShape} • ${editDiamondColor}-${editDiamondClarity}) at ₹${Number(editDiamondRateInr).toFixed(2)}/ct.`
+      );
+    } catch (err: any) {
+      showToast(`Error: ${err.message}`);
+    } finally {
+      setLoadingAction(false);
+    }
+  }
+
+  async function handleToggleDiamondSlabActive(slab: DiamondRateMatrixEntry) {
+    setLoadingAction(true);
+    try {
+      const res = await adminFetch(`${API_BASE}/api/admin/rates/diamonds/${encodeURIComponent(slab.id)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isActive: !slab.isActive }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to update slab status');
+      await syncWithBackend();
+      showToast(`${slab.isActive ? 'Deactivated' : 'Activated'} diamond slab ${slab.shape} ${slab.colorGrade}-${slab.clarityGrade}.`);
     } catch (err: any) {
       showToast(`Error: ${err.message}`);
     } finally {
@@ -2557,104 +2593,236 @@ export default function MangalRoyalAdminPage() {
 
           {/* MODULE 9: DIAMOND RATE MATRIX MANAGEMENT */}
           {visibleModule === 'diamond-rates' && (
-            <div className="mrs-grid-2">
-              <div className="mrs-card">
-                <div className="mrs-card-header">
-                  <h2 className="mrs-card-title">Diamond Quality × Sieve Size Matrix (INR/ct)</h2>
-                </div>
-                <div className="mrs-table-wrap">
-                  <table className="mrs-table">
-                    <thead>
-                      <tr>
-                        <th>Shape</th>
-                        <th>Color / Clarity</th>
-                        <th>Sieve / Bracket</th>
-                        <th>Carat Range</th>
-                        <th>Rate / Carat (INR)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {diamondRates.map((d) => (
-                        <tr key={d.id}>
-                          <td><strong>{d.shape}</strong></td>
-                          <td><span className="mrs-badge mrs-badge-burgundy">{d.colorGrade}-{d.clarityGrade}</span></td>
-                          <td><code>{d.sieveRange || 'Standard'}</code></td>
-                          <td>{d.sizeMinCarat} – {d.sizeMaxCarat} ct</td>
-                          <td><strong>₹{d.rateInr} / ct</strong></td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+            <div style={{ display: 'grid', gap: 20 }}>
+              <div className="mrs-card" style={{ background: '#fffbeb', borderColor: '#f6ad55' }}>
+                <strong style={{ color: '#744210', fontSize: 13 }}>
+                  1.0000 ct Governance Rule:
+                </strong>{' '}
+                <span style={{ color: '#744210', fontSize: 13 }}>
+                  Diamonds weighing exactly <strong>1.0000 ct</strong> always return <strong>Price on Request</strong> and cannot be covered by any active numeric slab. Active slabs for the same Shape / Colour / Clarity cannot overlap.
+                </span>
               </div>
 
-              <div className="mrs-card">
-                <div className="mrs-card-header">
-                  <h2 className="mrs-card-title">Update Diamond Matrix Slab</h2>
+              <div className="mrs-grid-2">
+                <div className="mrs-card">
+                  <div className="mrs-card-header">
+                    <h2 className="mrs-card-title">Diamond Quality × Carat Range Matrix (INR/ct)</h2>
+                  </div>
+                  <div className="mrs-table-wrap">
+                    <table className="mrs-table">
+                      <thead>
+                        <tr>
+                          <th>Shape</th>
+                          <th>Colour / Clarity</th>
+                          <th>Min Carat</th>
+                          <th>Max Carat</th>
+                          <th>Boundary Rules</th>
+                          <th>Rate / Carat</th>
+                          <th>Status</th>
+                          <th>Updated By / Date</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {diamondRates.map((d) => {
+                          const minOp = d.minInclusive !== false ? '≥' : '>';
+                          const maxOp = d.maxInclusive !== false ? '≤' : '<';
+                          const boundaryText = `${minOp} ${d.sizeMinCarat} ct to ${maxOp} ${d.sizeMaxCarat} ct`;
+                          return (
+                            <tr key={d.id} style={{ opacity: d.isActive ? 1 : 0.6 }}>
+                              <td><strong>{d.shape}</strong></td>
+                              <td><span className="mrs-badge mrs-badge-burgundy">{d.colorGrade}-{d.clarityGrade}</span></td>
+                              <td><code>{d.sizeMinCarat}</code></td>
+                              <td><code>{d.sizeMaxCarat}</code></td>
+                              <td style={{ fontSize: 12 }}><code>{boundaryText}</code></td>
+                              <td><strong>₹{Number(d.rateInr).toLocaleString('en-IN')} / ct</strong></td>
+                              <td>
+                                <span className={`mrs-badge ${d.isActive ? 'mrs-badge-success' : 'mrs-badge-warning'}`}>
+                                  {d.isActive ? 'ACTIVE' : 'INACTIVE'}
+                                </span>
+                              </td>
+                              <td style={{ fontSize: 11.5, color: 'var(--mrs-muted)' }}>
+                                <div>{d.createdBy}</div>
+                                <div>{new Date(d.effectiveAt).toLocaleDateString('en-IN')}</div>
+                              </td>
+                              <td>
+                                <div style={{ display: 'flex', gap: 6 }}>
+                                  <button
+                                    type="button"
+                                    className="mrs-btn mrs-btn-secondary"
+                                    style={{ padding: '4px 8px', fontSize: 11 }}
+                                    disabled={loadingAction || !authUser?.permissions?.includes('RATES_WRITE')}
+                                    onClick={() => {
+                                      setEditDiamondId(d.id);
+                                      setEditDiamondShape(d.shape);
+                                      setEditDiamondColor(d.colorGrade);
+                                      setEditDiamondClarity(d.clarityGrade);
+                                      setEditDiamondMinCarat(d.sizeMinCarat);
+                                      setEditDiamondMaxCarat(d.sizeMaxCarat);
+                                      setEditDiamondMinInclusive(d.minInclusive !== false);
+                                      setEditDiamondMaxInclusive(d.maxInclusive !== false);
+                                      setEditDiamondIsActive(d.isActive);
+                                      setEditDiamondSieve(d.sieveRange || boundaryText);
+                                      setEditDiamondRateInr(d.rateInr);
+                                    }}
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="mrs-btn mrs-btn-secondary"
+                                    style={{ padding: '4px 8px', fontSize: 11 }}
+                                    disabled={loadingAction || !authUser?.permissions?.includes('RATES_WRITE')}
+                                    onClick={() => handleToggleDiamondSlabActive(d)}
+                                  >
+                                    {d.isActive ? 'Deactivate' : 'Activate'}
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-                <form onSubmit={handleUpdateDiamondRate}>
-                  <div className="mrs-form-row">
-                    <label className="mrs-label">Diamond Shape</label>
-                    <select
-                      className="mrs-select"
-                      value={editDiamondShape}
-                      onChange={(e) => setEditDiamondShape(e.target.value)}
+
+                <div className="mrs-card">
+                  <div className="mrs-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h2 className="mrs-card-title">{editDiamondId ? 'Edit Diamond Matrix Slab' : 'Add Diamond Matrix Slab'}</h2>
+                    {editDiamondId && (
+                      <button
+                        type="button"
+                        className="mrs-btn mrs-btn-secondary"
+                        style={{ padding: '4px 10px', fontSize: 12 }}
+                        onClick={() => setEditDiamondId(null)}
+                      >
+                        Cancel Edit
+                      </button>
+                    )}
+                  </div>
+                  <form onSubmit={handleUpdateDiamondRate}>
+                    <div className="mrs-form-row">
+                      <label className="mrs-label">Diamond Shape</label>
+                      <select
+                        className="mrs-select"
+                        value={editDiamondShape}
+                        onChange={(e) => setEditDiamondShape(e.target.value)}
+                      >
+                        <option value="ROUND">ROUND</option>
+                        <option value="ANY">ANY SHAPE</option>
+                        <option value="EMERALD">EMERALD</option>
+                        <option value="PEAR">PEAR</option>
+                        <option value="CUSHION">CUSHION</option>
+                      </select>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                      <div className="mrs-form-row">
+                        <label className="mrs-label">Colour Grade</label>
+                        <input
+                          className="mrs-input"
+                          value={editDiamondColor}
+                          onChange={(e) => setEditDiamondColor(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="mrs-form-row">
+                        <label className="mrs-label">Clarity Grade</label>
+                        <input
+                          className="mrs-input"
+                          value={editDiamondClarity}
+                          onChange={(e) => setEditDiamondClarity(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                      <div className="mrs-form-row">
+                        <label className="mrs-label">Minimum Carat</label>
+                        <input
+                          type="number"
+                          step="0.0001"
+                          min="0"
+                          className="mrs-input"
+                          value={editDiamondMinCarat}
+                          onChange={(e) => setEditDiamondMinCarat(e.target.value)}
+                          required
+                        />
+                        <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, marginTop: 4 }}>
+                          <input
+                            type="checkbox"
+                            checked={editDiamondMinInclusive}
+                            onChange={(e) => setEditDiamondMinInclusive(e.target.checked)}
+                          />
+                          Inclusive (≥ min)
+                        </label>
+                      </div>
+                      <div className="mrs-form-row">
+                        <label className="mrs-label">Maximum Carat</label>
+                        <input
+                          type="number"
+                          step="0.0001"
+                          min="0.0001"
+                          className="mrs-input"
+                          value={editDiamondMaxCarat}
+                          onChange={(e) => setEditDiamondMaxCarat(e.target.value)}
+                          required
+                        />
+                        <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, marginTop: 4 }}>
+                          <input
+                            type="checkbox"
+                            checked={editDiamondMaxInclusive}
+                            onChange={(e) => setEditDiamondMaxInclusive(e.target.checked)}
+                          />
+                          Inclusive (≤ max)
+                        </label>
+                      </div>
+                    </div>
+                    <div className="mrs-form-row">
+                      <label className="mrs-label">Bracket Label (Optional)</label>
+                      <input
+                        className="mrs-input"
+                        value={editDiamondSieve}
+                        onChange={(e) => setEditDiamondSieve(e.target.value)}
+                      />
+                    </div>
+                    <div className="mrs-form-row">
+                      <label className="mrs-label">Rate per Carat (INR)</label>
+                      <input
+                        type="number"
+                        step="1"
+                        min="1"
+                        className="mrs-input"
+                        value={editDiamondRateInr}
+                        onChange={(e) => setEditDiamondRateInr(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="mrs-form-row" style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                      <input
+                        id="diamond-active-chk"
+                        type="checkbox"
+                        checked={editDiamondIsActive}
+                        onChange={(e) => setEditDiamondIsActive(e.target.checked)}
+                      />
+                      <label htmlFor="diamond-active-chk" style={{ fontSize: 12.5 }}>
+                        Slab is Active
+                      </label>
+                    </div>
+                    <button
+                      type="submit"
+                      className="mrs-btn mrs-btn-primary"
+                      disabled={loadingAction || !authUser?.permissions?.includes('RATES_WRITE')}
                     >
-                      <option value="ROUND">ROUND</option>
-                      <option value="ANY">ANY SHAPE</option>
-                      <option value="EMERALD">EMERALD</option>
-                      <option value="PEAR">PEAR</option>
-                      <option value="CUSHION">CUSHION</option>
-                    </select>
-                  </div>
-                  <div className="mrs-form-row">
-                    <label className="mrs-label">Color Grade</label>
-                    <input
-                      className="mrs-input"
-                      value={editDiamondColor}
-                      onChange={(e) => setEditDiamondColor(e.target.value)}
-                    />
-                  </div>
-                  <div className="mrs-form-row">
-                    <label className="mrs-label">Clarity Grade</label>
-                    <input
-                      className="mrs-input"
-                      value={editDiamondClarity}
-                      onChange={(e) => setEditDiamondClarity(e.target.value)}
-                    />
-                  </div>
-                  <div className="mrs-form-row">
-                    <label className="mrs-label">Sieve / Size Description</label>
-                    <input
-                      className="mrs-input"
-                      value={editDiamondSieve}
-                      onChange={(e) => setEditDiamondSieve(e.target.value)}
-                    />
-                  </div>
-                  <div className="mrs-form-row">
-                    <label className="mrs-label">Rate per Carat (INR)</label>
-                    <input
-                      type="number"
-                      step="500"
-                      className="mrs-input"
-                      value={editDiamondRateInr}
-                      onChange={(e) => setEditDiamondRateInr(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="mrs-btn mrs-btn-primary"
-                    disabled={loadingAction || !authUser?.permissions?.includes('RATES_WRITE')}
-                  >
-                    Save Diamond Matrix Rate
-                  </button>
-                  {!authUser?.permissions?.includes('RATES_WRITE') && (
-                    <p style={{ fontSize: 12, color: '#9b2c2c', marginTop: 8 }}>
-                      Read-only view: Only OWNER can publish diamond rate updates.
-                    </p>
-                  )}
-                </form>
+                      {editDiamondId ? 'Update Diamond Matrix Slab' : 'Save Diamond Matrix Slab'}
+                    </button>
+                    {!authUser?.permissions?.includes('RATES_WRITE') && (
+                      <p style={{ fontSize: 12, color: '#9b2c2c', marginTop: 8 }}>
+                        Read-only view: Only OWNER can publish diamond rate updates.
+                      </p>
+                    )}
+                  </form>
+                </div>
               </div>
             </div>
           )}

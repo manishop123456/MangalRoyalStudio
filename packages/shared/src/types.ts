@@ -163,6 +163,8 @@ export interface DiamondRateMatrixEntry {
   sieveRange?: string;
   sizeMinCarat: string;
   sizeMaxCarat: string;
+  minInclusive?: boolean;
+  maxInclusive?: boolean;
   colorGrade: string;
   clarityGrade: string;
   cutGrade: string;

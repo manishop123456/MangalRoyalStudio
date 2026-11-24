@@ -189,14 +189,35 @@ export interface RuntimeBackend {
   getActiveDiamondRates(): Promise<DiamondRateMatrixEntry[]>;
   recordDiamondRate(params: {
     shape: string;
+    sieveRange?: string;
     caratMin: number | string;
     caratMax: number | string;
+    minInclusive?: boolean;
+    maxInclusive?: boolean;
     colorGrade: string;
     clarityGrade: string;
     cutGrade?: string;
     ratePerCaratInr: number | string;
     isPlaceholder?: boolean;
+    isActive?: boolean;
     createdBy: string;
+    actorRole?: string;
+  }): Promise<DiamondRateMatrixEntry>;
+  updateDiamondRate(params: {
+    id: string;
+    shape?: string;
+    sieveRange?: string;
+    caratMin?: number | string;
+    caratMax?: number | string;
+    minInclusive?: boolean;
+    maxInclusive?: boolean;
+    colorGrade?: string;
+    clarityGrade?: string;
+    cutGrade?: string;
+    ratePerCaratInr?: number | string;
+    isPlaceholder?: boolean;
+    isActive?: boolean;
+    updatedBy: string;
     actorRole?: string;
   }): Promise<DiamondRateMatrixEntry>;
   listPricingRules(): Promise<PricingFormulaRule[]>;
@@ -581,6 +602,9 @@ export class PostgresRuntimeBackend implements RuntimeBackend {
   }
   recordDiamondRate(params: Parameters<RuntimeBackend['recordDiamondRate']>[0]) {
     return this.pricing.recordDiamondRate(params);
+  }
+  updateDiamondRate(params: Parameters<RuntimeBackend['updateDiamondRate']>[0]) {
+    return this.pricing.updateDiamondRate(params);
   }
   listPricingRules() {
     return this.pricing.listPricingRules();
@@ -1531,20 +1555,57 @@ export class JsonRuntimeBackend implements RuntimeBackend {
         }
       }
     }
+    const minInclusive = params.minInclusive ?? true;
+    const maxInclusive = params.maxInclusive ?? true;
+    const isActive = params.isActive ?? true;
+    if (Number(params.caratMin) < 0 || Number(params.caratMin) >= Number(params.caratMax)) {
+      throw new Error('INVALID_CARAT_RANGE: Minimum carat must be >= 0 and strictly lower than maximum carat.');
+    }
+    if (Number(params.ratePerCaratInr) <= 0) {
+      throw new Error('INVALID_DIAMOND_RATE: Rate per carat must be greater than 0.');
+    }
+    const minOk1 = minInclusive ? 1 >= Number(params.caratMin) : 1 > Number(params.caratMin);
+    const maxOk1 = maxInclusive ? 1 <= Number(params.caratMax) : 1 < Number(params.caratMax);
+    if (isActive && minOk1 && maxOk1) {
+      throw new Error('EXACT_1CT_PRICE_ON_REQUEST_REQUIRED: Exactly 1.0000 ct must remain Price on Request.');
+    }
+    if (isActive) {
+      for (const existing of s.diamondRates) {
+        if (
+          existing.isActive &&
+          existing.shape === params.shape &&
+          existing.colorGrade.toUpperCase() === params.colorGrade.toUpperCase() &&
+          existing.clarityGrade.toUpperCase() === params.clarityGrade.toUpperCase()
+        ) {
+          const eMin = Number(existing.sizeMinCarat);
+          const eMax = Number(existing.sizeMaxCarat);
+          const eMinInc = existing.minInclusive !== false;
+          const eMaxInc = existing.maxInclusive !== false;
+          const endsBefore = Number(params.caratMax) < eMin || (Number(params.caratMax) === eMin && (!maxInclusive || !eMinInc));
+          const startsAfter = Number(params.caratMin) > eMax || (Number(params.caratMin) === eMax && (!minInclusive || !eMaxInc));
+          if (!endsBefore && !startsAfter) {
+            throw new Error(`OVERLAPPING_DIAMOND_SLAB: Active slab overlaps existing ${existing.shape} ${existing.colorGrade}-${existing.clarityGrade} slab.`);
+          }
+        }
+      }
+    }
     const entry: DiamondRateMatrixEntry = {
       id: `dr-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       shape: params.shape as DiamondRateMatrixEntry['shape'],
+      sieveRange: params.sieveRange,
       sizeMinCarat: minStr,
       sizeMaxCarat: maxStr,
-      colorGrade: params.colorGrade,
-      clarityGrade: params.clarityGrade,
+      minInclusive,
+      maxInclusive,
+      colorGrade: params.colorGrade.toUpperCase(),
+      clarityGrade: params.clarityGrade.toUpperCase(),
       cutGrade: params.cutGrade || 'EXCELLENT',
       pricingType: 'PER_CARAT',
       rateInr: Number(params.ratePerCaratInr).toFixed(2),
       currency: 'INR',
       version: nextVersion,
       isPlaceholder: params.isPlaceholder ?? false,
-      isActive: true,
+      isActive,
       effectiveAt: now,
       createdBy: params.createdBy,
       createdAt: now,
@@ -1581,6 +1642,81 @@ export class JsonRuntimeBackend implements RuntimeBackend {
     });
     this.persistOrThrow();
     return entry;
+  }
+  async updateDiamondRate(params: Parameters<RuntimeBackend['updateDiamondRate']>[0]): Promise<DiamondRateMatrixEntry> {
+    const s = this.store.getState();
+    const existing = s.diamondRates.find((d) => d.id === params.id);
+    if (!existing) throw new Error('DIAMOND_RATE_NOT_FOUND');
+
+    const nextShape = (params.shape ?? existing.shape) as DiamondRateMatrixEntry['shape'];
+    const nextColor = (params.colorGrade ?? existing.colorGrade).toUpperCase();
+    const nextClarity = (params.clarityGrade ?? existing.clarityGrade).toUpperCase();
+    const nextMin = Number(params.caratMin ?? existing.sizeMinCarat);
+    const nextMax = Number(params.caratMax ?? existing.sizeMaxCarat);
+    const nextMinInc = params.minInclusive ?? (existing.minInclusive ?? true);
+    const nextMaxInc = params.maxInclusive ?? (existing.maxInclusive ?? true);
+    const nextRate = Number(params.ratePerCaratInr ?? existing.rateInr);
+    const nextActive = params.isActive ?? existing.isActive;
+
+    if (nextMin < 0 || nextMin >= nextMax) {
+      throw new Error('INVALID_CARAT_RANGE: Minimum carat must be >= 0 and strictly lower than maximum carat.');
+    }
+    if (nextRate <= 0) {
+      throw new Error('INVALID_DIAMOND_RATE: Rate per carat must be greater than 0.');
+    }
+    const minOk1 = nextMinInc ? 1 >= nextMin : 1 > nextMin;
+    const maxOk1 = nextMaxInc ? 1 <= nextMax : 1 < nextMax;
+    if (nextActive && minOk1 && maxOk1) {
+      throw new Error('EXACT_1CT_PRICE_ON_REQUEST_REQUIRED: Exactly 1.0000 ct must remain Price on Request.');
+    }
+    if (nextActive) {
+      for (const other of s.diamondRates) {
+        if (
+          other.id !== existing.id &&
+          other.isActive &&
+          other.shape === nextShape &&
+          other.colorGrade.toUpperCase() === nextColor &&
+          other.clarityGrade.toUpperCase() === nextClarity
+        ) {
+          const oMin = Number(other.sizeMinCarat);
+          const oMax = Number(other.sizeMaxCarat);
+          const oMinInc = other.minInclusive !== false;
+          const oMaxInc = other.maxInclusive !== false;
+          const endsBefore = nextMax < oMin || (nextMax === oMin && (!nextMaxInc || !oMinInc));
+          const startsAfter = nextMin > oMax || (nextMin === oMax && (!nextMinInc || !oMaxInc));
+          if (!endsBefore && !startsAfter) {
+            throw new Error(`OVERLAPPING_DIAMOND_SLAB: Active slab overlaps existing ${other.shape} ${other.colorGrade}-${other.clarityGrade} slab.`);
+          }
+        }
+      }
+    }
+
+    const beforeSnapshot = { ...existing };
+    existing.shape = nextShape;
+    existing.colorGrade = nextColor;
+    existing.clarityGrade = nextClarity;
+    existing.sizeMinCarat = nextMin.toFixed(4);
+    existing.sizeMaxCarat = nextMax.toFixed(4);
+    existing.minInclusive = nextMinInc;
+    existing.maxInclusive = nextMaxInc;
+    existing.rateInr = nextRate.toFixed(2);
+    existing.isActive = nextActive;
+    if (params.sieveRange !== undefined) existing.sieveRange = params.sieveRange || undefined;
+    if (params.cutGrade !== undefined) existing.cutGrade = params.cutGrade;
+    if (params.isPlaceholder !== undefined) existing.isPlaceholder = params.isPlaceholder;
+
+    this.store.stageAuditLog({
+      actorEmail: params.updatedBy,
+      actorRole: (params.actorRole as AdminRoleName) || 'OWNER',
+      action: 'DIAMOND_RATE_UPDATED',
+      entityType: 'DiamondRate',
+      entityId: existing.id,
+      summary: `Updated ${existing.shape} ${existing.colorGrade}-${existing.clarityGrade} (${nextMinInc ? '[' : '('}${existing.sizeMinCarat}, ${existing.sizeMaxCarat}${nextMaxInc ? ']' : ')'} ct) @ ₹${existing.rateInr}/ct (active=${nextActive})`,
+      beforeData: beforeSnapshot as unknown as Record<string, unknown>,
+      afterData: { ...existing } as unknown as Record<string, unknown>,
+    });
+    this.persistOrThrow();
+    return existing;
   }
   private enrichRule(rule: PricingFormulaRule): PricingFormulaRule {
     const match = rule.description.match(/\[MAKING_CHARGE_PER_GRAM_INR:([0-9.]+)\]/);

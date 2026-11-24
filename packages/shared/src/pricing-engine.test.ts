@@ -123,7 +123,7 @@ describe('Jewellery Pricing Engine (Decimal Arithmetic)', () => {
           componentName: 'Center Solitaire',
           shape: 'ROUND',
           stoneCount: 1,
-          totalCaratWeight: '1.000',
+          totalCaratWeight: '1.100',
           colorGrade: 'EF',
           clarityGrade: 'VVS',
         },
@@ -158,16 +158,16 @@ describe('Jewellery Pricing Engine (Decimal Arithmetic)', () => {
 
     // Metal: 3.5g * 5800 = 20300.00
     expect(result.baseMetalValueInr).toBe('20300.00');
-    // Diamonds: (1.0 ct * 24000) + (0.20 ct * 18000) = 24000 + 3600 = 27600.00
-    expect(result.totalDiamondValueInr).toBe('27600.00');
+    // Diamonds: (1.1 ct * 24000) + (0.20 ct * 18000) = 26400 + 3600 = 30000.00
+    expect(result.totalDiamondValueInr).toBe('30000.00');
     // Making: 3.5g * 1200 = 4200.00
     expect(result.makingChargeValueInr).toBe('4200.00');
-    // Subtotal before GST: 20300 + 27600 + 4200 + 500 + 100 = 52700.00
-    expect(result.subtotalBeforeTaxInr).toBe('52700.00');
-    // GST 3%: 52700 * 0.03 = 1581.00
-    expect(result.gstAmountInr).toBe('1581.00');
-    // Total: 54281.00
-    expect(result.finalProposedPriceInr).toBe('54281.00');
+    // Subtotal before GST: 20300 + 30000 + 4200 + 500 + 100 = 55100.00
+    expect(result.subtotalBeforeTaxInr).toBe('55100.00');
+    // GST 3%: 55100 * 0.03 = 1653.00
+    expect(result.gstAmountInr).toBe('1653.00');
+    // Total: 56753.00
+    expect(result.finalProposedPriceInr).toBe('56753.00');
     expect(result.exceedsMaxDeltaThreshold).toBe(false);
     expect(result.isPlaceholderConfiguration).toBe(true);
   });

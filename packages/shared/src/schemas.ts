@@ -55,6 +55,8 @@ export const CreateDiamondRateInputSchema = z.object({
   sieveRange: z.string().max(50).optional(),
   sizeMinCarat: PositiveDecimalStringSchema,
   sizeMaxCarat: PositiveDecimalStringSchema,
+  minInclusive: z.boolean().default(true),
+  maxInclusive: z.boolean().default(true),
   colorGrade: z.string().min(1).max(20),
   clarityGrade: z.string().min(1).max(20),
   cutGrade: z.string().min(1).max(30).default('EXCELLENT'),
@@ -63,6 +65,27 @@ export const CreateDiamondRateInputSchema = z.object({
     message: 'Diamond rate must be greater than 0',
   }),
   isPlaceholder: z.boolean().default(true),
+  isActive: z.boolean().default(true),
+}).refine((d) => Number(d.sizeMinCarat) < Number(d.sizeMaxCarat), {
+  message: 'Minimum carat must be strictly lower than maximum carat',
+  path: ['sizeMinCarat'],
+});
+
+export const UpdateDiamondRateInputSchema = z.object({
+  shape: z.union([DiamondShapeSchema, z.literal('ANY')]).optional(),
+  sieveRange: z.string().max(50).optional(),
+  sizeMinCarat: PositiveDecimalStringSchema.optional(),
+  sizeMaxCarat: PositiveDecimalStringSchema.optional(),
+  minInclusive: z.boolean().optional(),
+  maxInclusive: z.boolean().optional(),
+  colorGrade: z.string().min(1).max(20).optional(),
+  clarityGrade: z.string().min(1).max(20).optional(),
+  cutGrade: z.string().min(1).max(30).optional(),
+  rateInr: PositiveDecimalStringSchema.refine((v) => Number(v) > 0, {
+    message: 'Diamond rate must be greater than 0',
+  }).optional(),
+  isPlaceholder: z.boolean().optional(),
+  isActive: z.boolean().optional(),
 });
 
 export const UpdateOwnerMarketRateCardSchema = z.object({

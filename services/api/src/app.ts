@@ -41,6 +41,7 @@ import {
   resolveEligibleCustomizationProfile,
   ROLE_PERMISSIONS,
   UpdateCustomerDesignSchema,
+  UpdateDiamondRateInputSchema,
   UpdateOwnerMarketRateCardSchema,
   UpdateProductJewellerySpecSchema,
   UpdateUserRoleSchema,
@@ -1883,40 +1884,114 @@ export function createApp(storeOrOptions?: CreateAppOptions) {
 
       const candidate = {
         shape: req.body.shape || 'ROUND',
-        sieveRange: req.body.sieveRange || req.body.sieveGroup || 'All Sizes',
-        sizeMinCarat: req.body.sizeMinCarat || req.body.caratMin || '0.010',
-        sizeMaxCarat: req.body.sizeMaxCarat || req.body.caratMax || '5.000',
+        sieveRange: req.body.sieveRange || req.body.sieveGroup || undefined,
+        sizeMinCarat: req.body.sizeMinCarat ?? req.body.caratMin,
+        sizeMaxCarat: req.body.sizeMaxCarat ?? req.body.caratMax,
+        minInclusive: req.body.minInclusive ?? true,
+        maxInclusive: req.body.maxInclusive ?? true,
         colorGrade: req.body.colorGrade || 'EF',
         clarityGrade: req.body.clarityGrade || 'VVS',
         cutGrade: req.body.cutGrade || 'EXCELLENT',
         pricingType: req.body.pricingType || 'PER_CARAT',
-        rateInr: req.body.rateInr || req.body.ratePerCaratInr || '55000.00',
-        isPlaceholder: req.body.isPlaceholder ?? true,
+        rateInr: req.body.rateInr ?? req.body.ratePerCaratInr,
+        isPlaceholder: req.body.isPlaceholder ?? false,
+        isActive: req.body.isActive ?? true,
       };
 
       const parsed = CreateDiamondRateInputSchema.safeParse(candidate);
       if (!parsed.success) {
         res.status(400).json({
           error: 'VALIDATION_ERROR',
+          message: parsed.error.issues[0]?.message || 'Invalid diamond rate slab.',
           details: parsed.error.flatten(),
         });
         return;
       }
 
-      const newEntry = await backend.recordDiamondRate({
-        shape: parsed.data.shape,
-        caratMin: parsed.data.sizeMinCarat,
-        caratMax: parsed.data.sizeMaxCarat,
-        colorGrade: parsed.data.colorGrade,
-        clarityGrade: parsed.data.clarityGrade,
-        cutGrade: parsed.data.cutGrade,
-        ratePerCaratInr: parsed.data.rateInr,
-        isPlaceholder: parsed.data.isPlaceholder,
-        createdBy: req.adminUser!.email,
-        actorRole: req.adminUser!.role,
-      });
+      try {
+        const newEntry = await backend.recordDiamondRate({
+          shape: parsed.data.shape,
+          sieveRange: parsed.data.sieveRange,
+          caratMin: parsed.data.sizeMinCarat,
+          caratMax: parsed.data.sizeMaxCarat,
+          minInclusive: parsed.data.minInclusive,
+          maxInclusive: parsed.data.maxInclusive,
+          colorGrade: parsed.data.colorGrade,
+          clarityGrade: parsed.data.clarityGrade,
+          cutGrade: parsed.data.cutGrade,
+          ratePerCaratInr: parsed.data.rateInr,
+          isPlaceholder: parsed.data.isPlaceholder,
+          isActive: parsed.data.isActive,
+          createdBy: req.adminUser!.email,
+          actorRole: req.adminUser!.role,
+        });
+        res.json({ diamondRate: newEntry });
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        if (msg.startsWith('OVERLAPPING_DIAMOND_SLAB:') || msg.startsWith('EXACT_1CT_PRICE_ON_REQUEST_REQUIRED:')) {
+          res.status(409).json({ error: msg.split(':')[0], message: msg });
+          return;
+        }
+        if (msg.startsWith('INVALID_')) {
+          res.status(400).json({ error: msg.split(':')[0], message: msg });
+          return;
+        }
+        throw err;
+      }
+    })
+  );
 
-      res.json({ diamondRate: newEntry });
+  app.patch(
+    '/api/admin/rates/diamonds/:id',
+    requireAuth,
+    requirePermission('RATES_WRITE'),
+    asyncHandler(async (req: Request, res: Response) => {
+      const id = getParam(req.params.id);
+      const parsed = UpdateDiamondRateInputSchema.safeParse(req.body || {});
+      if (!parsed.success) {
+        res.status(400).json({
+          error: 'VALIDATION_ERROR',
+          message: parsed.error.issues[0]?.message || 'Invalid diamond rate update.',
+          details: parsed.error.flatten(),
+        });
+        return;
+      }
+
+      try {
+        const updated = await backend.updateDiamondRate({
+          id,
+          shape: parsed.data.shape,
+          sieveRange: parsed.data.sieveRange,
+          caratMin: parsed.data.sizeMinCarat,
+          caratMax: parsed.data.sizeMaxCarat,
+          minInclusive: parsed.data.minInclusive,
+          maxInclusive: parsed.data.maxInclusive,
+          colorGrade: parsed.data.colorGrade,
+          clarityGrade: parsed.data.clarityGrade,
+          cutGrade: parsed.data.cutGrade,
+          ratePerCaratInr: parsed.data.rateInr,
+          isPlaceholder: parsed.data.isPlaceholder,
+          isActive: parsed.data.isActive,
+          updatedBy: req.adminUser!.email,
+          actorRole: req.adminUser!.role,
+        });
+        res.json({ diamondRate: updated });
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        if (msg === 'DIAMOND_RATE_NOT_FOUND') {
+          res.status(404).json({ error: 'DIAMOND_RATE_NOT_FOUND', message: 'Diamond rate slab not found.' });
+          return;
+        }
+        if (msg.startsWith('OVERLAPPING_DIAMOND_SLAB:') || msg.startsWith('EXACT_1CT_PRICE_ON_REQUEST_REQUIRED:')) {
+          res.status(409).json({ error: msg.split(':')[0], message: msg });
+          return;
+        }
+        if (msg.startsWith('INVALID_')) {
+          res.status(400).json({ error: msg.split(':')[0], message: msg });
+          return;
+        }
+        throw err;
+      }
     })
   );
 
