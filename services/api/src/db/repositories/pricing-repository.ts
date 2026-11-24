@@ -292,6 +292,27 @@ export class PostgresPricingRepository {
 
     return this.prisma.$transaction(async (tx) => {
       if (isActive) {
+        // Supersede (rather than reject) the previous version of this exact slab, and any
+        // placeholder slabs when an owner-confirmed (non-placeholder) rate is being published.
+        // This mirrors the in-memory backend, so re-publishing the owner rate card is idempotent
+        // instead of failing with OVERLAPPING_DIAMOND_SLAB after the metal rates were already saved.
+        await tx.diamondRate.updateMany({
+          where: {
+            isActive: true,
+            shape: params.shape,
+            colorGrade: params.colorGrade.toUpperCase(),
+            clarityGrade: params.clarityGrade.toUpperCase(),
+            sizeMinCarat: minDec.toFixed(4),
+            sizeMaxCarat: maxDec.toFixed(4),
+          },
+          data: { isActive: false },
+        });
+        if (params.isPlaceholder === false) {
+          await tx.diamondRate.updateMany({
+            where: { isActive: true, isPlaceholder: true },
+            data: { isActive: false },
+          });
+        }
         const existingSameGroup = await tx.diamondRate.findMany({
           where: {
             isActive: true,

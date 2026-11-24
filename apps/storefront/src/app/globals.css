@@ -727,3 +727,38 @@ textarea:focus-visible {
   }
 }
 
+
+
+/* Sticky add-to-bag / consultation bar (mobile PDP only) */
+.mrs-sticky-cta { display: none; }
+@media (max-width: 768px) {
+  .mrs-sticky-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    background: #ffffff;
+    border-top: 1px solid #e6e0de;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+  }
+  .mrs-sticky-cta-btn {
+    flex: 0 0 auto;
+    min-height: 48px;
+    padding: 0 22px;
+    display: inline-flex;
+    align-items: center;
+    background: #8e1230;
+    color: #ffffff;
+    border: 0;
+    font-size: 12px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+}

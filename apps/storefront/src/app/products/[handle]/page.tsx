@@ -171,7 +171,23 @@ export default function ProductDetailPage() {
       : Number(breakup.finalProposedPriceInr || product.currentShopifyPriceInr);
 
   const isWished = product ? wishlistHandles.includes(product.handle) : false;
-  const relatedProducts = product ? products.filter((p) => p.sku !== product.sku).slice(0, 4) : [];
+  // "Complete the Look": other categories first (so a ring suggests matching earrings/pendants), same metal
+  // colour preferred, in-stock only; padded with same-category pieces if the catalogue is thin.
+  const relatedProducts = useMemo(() => {
+    if (!product) return [];
+    const others = products.filter((p) => p.sku !== product.sku && p.inventoryQuantity > 0);
+    const rank = (p: (typeof others)[number]) =>
+      (p.category !== product.category ? 0 : 2) + (p.metalColor === product.metalColor ? 0 : 1);
+    const picked: typeof others = [];
+    const seenCategories = new Set<string>();
+    for (const p of [...others].sort((a, b) => rank(a) - rank(b))) {
+      if (picked.length >= 4) break;
+      if (p.category !== product.category && seenCategories.has(p.category) && picked.length < 3) continue;
+      seenCategories.add(p.category);
+      picked.push(p);
+    }
+    return picked;
+  }, [product, products]);
 
   return !matchedProduct || !product || !breakup ? (
     <div className="mrs-section-pad" style={{ textAlign: 'center', padding: '72px 20px' }}>
@@ -586,8 +602,8 @@ export default function ProductDetailPage() {
                       type="button"
                       onClick={() => setSelectedRingSize(sz)}
                       style={{
-                        width: '38px',
-                        height: '36px',
+                        width: '44px',
+                        height: '44px',
                         border:
                           selectedRingSize === sz ? '1.5px solid #8E1230' : '1px solid #E6E0DE',
                         background: selectedRingSize === sz ? '#8E1230' : '#FFFFFF',
@@ -698,6 +714,45 @@ export default function ProductDetailPage() {
                 Buy It Now
               </button>
             )}
+
+            {/* TRUST SIGNALS (shown beside the price / CTA at the moment of decision) */}
+            <ul
+              aria-label="Our assurances"
+              style={{
+                listStyle: 'none',
+                margin: '0 0 24px 0',
+                padding: 0,
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+                gap: '10px 14px',
+                fontSize: '12px',
+                color: '#2D2021',
+              }}
+            >
+              {[
+                ['◆', 'IGI-certified lab-grown diamonds'],
+                ['✓', 'BIS-hallmarked gold'],
+                ['↺', '15-day returns'],
+                ['⇄', 'Lifetime exchange'],
+                ['🚚', 'Insured delivery'],
+                ['🔒', 'Secure checkout'],
+              ].map(([icon, text]) => (
+                <li key={text} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span aria-hidden="true" style={{ color: '#8E1230', width: '16px', textAlign: 'center' }}>
+                    {icon}
+                  </span>
+                  {text}
+                </li>
+              ))}
+              <li style={{ gridColumn: '1 / -1', fontSize: '11px' }}>
+                <Link href="/pages/return-policy" style={{ color: '#8E1230', textDecoration: 'underline' }}>
+                  Return policy
+                </Link>{' · '}
+                <Link href="/pages/lifetime-exchange" style={{ color: '#8E1230', textDecoration: 'underline' }}>
+                  Exchange &amp; buyback
+                </Link>
+              </li>
+            </ul>
 
             {/* PINCODE SERVICEABILITY CHECKER */}
             <div
@@ -966,10 +1021,10 @@ export default function ProductDetailPage() {
       <section style={{ maxWidth: '1280px', margin: '0 auto', padding: '64px 36px' }}>
         <div style={{ textAlign: 'center', marginBottom: '36px' }}>
           <p className="mrs-section-eyebrow-script" style={{ fontSize: '46px' }}>
-            Complete the suite
+            Complete the look
           </p>
           <h2 className="mrs-section-heading-serif" style={{ fontSize: '34px' }}>
-            YOU MAY ALSO LOVE
+            PAIRS BEAUTIFULLY WITH
           </h2>
         </div>
         <div
@@ -984,6 +1039,38 @@ export default function ProductDetailPage() {
           ))}
         </div>
       </section>
+
+      {/* STICKY MOBILE CTA: keeps the primary action reachable while reading details */}
+      <div className="mrs-sticky-cta" role="region" aria-label="Purchase actions">
+        <div style={{ minWidth: 0 }}>
+          <div style={{ fontSize: '11px', color: '#6B5B5B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {product.title}
+          </div>
+          <div style={{ fontSize: '15px', fontWeight: 600, color: '#2D2021' }}>
+            {isPriceOnRequest ? 'Price on request' : formatInr(effectivePrice)}
+          </div>
+        </div>
+        {isPriceOnRequest ? (
+          <Link href="/pages/contact#appointment" className="mrs-sticky-cta-btn">
+            Book Consultation
+          </Link>
+        ) : (
+          <button
+            type="button"
+            className="mrs-sticky-cta-btn"
+            onClick={() =>
+              addToCart(product, {
+                metalPurity: selectedPurity,
+                metalColor: selectedColor,
+                ringSize: selectedRingSize,
+                unitPriceInr: effectivePrice,
+              })
+            }
+          >
+            Add To Bag
+          </button>
+        )}
+      </div>
     </div>
   );
 }

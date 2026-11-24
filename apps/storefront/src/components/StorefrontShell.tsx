@@ -303,8 +303,8 @@ export function StorefrontShell({ children }: { children: React.ReactNode }) {
     { label: 'ALL JEWELLERY', href: '/collections/all' },
     { label: 'CATEGORIES', href: '/collections' },
     { label: 'SHAPES', href: '/collections/all?shape=ROUND' },
-    { label: 'VIRTUAL TRY-ON', href: '/customize/MRS-RNG-1001' },
-    { label: 'BOOK SLOT', href: '/pages/contact' },
+    { label: 'CUSTOMIZE', href: '/customize/MRS-RNG-1001' },
+    { label: 'BOOK A VIEWING', href: '/pages/contact#appointment' },
     { label: 'ABOUT US', href: '/pages/about-us' },
   ];
 

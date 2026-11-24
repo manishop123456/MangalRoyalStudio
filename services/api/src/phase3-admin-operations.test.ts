@@ -1052,4 +1052,40 @@ describe('Phase 3 Admin Business Operations & Hardening Suite', () => {
       expect(overrideRes.body.recalculatedBreakdown.priceOnRequest).toBe(false);
     });
   });
+
+  describe('9. Appointment requests', () => {
+    it('accepts a valid public request, rejects bad input, and lists it for staff only', async () => {
+      const bad = await invokeApp(app, {
+        method: 'POST',
+        url: '/api/public/appointment-requests',
+        body: { name: 'A', phone: 'x', preferredDate: '' },
+      });
+      expect(bad.status).toBe(400);
+
+      const ok = await invokeApp(app, {
+        method: 'POST',
+        url: '/api/public/appointment-requests',
+        body: {
+          name: 'Test Visitor',
+          phone: '+91 90000 00000',
+          preferredDate: '2026-12-05',
+          preferredTime: 'Afternoon',
+          productOfInterest: 'MRS-RNG-1001',
+        },
+      });
+      expect(ok.status).toBe(201);
+      expect(ok.body.reference).toMatch(/^APT-/);
+
+      const anon = await invokeApp(app, { method: 'GET', url: '/api/admin/appointment-requests' });
+      expect(anon.status).toBe(401);
+
+      const staff = await invokeApp(app, {
+        method: 'GET',
+        url: '/api/admin/appointment-requests',
+        headers: { Authorization: `Bearer ${ownerToken}` },
+      });
+      expect(staff.status).toBe(200);
+      expect(staff.body.requests[0].details.name).toBe('Test Visitor');
+    });
+  });
 });

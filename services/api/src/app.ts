@@ -4,6 +4,7 @@ import crypto from 'node:crypto';
 import express, { type Request, type Response, type NextFunction } from 'express';
 import cors from 'cors';
 import multer from 'multer';
+import { z } from 'zod';
 import {
   AdjustInventorySchema,
   AssignProductCustomizationSchema,
@@ -226,6 +227,23 @@ function enrichProductWithAuthoritativePrice(
     rateCardUpdatedAt: priceBreakup.rateCardUpdatedAt,
     priceBreakup,
     latestBreakdown: priceBreakup,
+  };
+}
+
+/**
+ * A product's secondary/gallery image must never be another SKU's primary photo (data-entry mix-ups such as
+ * MRS-RNG-1002 showing the Royal Celeste ring). Drops any such foreign image from the public response.
+ */
+export function withoutForeignImages<T extends JewelleryProductSpec>(product: T, all: JewelleryProductSpec[]): T {
+  const foreignPrimaries = new Set(
+    all.filter((o) => o.sku !== product.sku && o.imageUrl).map((o) => o.imageUrl as string)
+  );
+  const isForeign = (u?: string | null) => Boolean(u) && foreignPrimaries.has(u as string);
+  if (!isForeign(product.altImageUrl) && !(product.galleryImages || []).some(isForeign)) return product;
+  return {
+    ...product,
+    altImageUrl: isForeign(product.altImageUrl) ? undefined : product.altImageUrl,
+    galleryImages: product.galleryImages ? product.galleryImages.filter((u) => !isForeign(u)) : product.galleryImages,
   };
 }
 
@@ -604,6 +622,80 @@ export function createApp(storeOrOptions?: CreateAppOptions) {
         product: publicProduct,
         priceBreakup: publicProduct.priceBreakup,
       });
+    })
+  );
+
+  // Private appointment / viewing requests. Stored as ADMIN_ALERT notifications (no new table needed)
+  // so the studio can review them in the admin API; the customer never sees internal details.
+  const AppointmentRequestSchema = z.object({
+    name: z.string().trim().min(2).max(120),
+    phone: z.string().trim().regex(/^[+0-9()\-\s]{8,20}$/, 'Enter a valid phone number'),
+    email: z.string().trim().email().max(200).optional().or(z.literal('')),
+    preferredDate: z.string().trim().min(1).max(40),
+    preferredTime: z.string().trim().max(40).optional().default(''),
+    productOfInterest: z.string().trim().max(200).optional().default(''),
+    notes: z.string().trim().max(1000).optional().default(''),
+    website: z.string().max(0).optional(), // honeypot: real users never fill this
+  });
+  const appointmentRateLimit = createRateLimiter({
+    windowMs: 10 * 60_000,
+    maxRequests: 5,
+    keyPrefix: 'appointment-request',
+  });
+
+  app.post(
+    '/api/public/appointment-requests',
+    appointmentRateLimit,
+    asyncHandler(async (req: Request, res: Response) => {
+      const parsed = AppointmentRequestSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({
+          error: 'VALIDATION_ERROR',
+          message: 'Please check your name, phone number and preferred date, then try again.',
+        });
+        return;
+      }
+      const r = parsed.data;
+      const reference = `APT-${Date.now().toString(36).toUpperCase()}`;
+      await backend.createNotification({
+        recipientEmail: r.email || '',
+        channel: 'ADMIN_ALERT',
+        templateCode: 'APPOINTMENT_REQUEST',
+        subject: `Appointment request ${reference} — ${r.name}`,
+        body: JSON.stringify({
+          reference,
+          name: r.name,
+          phone: r.phone,
+          email: r.email || null,
+          preferredDate: r.preferredDate,
+          preferredTime: r.preferredTime,
+          productOfInterest: r.productOfInterest,
+          notes: r.notes,
+        }),
+        referenceId: reference,
+      });
+      res.status(201).json({ ok: true, reference });
+    })
+  );
+
+  app.get(
+    '/api/admin/appointment-requests',
+    requireAuth,
+    requirePermission('ORDERS_VIEW'),
+    asyncHandler(async (_req: Request, res: Response) => {
+      const all = await backend.listNotifications();
+      const requests = all
+        .filter((n) => n.templateCode === 'APPOINTMENT_REQUEST')
+        .map((n) => {
+          let details: unknown = null;
+          try {
+            details = JSON.parse(n.body);
+          } catch {
+            details = { raw: n.body };
+          }
+          return { id: n.id, receivedAt: n.sentAt, subject: n.subject, details };
+        });
+      res.json({ total: requests.length, requests });
     })
   );
 
@@ -3001,11 +3093,15 @@ export function createApp(storeOrOptions?: CreateAppOptions) {
 
       if (sort === 'price-asc' || sort === 'price-ascending') {
         filtered.sort(
-          (a, b) => Number(a.currentShopifyPriceInr) - Number(b.currentShopifyPriceInr)
+          (a, b) =>
+            Number(a.priceOnRequest) - Number(b.priceOnRequest) ||
+            Number(a.currentShopifyPriceInr) - Number(b.currentShopifyPriceInr)
         );
       } else if (sort === 'price-desc' || sort === 'price-descending') {
         filtered.sort(
-          (a, b) => Number(b.currentShopifyPriceInr) - Number(a.currentShopifyPriceInr)
+          (a, b) =>
+            Number(a.priceOnRequest) - Number(b.priceOnRequest) ||
+            Number(b.currentShopifyPriceInr) - Number(a.currentShopifyPriceInr)
         );
       } else if (sort === 'title-asc' || sort === 'title-ascending') {
         filtered.sort((a, b) => a.title.localeCompare(b.title));
@@ -3022,7 +3118,7 @@ export function createApp(storeOrOptions?: CreateAppOptions) {
       res.json({
         total: filtered.length,
         rateCard,
-        products: filtered.map(toPublicProduct),
+        products: filtered.map((p) => toPublicProduct(withoutForeignImages(p, enrichedProducts))),
       });
     })
   );
@@ -3090,7 +3186,7 @@ export function createApp(storeOrOptions?: CreateAppOptions) {
         rule: activeRule,
       });
 
-      const publicProduct = toPublicProduct(enrichedProduct);
+      const publicProduct = toPublicProduct(withoutForeignImages(enrichedProduct, products));
       res.json({
         product: publicProduct,
         priceBreakup: publicProduct.priceBreakup,

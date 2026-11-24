@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense, useMemo, useState } from 'react';
+import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useStorefront } from '../../../components/StorefrontShell';
@@ -29,6 +29,10 @@ function CollectionDetailContent() {
     if (handle === '50k-and-above') return 'Signature Creations ₹50,000 & Above';
     return handle.replace(/-/g, ' ').toUpperCase();
   }, [handle]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [handle, selectedPurity, selectedShape, sortBy]);
 
   const filteredProducts = useMemo(() => {
     const list = products.filter((p) => {
@@ -63,10 +67,18 @@ function CollectionDetailContent() {
       return true;
     });
 
+    const por = (p: (typeof list)[number]) => Boolean(p.priceOnRequest ?? p.priceBreakup?.priceOnRequest);
     if (sortBy === 'price-asc') {
-      list.sort((a, b) => Number(a.currentShopifyPriceInr) - Number(b.currentShopifyPriceInr));
+      // "Price on request" items have no numeric price: always list them after priced pieces.
+      list.sort(
+        (a, b) =>
+          Number(por(a)) - Number(por(b)) || Number(a.currentShopifyPriceInr) - Number(b.currentShopifyPriceInr)
+      );
     } else if (sortBy === 'price-desc') {
-      list.sort((a, b) => Number(b.currentShopifyPriceInr) - Number(a.currentShopifyPriceInr));
+      list.sort(
+        (a, b) =>
+          Number(por(a)) - Number(por(b)) || Number(b.currentShopifyPriceInr) - Number(a.currentShopifyPriceInr)
+      );
     } else if (sortBy === 'title-asc') {
       list.sort((a, b) => a.title.localeCompare(b.title));
     }
@@ -126,7 +138,7 @@ function CollectionDetailContent() {
           </label>
 
           <label style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-            Diamond Cut:{' '}
+            Diamond Shape:{' '}
             <select
               value={selectedShape}
               onChange={(e) => setSelectedShape(e.target.value)}
