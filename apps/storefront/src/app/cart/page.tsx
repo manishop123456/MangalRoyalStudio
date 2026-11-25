@@ -70,17 +70,17 @@ export default function CartPage() {
                 key={item.id}
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '100px 1fr auto',
-                  gap: '20px',
+                  gridTemplateColumns: '84px 1fr',
+                  gap: '16px',
                   padding: '20px 0',
                   borderBottom: '1px solid #E6E0DE',
-                  alignItems: 'center',
+                  alignItems: 'start',
                 }}
               >
                 <SafeImage
                   src={resolveProductImageUrl(item.imageUrl, API_ORIGIN)}
                   alt={item.title}
-                  style={{ width: '100px', height: '125px', objectFit: 'cover', background: '#F6F3F1' }}
+                  style={{ width: '84px', height: '105px', objectFit: 'cover', background: '#F6F3F1' }}
                 />
                 <div>
                   <Link
@@ -116,41 +116,43 @@ export default function CartPage() {
                       ))}
                     </div>
                   ) : null}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <button
-                      type="button"
-                      onClick={() => updateCartQty(item.id, item.quantity - 1)}
-                      style={{ width: '28px', height: '28px', border: '1px solid #D5CBC8', background: '#fff', cursor: 'pointer' }}
-                    >
-                      −
-                    </button>
-                    <span>{item.quantity}</span>
-                    <button
-                      type="button"
-                      onClick={() => updateCartQty(item.id, item.quantity + 1)}
-                      style={{ width: '28px', height: '28px', border: '1px solid #D5CBC8', background: '#fff', cursor: 'pointer' }}
-                    >
-                      +
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => removeFromCart(item.id)}
-                      style={{
-                        marginLeft: '14px',
-                        background: 'none',
-                        border: 0,
-                        color: '#7D132A',
-                        fontSize: '12px',
-                        cursor: 'pointer',
-                        textDecoration: 'underline',
-                      }}
-                    >
-                      Remove
-                    </button>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <button
+                        type="button"
+                        onClick={() => updateCartQty(item.id, item.quantity - 1)}
+                        style={{ width: '28px', height: '28px', border: '1px solid #D5CBC8', background: '#fff', cursor: 'pointer' }}
+                      >
+                        −
+                      </button>
+                      <span>{item.quantity}</span>
+                      <button
+                        type="button"
+                        onClick={() => updateCartQty(item.id, item.quantity + 1)}
+                        style={{ width: '28px', height: '28px', border: '1px solid #D5CBC8', background: '#fff', cursor: 'pointer' }}
+                      >
+                        +
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => removeFromCart(item.id)}
+                        style={{
+                          marginLeft: '14px',
+                          background: 'none',
+                          border: 0,
+                          color: '#7D132A',
+                          fontSize: '12px',
+                          cursor: 'pointer',
+                          textDecoration: 'underline',
+                        }}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div style={{ fontSize: '16px', fontWeight: 600 }}>
+                      {formatInr(item.unitPriceInr * item.quantity)}
+                    </div>
                   </div>
-                </div>
-                <div style={{ fontSize: '16px', fontWeight: 600 }}>
-                  {formatInr(item.unitPriceInr * item.quantity)}
                 </div>
               </div>
             ))}

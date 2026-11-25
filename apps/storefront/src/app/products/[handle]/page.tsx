@@ -686,34 +686,56 @@ export default function ProductDetailPage() {
             ) : null}
 
             {!isPriceOnRequest && (
-              <button
-                type="button"
-                onClick={() => {
-                  addToCart(product, {
-                    metalPurity: selectedPurity,
-                    metalColor: selectedColor,
-                    ringSize: selectedRingSize,
-                    unitPriceInr: effectivePrice,
-                    openDrawer: false,
-                  });
-                  router.push('/checkout');
-                }}
-                style={{
-                  width: '100%',
-                  padding: '14px 24px',
-                  background: '#FFFFFF',
-                  color: '#8E1230',
-                  border: '1px solid #8E1230',
-                  fontSize: '12px',
-                  fontWeight: 500,
-                  letterSpacing: '1.2px',
-                  textTransform: 'uppercase',
-                  cursor: 'pointer',
-                  marginBottom: '24px',
-                }}
-              >
-                Buy It Now
-              </button>
+              process.env.NEXT_PUBLIC_ONLINE_CHECKOUT_ENABLED === 'true' ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    addToCart(product, {
+                      metalPurity: selectedPurity,
+                      metalColor: selectedColor,
+                      ringSize: selectedRingSize,
+                      unitPriceInr: effectivePrice,
+                      openDrawer: false,
+                    });
+                    router.push('/checkout');
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '14px 24px',
+                    background: '#FFFFFF',
+                    color: '#8E1230',
+                    border: '1px solid #8E1230',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    letterSpacing: '1.2px',
+                    textTransform: 'uppercase',
+                    cursor: 'pointer',
+                    marginBottom: '24px',
+                  }}
+                >
+                  Buy It Now
+                </button>
+              ) : (
+                <Link
+                  href="/contact"
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    padding: '14px 24px',
+                    background: '#FFFFFF',
+                    color: '#8E1230',
+                    border: '1px solid #8E1230',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    letterSpacing: '1.2px',
+                    textTransform: 'uppercase',
+                    textAlign: 'center',
+                    marginBottom: '24px',
+                  }}
+                >
+                  Enquire With Studio Concierge
+                </Link>
+              )
             )}
 
             {/* TRUST SIGNALS (shown beside the price / CTA at the moment of decision) */}
@@ -784,12 +806,13 @@ export default function ProductDetailPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (/^\d{6}$/.test(pincode)) {
+                    const trimmedPin = pincode.trim();
+                    if (/^[1-8]\d{5}$/.test(trimmedPin)) {
                       setPincodeMessage(
-                        `✓ PIN ${pincode} is serviceable via BlueDart Insured Jewellery Air (Estimated 2–4 Days).`
+                        `✓ PIN ${trimmedPin} is serviceable via BlueDart Insured Jewellery Air (Estimated 2–4 Days).`
                       );
                     } else {
-                      setPincodeMessage('Please enter a valid 6-digit Indian PIN code.');
+                      setPincodeMessage('Please enter a valid 6-digit Indian PIN code (starting with 1–8).');
                     }
                   }}
                   style={{

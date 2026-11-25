@@ -66,6 +66,9 @@ export function addItemToCart(
       product.currentShopifyPriceInr
   );
   const unitPrice = options?.unitPriceInr ?? authoritativePrice;
+  if (!Number.isFinite(unitPrice) || unitPrice <= 0) {
+    return cart;
+  }
   const itemId = buildCartItemId({
     sku: product.sku,
     metalPurity: purity,

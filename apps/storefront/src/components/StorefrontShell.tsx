@@ -802,7 +802,7 @@ export function StorefrontShell({ children }: { children: React.ReactNode }) {
                     View Bag
                   </Link>
                   <Link
-                    href="/checkout"
+                    href={process.env.NEXT_PUBLIC_ONLINE_CHECKOUT_ENABLED === 'true' ? '/checkout' : '/contact'}
                     onClick={() => setCartDrawerOpen(false)}
                     style={{
                       padding: '12px',
@@ -814,7 +814,7 @@ export function StorefrontShell({ children }: { children: React.ReactNode }) {
                       textTransform: 'uppercase',
                     }}
                   >
-                    Checkout
+                    {process.env.NEXT_PUBLIC_ONLINE_CHECKOUT_ENABLED === 'true' ? 'Checkout' : 'Enquire'}
                   </Link>
                 </div>
               </div>
