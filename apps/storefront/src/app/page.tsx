@@ -235,47 +235,11 @@ export default function HomePage() {
       </section>
 
       {/* 7. BRAND STORY (sections/brand-story.liquid) */}
-      <section
-        style={{
-          backgroundColor: '#FBE8DB',
-          padding: '100px 40px',
-        }}
-      >
-        <div
-          style={{
-            maxWidth: '1320px',
-            margin: '0 auto',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-            gap: '56px',
-            alignItems: 'center',
-          }}
-        >
+      <section className="mrs-brand-section">
+        <div className="mrs-split-grid">
           <div>
-            <h2
-              style={{
-                fontFamily: 'var(--font-serif)',
-                fontSize: '54px',
-                lineHeight: 1.02,
-                letterSpacing: '0.5px',
-                textTransform: 'uppercase',
-                color: '#190303',
-                margin: 0,
-              }}
-            >
-              ROOTED IN LEGACY
-            </h2>
-            <p
-              style={{
-                fontFamily: 'var(--font-script)',
-                fontSize: '88px',
-                lineHeight: 0.9,
-                color: '#7D132A',
-                margin: '-14px 0 22px 0',
-              }}
-            >
-              Build for today.
-            </p>
+            <h2 className="mrs-brand-title">ROOTED IN LEGACY</h2>
+            <p className="mrs-brand-script">Build for today.</p>
             <p
               style={{
                 fontSize: '16px',
@@ -491,22 +455,8 @@ export default function HomePage() {
       </section>
 
       {/* 11. WHY LAB GROWN (sections/why-lab-grown.liquid) */}
-      <section
-        style={{
-          backgroundColor: '#F9E2D2',
-          padding: '90px 70px',
-        }}
-      >
-        <div
-          style={{
-            maxWidth: '1440px',
-            margin: '0 auto',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-            gap: '64px',
-            alignItems: 'center',
-          }}
-        >
+      <section className="mrs-why-section">
+        <div className="mrs-split-grid mrs-split-grid--wide">
           <div>
             <SafeImage
               src={THEME_IMAGES.whyLabGrown}
@@ -523,8 +473,8 @@ export default function HomePage() {
 
             <div style={{ display: 'grid', gap: '24px', marginBottom: '36px' }}>
               <div style={{ borderBottom: '1px solid rgba(25,3,3,0.15)', paddingBottom: '18px' }}>
-                <div style={{ fontFamily: 'var(--font-serif)', fontSize: '22px', color: '#7D132A', marginBottom: '4px' }}>
-                  01. Physically, Optically & Chemically Identical
+                <div className="mrs-why-item-title">
+                  01. Physically, Optically &amp; Chemically Identical
                 </div>
                 <p style={{ margin: 0, fontSize: '14px', color: '#3E3E3E', lineHeight: 1.6 }}>
                   100% real pure carbon crystal diamonds with identical fire, scintillation, Mohs 10 hardness, and IGI grading as mined diamonds.
@@ -532,7 +482,7 @@ export default function HomePage() {
               </div>
 
               <div style={{ borderBottom: '1px solid rgba(25,3,3,0.15)', paddingBottom: '18px' }}>
-                <div style={{ fontFamily: 'var(--font-serif)', fontSize: '22px', color: '#7D132A', marginBottom: '4px' }}>
+                <div className="mrs-why-item-title">
                   02. Consciously Crafted
                 </div>
                 <p style={{ margin: 0, fontSize: '14px', color: '#3E3E3E', lineHeight: 1.6 }}>
@@ -541,7 +491,7 @@ export default function HomePage() {
               </div>
 
               <div style={{ borderBottom: '1px solid rgba(25,3,3,0.15)', paddingBottom: '18px' }}>
-                <div style={{ fontFamily: 'var(--font-serif)', fontSize: '22px', color: '#7D132A', marginBottom: '4px' }}>
+                <div className="mrs-why-item-title">
                   03. Extraordinary Solitaire Value
                 </div>
                 <p style={{ margin: 0, fontSize: '14px', color: '#3E3E3E', lineHeight: 1.6 }}>
@@ -550,18 +500,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <Link
-              href="/collections/all"
-              style={{
-                display: 'inline-block',
-                padding: '14px 36px',
-                background: '#7D132A',
-                color: '#FFFFFF',
-                fontSize: '12px',
-                letterSpacing: '1.4px',
-                textTransform: 'uppercase',
-              }}
-            >
+            <Link href="/collections/all" className="mrs-btn-primary">
               Explore Lab Grown
             </Link>
           </div>
@@ -569,13 +508,7 @@ export default function HomePage() {
       </section>
 
       {/* 12B. SEO EDITORIAL CONTENT (sections/content.liquid) */}
-      <section
-        style={{
-          backgroundColor: '#F7E0D0',
-          padding: '48px 40px',
-          borderTop: '1px solid #E7D1C4',
-        }}
-      >
+      <section className="mrs-seo-section">
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <h2
             style={{

@@ -987,3 +987,87 @@ textarea:focus-visible {
 .pc-skeleton__line--short {
   width: 48%;
 }
+
+/* ============================================================================
+   9. SPLIT EDITORIAL SECTIONS (Brand Story, Why Lab Grown, SEO Editorial)
+   ============================================================================ */
+.mrs-brand-section {
+  background-color: #FBE8DB;
+  padding: 96px 70px;
+}
+
+.mrs-why-section {
+  background-color: #F9E2D2;
+  padding: 90px 70px;
+}
+
+.mrs-seo-section {
+  background-color: #F7E0D0;
+  padding: 48px 70px;
+  border-top: 1px solid #E7D1C4;
+}
+
+.mrs-split-grid {
+  max-width: 1320px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 56px;
+  align-items: center;
+}
+
+.mrs-split-grid--wide {
+  max-width: 1440px;
+  gap: 64px;
+}
+
+.mrs-brand-title {
+  font-family: var(--font-serif);
+  font-size: 54px;
+  line-height: 1.02;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #190303;
+  margin: 0;
+}
+
+.mrs-brand-script {
+  font-family: var(--font-script);
+  font-size: 88px;
+  line-height: 0.9;
+  color: #7D132A;
+  margin: -14px 0 22px 0;
+}
+
+.mrs-why-item-title {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  line-height: 1.25;
+  color: #7D132A;
+  margin-bottom: 6px;
+}
+
+@media screen and (max-width: 989px) {
+  .mrs-brand-section,
+  .mrs-why-section {
+    padding: 48px 16px;
+  }
+  .mrs-seo-section {
+    padding: 36px 16px;
+  }
+  .mrs-split-grid,
+  .mrs-split-grid--wide {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+  .mrs-brand-title {
+    font-size: 34px;
+  }
+  .mrs-brand-script {
+    font-size: 52px;
+    margin: -8px 0 16px 0;
+  }
+  .mrs-why-item-title {
+    font-size: 19px;
+  }
+}
