@@ -68,17 +68,19 @@ services:
       dockerfile: /srv/mangal-royal-studio-prod/deployment/Dockerfile
       target: admin
       args:
-        NEXT_PUBLIC_API_URL: http://localhost:4100
-        NEXT_PUBLIC_ADMIN_API_URL: http://localhost:4100
-        NEXT_PUBLIC_API_BASE_URL: http://localhost:4100
+        NEXT_PUBLIC_API_URL: https://mangalroyalstudio.com
+        NEXT_PUBLIC_ADMIN_API_URL: https://mangalroyalstudio.com
+        NEXT_PUBLIC_API_BASE_URL: https://mangalroyalstudio.com
+        NEXT_PUBLIC_ADMIN_BASE_PATH: /admin
     image: mrs-admin:prod
     container_name: mrs_prod_admin
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      NEXT_PUBLIC_API_URL: http://localhost:4100
-      NEXT_PUBLIC_ADMIN_API_URL: http://localhost:4100
-      NEXT_PUBLIC_API_BASE_URL: http://localhost:4100
+      NEXT_PUBLIC_API_URL: https://mangalroyalstudio.com
+      NEXT_PUBLIC_ADMIN_API_URL: https://mangalroyalstudio.com
+      NEXT_PUBLIC_API_BASE_URL: https://mangalroyalstudio.com
+      NEXT_PUBLIC_ADMIN_BASE_PATH: /admin
     ports:
       - "127.0.0.1:3101:3001"
     depends_on:
@@ -87,7 +89,7 @@ services:
     networks:
       - mrs_prod_network
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:3001/ >/dev/null || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:3001/admin >/dev/null || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 6

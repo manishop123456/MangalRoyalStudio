@@ -50,13 +50,15 @@ EXPOSE 3000
 CMD ["npm", "run", "start", "--workspace=@mrs/storefront"]
 
 FROM deps AS admin
-ARG NEXT_PUBLIC_API_URL=http://localhost:4100
-ARG NEXT_PUBLIC_ADMIN_API_URL=http://localhost:4100
-ARG NEXT_PUBLIC_API_BASE_URL=http://localhost:4100
+ARG NEXT_PUBLIC_API_URL=https://mangalroyalstudio.com
+ARG NEXT_PUBLIC_ADMIN_API_URL=https://mangalroyalstudio.com
+ARG NEXT_PUBLIC_API_BASE_URL=https://mangalroyalstudio.com
+ARG NEXT_PUBLIC_ADMIN_BASE_PATH=/admin
 ENV NODE_ENV=production \
     NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL} \
     NEXT_PUBLIC_ADMIN_API_URL=${NEXT_PUBLIC_ADMIN_API_URL} \
-    NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
+    NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL} \
+    NEXT_PUBLIC_ADMIN_BASE_PATH=${NEXT_PUBLIC_ADMIN_BASE_PATH}
 COPY apps/admin ./apps/admin
 RUN npm run build --workspace=@mrs/admin \
   && chown -R node:node /app/apps/admin
