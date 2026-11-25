@@ -89,12 +89,14 @@ export const THEME_IMAGES = {
 };
 
 export const CATEGORY_TILE_SKU_BY_HANDLE: Record<string, string> = {
-  'best-sellers': 'SKUDRG00038',
+  'best-sellers': 'SKUDRG00018',
   rings: 'SKUDRG00038',
   earrings: 'SKUDTG00022',
   pendants: 'SKUDTG00149',
-  necklaces: 'SKUDNG00001',
+  necklaces: 'SKUDNG00003',
   bracelets: 'SKUBRG00271',
+  bangles: 'SKUBGG00002',
+  antique: 'SKURIGO0909',
 };
 
 export function resolveCategoryTileImage(
