@@ -3,97 +3,215 @@
 import React from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import { POLICIES_MAP, POLICY_ALIASES, type PolicyBlock } from '../../../lib/policies-data';
 
-const POLICIES: Record<string, { title: string; body: string[] }> = {
-  'lifetime-exchange': {
-    title: 'Lifetime Exchange & Buyback Policy',
-    body: [
-      'Every Mangal Royal Studio piece is backed by Mangal Royal Jewels Pvt Ltd (Since 1975).',
-      'We offer 100% prevailing bullion value on net BIS-hallmarked gold weight and 90% prevailing valuation on IGI-certified EF-VVS lab-grown diamonds when upgrading or exchanging for a new creation.',
-      'Please present your original GST Tax Invoice and IGI Authenticity Certificate at our Mumbai Studio or request an insured reverse pickup.',
-    ],
-  },
-  'shipping-policy': {
-    title: 'Insured Pan-India Shipping Policy',
-    body: [
-      'Every order is dispatched in a tamper-evident security box with 100% transit insurance via BlueDart Insured Jewellery Air or Sequel Fine Jewellery Logistics.',
-      'Delivery requires recipient verification via mobile OTP upon arrival.',
-    ],
-  },
-  'ring-resizing': {
-    title: 'Complimentary 30-Day Ring Resizing',
-    body: [
-      'Enjoy complimentary resizing within 30 days of purchase across all solitaire and engagement rings.',
-    ],
-  },
-  'privacy-policy': {
-    title: 'Privacy Policy',
-    body: [
-      'Mangal Royal Studio respects your privacy. Customer contact details, shipping addresses, and order records are encrypted and never shared with unauthorized third parties.',
-    ],
-  },
-  'terms-of-service': {
-    title: 'Terms of Service',
-    body: [
-      'All jewellery prices are calculated in Indian Rupees (INR) using our versioned Decimal.js pricing engine and include 3% GST (HSN 711319). Once an order is placed, the purchase-time price snapshot is immutably locked.',
-    ],
-  },
-  'refund-policy': {
-    title: 'Refund & Return Policy',
-    body: [
-      'Unworn jewellery with original tags, IGI certificate, and tamper-evident seal intact may be returned within 15 days for a full refund to the original payment method.',
-    ],
-  },
-  'return-policy': {
-    title: 'Return Policy',
-    body: [
-      'Unworn jewellery with original tags, IGI certificate, and tamper-evident seal intact may be returned within 15 days for a full refund to the original payment method.',
-    ],
-  },
-};
+const POLICY_NAV_LINKS = [
+  { slug: 'terms-of-service', label: 'Terms of Sale' },
+  { slug: 'privacy-policy', label: 'Privacy' },
+  { slug: 'return-policy', label: 'Returns & Exchange' },
+  { slug: 'refund-policy', label: 'Refunds' },
+  { slug: 'shipping-policy', label: 'Shipping' },
+  { slug: 'cancellation-policy', label: 'Cancellation' },
+  { slug: 'lifetime-exchange', label: 'Warranty & Buyback' },
+  { slug: 'care-guide', label: 'Care Guide' },
+  { slug: 'grievance-redressal', label: 'Grievance' },
+];
+
+function renderBlock(block: PolicyBlock, idx: number) {
+  switch (block.type) {
+    case 'heading':
+      return (
+        <h2
+          key={idx}
+          style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: '21px',
+            color: '#190303',
+            margin: '16px 0 4px 0',
+          }}
+        >
+          {block.text}
+        </h2>
+      );
+    case 'paragraph':
+      return (
+        <p key={idx} style={{ margin: 0, fontSize: '14px', lineHeight: 1.75, color: '#3E3E3E' }}>
+          {block.text}
+        </p>
+      );
+    case 'list':
+      return (
+        <ul
+          key={idx}
+          style={{
+            margin: 0,
+            paddingLeft: '20px',
+            display: 'grid',
+            gap: '8px',
+            fontSize: '14px',
+            lineHeight: 1.7,
+            color: '#3E3E3E',
+          }}
+        >
+          {block.items.map((item, i) => (
+            <li key={i}>{item}</li>
+          ))}
+        </ul>
+      );
+    case 'table':
+      return (
+        <div key={idx} style={{ overflowX: 'auto', border: '1px solid #E6E0DE' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13.5px', textAlign: 'left' }}>
+            <thead>
+              <tr style={{ background: '#F8E1CF', color: '#190303' }}>
+                {block.headers.map((h, i) => (
+                  <th
+                    key={i}
+                    style={{
+                      padding: '10px 14px',
+                      borderBottom: '1px solid #E6E0DE',
+                      fontWeight: 600,
+                    }}
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {block.rows.map((row, rIdx) => (
+                <tr key={rIdx} style={{ background: rIdx % 2 === 0 ? '#FFFFFF' : '#FAF7F4' }}>
+                  {row.map((cell, cIdx) => (
+                    <td
+                      key={cIdx}
+                      style={{
+                        padding: '10px 14px',
+                        borderBottom: '1px solid #F0EAE6',
+                        color: '#3E3E3E',
+                        verticalAlign: 'top',
+                      }}
+                    >
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    case 'callout':
+      return (
+        <div
+          key={idx}
+          style={{
+            background: '#FAF7F4',
+            borderLeft: '3px solid #7D132A',
+            padding: '14px 18px',
+            fontSize: '13.5px',
+            lineHeight: 1.7,
+            color: '#3E3E3E',
+          }}
+        >
+          <strong style={{ display: 'block', color: '#7D132A', marginBottom: '4px' }}>{block.title}</strong>
+          {block.text}
+        </div>
+      );
+    case 'ownerConfirm':
+      return (
+        <div
+          key={idx}
+          style={{
+            background: '#FEF7E6',
+            border: '1px solid #F0D28C',
+            padding: '12px 16px',
+            fontSize: '13px',
+            lineHeight: 1.6,
+            color: '#6E4B0A',
+          }}
+        >
+          {block.text}
+        </div>
+      );
+  }
+}
 
 export default function PolicyPage() {
   const params = useParams<{ slug: string }>();
-  const slug = String(params?.slug || 'lifetime-exchange').toLowerCase();
-  const policy = POLICIES[slug] || {
-    title: slug.replace(/-/g, ' ').toUpperCase(),
-    body: [
-      'Mangal Royal Studio (A unit of Mangal Royal Jewels Pvt Ltd — since 1975) guarantees full transparency, IGI certification, and BIS hallmarking on every creation.',
-    ],
-  };
+  const rawSlug = String(params?.slug || 'terms-of-service').toLowerCase();
+  const resolvedSlug = POLICY_ALIASES[rawSlug] || rawSlug;
+  const policy = POLICIES_MAP[resolvedSlug];
 
   return (
-    <div style={{ maxWidth: '880px', margin: '0 auto', padding: '64px 28px 80px' }}>
-      <p className="mrs-section-eyebrow-script" style={{ fontSize: '44px' }}>
-        Client assurance
-      </p>
-      <h1 className="mrs-section-heading-serif" style={{ fontSize: '34px', marginBottom: '24px' }}>
-        {policy.title}
-      </h1>
-      <div style={{ display: 'grid', gap: '16px', fontSize: '14px', lineHeight: 1.75, color: '#3E3E3E' }}>
-        {policy.body.map((p, idx) => (
-          <p key={idx} style={{ margin: 0 }}>
-            {p}
+    <div style={{ maxWidth: '940px', margin: '0 auto', padding: '48px 20px 80px' }}>
+      <nav
+        aria-label="Policy sections"
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '8px',
+          marginBottom: '28px',
+          paddingBottom: '16px',
+          borderBottom: '1px solid #E6E0DE',
+        }}
+      >
+        {POLICY_NAV_LINKS.map((item) => {
+          const active = item.slug === resolvedSlug;
+          return (
+            <Link
+              key={item.slug}
+              href={`/pages/${item.slug}`}
+              style={{
+                padding: '6px 12px',
+                fontSize: '11.5px',
+                letterSpacing: '0.6px',
+                textTransform: 'uppercase',
+                border: active ? '1px solid #7D132A' : '1px solid #E6E0DE',
+                background: active ? '#7D132A' : '#FFFFFF',
+                color: active ? '#FFFFFF' : '#3E3E3E',
+              }}
+            >
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {policy ? (
+        <>
+          <p className="mrs-section-eyebrow-script" style={{ fontSize: '40px' }}>
+            {policy.partLabel}
           </p>
-        ))}
-      </div>
-      <div style={{ marginTop: '36px' }}>
-        <Link
-          href="/collections/all"
-          style={{
-            display: 'inline-block',
-            padding: '12px 28px',
-            background: '#7D132A',
-            color: '#FFFFFF',
-            fontSize: '12px',
-            letterSpacing: '1.2px',
-            textTransform: 'uppercase',
-          }}
-        >
+          <h1 className="mrs-section-heading-serif" style={{ fontSize: '32px', marginBottom: '8px' }}>
+            {policy.title}
+          </h1>
+          <p style={{ fontSize: '12.5px', color: '#6B5B5B', margin: '0 0 28px 0' }}>{policy.subtitle}</p>
+          <div style={{ display: 'grid', gap: '16px' }}>
+            {policy.blocks.map((block, idx) => renderBlock(block, idx))}
+          </div>
+        </>
+      ) : (
+        <>
+          <p className="mrs-section-eyebrow-script" style={{ fontSize: '40px' }}>
+            Client assurance
+          </p>
+          <h1 className="mrs-section-heading-serif" style={{ fontSize: '32px', marginBottom: '16px' }}>
+            {rawSlug.replace(/-/g, ' ').toUpperCase()}
+          </h1>
+          <p style={{ fontSize: '14px', lineHeight: 1.75, color: '#3E3E3E' }}>
+            Mangal Royal Studio (MANGAL ROYAL JEWELS PVT. LTD.) guarantees full transparency, IGI certification, and BIS hallmarking on every creation.
+          </p>
+        </>
+      )}
+
+      <div style={{ marginTop: '36px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+        <Link href="/collections/all" className="mrs-btn-primary">
           Back To Shop
+        </Link>
+        <Link href="/pages/contact" className="mrs-btn-outline">
+          Contact Support
         </Link>
       </div>
     </div>
   );
 }
-

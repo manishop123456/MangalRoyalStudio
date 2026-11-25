@@ -927,9 +927,15 @@ export function StorefrontShell({ children }: { children: React.ReactNode }) {
 
             <div>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '10px', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                <li><Link href="/pages/terms-of-service">Terms of Use &amp; Sale</Link></li>
                 <li><Link href="/pages/privacy-policy">Privacy Policy</Link></li>
-                <li><Link href="/pages/terms-of-service">Terms of Service</Link></li>
-                <li><Link href="/pages/return-policy">Return Policy</Link></li>
+                <li><Link href="/pages/return-policy">Returns &amp; Exchange</Link></li>
+                <li><Link href="/pages/refund-policy">Refund Policy</Link></li>
+                <li><Link href="/pages/shipping-policy">Shipping &amp; Delivery</Link></li>
+                <li><Link href="/pages/cancellation-policy">Cancellation Policy</Link></li>
+                <li><Link href="/pages/lifetime-exchange">Warranty &amp; Buyback</Link></li>
+                <li><Link href="/pages/care-guide">Jewellery Care Guide</Link></li>
+                <li><Link href="/pages/grievance-redressal">Grievance Redressal</Link></li>
               </ul>
             </div>
 

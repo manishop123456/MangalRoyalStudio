@@ -2,8 +2,7 @@
 
 import React, { useState } from 'react';
 import { API_BASE_URL } from '../../../lib/storefront-data';
-
-const CONCIERGE_EMAIL = 'concierge@mangalroyalstudio.com';
+import { BUSINESS_INFO } from '../../../lib/business-info';
 
 const field: React.CSSProperties = {
   width: '100%',
@@ -75,20 +74,51 @@ export default function ContactPage() {
           gap: '44px',
         }}
       >
-        <div style={{ background: '#FBE8DB', padding: '32px', border: '1px solid #E7D1C4', alignSelf: 'start' }}>
-          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '26px', margin: '0 0 14px 0' }}>
-            Mangal Royal Studio
+        <div style={{ background: '#FBE8DB', padding: '32px', border: '1px solid #E7D1C4', alignSelf: 'start', display: 'grid', gap: '12px' }}>
+          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '26px', margin: 0 }}>
+            {BUSINESS_INFO.brandName}
           </h2>
-          <p style={{ fontSize: '14px', lineHeight: 1.7, color: '#3E3E3E' }}>
-            <strong>A Unit of Mangal Royal Jewels Pvt Ltd (Since 1975)</strong>
+          <p style={{ fontSize: '14px', lineHeight: 1.65, color: '#3E3E3E', margin: 0 }}>
+            <strong>Legal Name:</strong> {BUSINESS_INFO.legalName}
           </p>
-          <p style={{ fontSize: '14px', lineHeight: 1.7, color: '#3E3E3E' }}>
-            <strong>Email:</strong>{' '}
-            <a href={`mailto:${CONCIERGE_EMAIL}`} style={{ color: '#7D132A' }}>
-              {CONCIERGE_EMAIL}
+          <p style={{ fontSize: '14px', lineHeight: 1.65, color: '#3E3E3E', margin: 0 }}>
+            <strong>Registered Address:</strong> {BUSINESS_INFO.address}
+          </p>
+          <p style={{ fontSize: '13.5px', lineHeight: 1.65, color: '#3E3E3E', margin: 0 }}>
+            <strong>GSTIN:</strong> {BUSINESS_INFO.gstin}
+            <br />
+            <strong>BIS Hallmarking Reg. No.:</strong> {BUSINESS_INFO.bisHallmarkRegNo}
+          </p>
+          <p style={{ fontSize: '14px', lineHeight: 1.65, color: '#3E3E3E', margin: 0 }}>
+            <strong>Support Email:</strong>{' '}
+            <a href={`mailto:${BUSINESS_INFO.supportEmail}`} style={{ color: '#7D132A', textDecoration: 'underline' }}>
+              {BUSINESS_INFO.supportEmail}
             </a>
+            <br />
+            <strong>Support Phone:</strong>{' '}
+            <a href={`tel:${BUSINESS_INFO.supportPhone}`} style={{ color: '#7D132A', textDecoration: 'underline' }}>
+              {BUSINESS_INFO.supportPhone}
+            </a>
+            <br />
+            <strong>Support Hours:</strong> {BUSINESS_INFO.supportHours} (IST)
           </p>
-          <p style={{ fontSize: '13px', lineHeight: 1.7, color: '#4A433E' }}>
+          <div style={{ borderTop: '1px solid #DFC4B4', paddingTop: '12px', marginTop: '4px' }}>
+            <div style={{ fontSize: '11.5px', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: '#7D132A', marginBottom: '4px' }}>
+              Grievance Officer
+            </div>
+            <p style={{ fontSize: '13.5px', lineHeight: 1.65, color: '#3E3E3E', margin: 0 }}>
+              {BUSINESS_INFO.grievanceOfficer.name} ({BUSINESS_INFO.grievanceOfficer.designation})
+              <br />
+              <a href={`mailto:${BUSINESS_INFO.grievanceOfficer.email}`} style={{ color: '#7D132A', textDecoration: 'underline' }}>
+                {BUSINESS_INFO.grievanceOfficer.email}
+              </a>{' '}
+              ·{' '}
+              <a href={`tel:${BUSINESS_INFO.grievanceOfficer.phone}`} style={{ color: '#7D132A', textDecoration: 'underline' }}>
+                {BUSINESS_INFO.grievanceOfficer.phone}
+              </a>
+            </p>
+          </div>
+          <p style={{ fontSize: '13px', lineHeight: 1.6, color: '#4A433E', margin: 0 }}>
             Studio visits are by appointment. Send us a request and our concierge will confirm a time with you.
           </p>
         </div>
@@ -173,10 +203,10 @@ export default function ContactPage() {
               <p style={{ margin: 0, fontSize: '12.5px', color: '#4A433E' }}>
                 Prefer email?{' '}
                 <a
-                  href={`mailto:${CONCIERGE_EMAIL}?subject=Private%20Viewing%20Enquiry%20-%20Mangal%20Royal%20Studio`}
+                  href={`mailto:${BUSINESS_INFO.supportEmail}?subject=Private%20Viewing%20Enquiry%20-%20Mangal%20Royal%20Studio`}
                   style={{ color: '#7D132A' }}
                 >
-                  {CONCIERGE_EMAIL}
+                  {BUSINESS_INFO.supportEmail}
                 </a>
               </p>
             </form>
