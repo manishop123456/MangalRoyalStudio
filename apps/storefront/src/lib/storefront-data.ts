@@ -1,4 +1,5 @@
 import {
+  resolveProductImageUrl,
   type DiamondRateMatrixEntry,
   type JewelleryProductSpec,
   type MetalPurity,
@@ -86,6 +87,29 @@ export const THEME_IMAGES = {
   quoteBanner: `${CDN_BASE}59205e0bf94ef6a4257d713defef8fe89d9fe5b8.png`,
   whyLabGrown: `${CDN_BASE}32830c2dc27609f18b884bc5ab307d57f0f8f900.png`,
 };
+
+export const CATEGORY_TILE_SKU_BY_HANDLE: Record<string, string> = {
+  'best-sellers': 'SKUDRG00038',
+  rings: 'SKUDRG00038',
+  earrings: 'SKUDTG00022',
+  pendants: 'SKUDTG00149',
+  necklaces: 'SKUDNG00001',
+  bracelets: 'SKUBRG00271',
+};
+
+export function resolveCategoryTileImage(
+  handle: string,
+  products: readonly JewelleryProductSpec[],
+  fallbackUrl: string
+): string {
+  const targetSku = CATEGORY_TILE_SKU_BY_HANDLE[handle];
+  if (!targetSku) return fallbackUrl;
+  const match = products.find((p) => p.sku === targetSku);
+  if (match?.imageUrl) {
+    return resolveProductImageUrl(match.imageUrl, API_ORIGIN) || PRODUCT_IMAGE_PLACEHOLDER;
+  }
+  return PRODUCT_IMAGE_PLACEHOLDER;
+}
 
 export const DEFAULT_METAL_RATES: MetalRateRecord[] = [
   {

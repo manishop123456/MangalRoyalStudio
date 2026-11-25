@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import {
   buildShopifyImageSrcSet,
+  resolveCategoryTileImage,
   THEME_IMAGES,
   withShopifyImageWidth,
 } from '../lib/storefront-data';
@@ -221,7 +222,11 @@ export default function HomePage() {
               className={`mrs-category-card ${cat.stagger ? 'mrs-category-card--stagger' : ''}`}
             >
               <div className="mrs-category-card__media">
-                <SafeImage src={cat.image} alt={cat.title} loading="lazy" />
+                <SafeImage
+                  src={resolveCategoryTileImage(cat.handle, products, cat.image)}
+                  alt={cat.title}
+                  loading="lazy"
+                />
               </div>
               <div className="mrs-category-card__footer">
                 <h3 className="mrs-category-card__title">{cat.title}</h3>
