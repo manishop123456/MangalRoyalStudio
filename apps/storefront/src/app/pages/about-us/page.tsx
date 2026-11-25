@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { THEME_IMAGES } from '../../../lib/storefront-data';
+import { SafeImage } from '../../../components/SafeImage';
 
 const CORE_VALUES = [
   {
@@ -109,7 +110,7 @@ export default function AboutUsPage() {
             </Link>
           </div>
           <div>
-            <img
+            <SafeImage
               src={THEME_IMAGES.brandStoryTop}
               alt="Where Heritage Meets The Modern Diamond"
               style={{ width: '100%', aspectRatio: '4 / 4.2', objectFit: 'cover', display: 'block' }}
@@ -131,12 +132,12 @@ export default function AboutUsPage() {
           }}
         >
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-            <img
+            <SafeImage
               src={THEME_IMAGES.brandStoryLeft}
               alt="Mangal Royal Studio Craftsmanship"
               style={{ width: '100%', aspectRatio: '3 / 4', objectFit: 'cover', display: 'block' }}
             />
-            <img
+            <SafeImage
               src={THEME_IMAGES.brandStoryRight}
               alt="Mangal Royal Studio Diamond Inspection"
               style={{ width: '100%', aspectRatio: '3 / 4', objectFit: 'cover', display: 'block', marginTop: '32px' }}
@@ -352,12 +353,12 @@ export default function AboutUsPage() {
           }}
         >
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-            <img
+            <SafeImage
               src={THEME_IMAGES.catRings}
               alt="Mangal Royal Studio Rings"
               style={{ width: '100%', aspectRatio: '1 / 1', objectFit: 'cover', display: 'block' }}
             />
-            <img
+            <SafeImage
               src={THEME_IMAGES.catBracelets}
               alt="Mangal Royal Studio Bracelets"
               style={{ width: '100%', aspectRatio: '1 / 1', objectFit: 'cover', display: 'block' }}
@@ -440,7 +441,7 @@ export default function AboutUsPage() {
             </Link>
           </div>
           <div>
-            <img
+            <SafeImage
               src={THEME_IMAGES.heroSlide1}
               alt="Mangal Royal Studio Showroom — Vile Parle, Mumbai"
               style={{ width: '100%', aspectRatio: '16 / 10', objectFit: 'cover', display: 'block' }}

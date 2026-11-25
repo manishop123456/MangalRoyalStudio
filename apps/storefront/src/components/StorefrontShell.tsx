@@ -18,6 +18,7 @@ import {
   setStorefrontCsrfToken,
   storefrontFetch,
 } from '../lib/storefront-data';
+import { SafeImage } from './SafeImage';
 import { hasCustomerSessionHint, setCustomerSessionHint } from '../lib/customer-messages';
 import {
   addItemToCart,
@@ -359,7 +360,7 @@ export function StorefrontShell({ children }: { children: React.ReactNode }) {
               </svg>
             </button>
             <Link href="/" className="mrs-header__logo" aria-label="Mangal Royal Studio Home">
-              <img src={THEME_IMAGES.headerLogo} alt="Mangal Royal Studio" />
+              <SafeImage src={THEME_IMAGES.headerLogo} alt="Mangal Royal Studio" />
             </Link>
           </div>
 
@@ -530,7 +531,7 @@ export function StorefrontShell({ children }: { children: React.ReactNode }) {
                   borderBottom: '1px solid #EEEEEE',
                 }}
               >
-                <img src={THEME_IMAGES.headerLogo} alt="Mangal Royal Studio" style={{ width: '110px' }} />
+                <SafeImage src={THEME_IMAGES.headerLogo} alt="Mangal Royal Studio" style={{ width: '110px' }} />
                 <button
                   type="button"
                   onClick={() => setMobileMenuOpen(false)}
@@ -687,7 +688,7 @@ export function StorefrontShell({ children }: { children: React.ReactNode }) {
                         borderBottom: '1px solid #F2ECE9',
                       }}
                     >
-                      <img
+                      <SafeImage
                         src={resolveProductImageUrl(item.imageUrl, API_ORIGIN)}
                         alt={item.title}
                         style={{
@@ -893,7 +894,7 @@ export function StorefrontShell({ children }: { children: React.ReactNode }) {
 
           <div className="mrs-footer__grid">
             <div>
-              <img
+              <SafeImage
                 src={THEME_IMAGES.footerLogo}
                 alt="Mangal Royal Studio"
                 style={{ width: '150px', marginBottom: '16px', display: 'block' }}

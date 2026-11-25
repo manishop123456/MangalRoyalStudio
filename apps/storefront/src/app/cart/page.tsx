@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { resolveProductImageUrl } from '@mrs/shared';
 import { API_ORIGIN, formatInr } from '../../lib/storefront-data';
 import { useStorefront } from '../../components/StorefrontShell';
+import { SafeImage } from '../../components/SafeImage';
 
 export default function CartPage() {
   const {
@@ -76,7 +77,7 @@ export default function CartPage() {
                   alignItems: 'center',
                 }}
               >
-                <img
+                <SafeImage
                   src={resolveProductImageUrl(item.imageUrl, API_ORIGIN)}
                   alt={item.title}
                   style={{ width: '100px', height: '125px', objectFit: 'cover', background: '#F6F3F1' }}

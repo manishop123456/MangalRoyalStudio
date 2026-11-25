@@ -13,6 +13,7 @@ import {
   withShopifyImageWidth,
 } from '../lib/storefront-data';
 import { useStorefront } from './StorefrontShell';
+import { SafeImage } from './SafeImage';
 
 export function ProductCard({
   product,
@@ -49,7 +50,7 @@ export function ProductCard({
   return (
     <div className="pc-card">
       <Link href={`/products/${product.handle}`} className="pc-card__media">
-        <img
+        <SafeImage
           src={mainImg}
           srcSet={mainSrcSet}
           sizes={mainSrcSet ? cardSizes : undefined}
@@ -60,12 +61,13 @@ export function ProductCard({
           decoding="async"
         />
         {altImg && (
-          <img
+          <SafeImage
             src={altImg}
             srcSet={altSrcSet}
             sizes={altSrcSet ? cardSizes : undefined}
             alt=""
             aria-hidden="true"
+            hideOnError
             className="pc-card__img pc-card__img--alt"
             loading="lazy"
             decoding="async"

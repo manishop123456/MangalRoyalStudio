@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { friendlyThrown } from '../lib/customer-messages';
+import { SafeImage } from './SafeImage';
 
 export interface Product3DViewerProps {
   modelUrl: string;
@@ -390,7 +391,7 @@ export default function Product3DViewer({
     return (
       <div className="rounded-lg border border-[var(--mrs-border)] bg-[#FAF7F5] p-6 text-center">
         {posterImageUrl ? (
-          <img
+          <SafeImage
             src={posterImageUrl}
             alt={productTitle}
             className="mx-auto mb-4 max-h-72 rounded object-contain"

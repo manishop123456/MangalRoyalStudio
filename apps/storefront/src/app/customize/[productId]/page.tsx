@@ -18,6 +18,7 @@ import {
   storefrontFetch,
 } from '../../../lib/storefront-data';
 import { useStorefront } from '../../../components/StorefrontShell';
+import { SafeImage } from '../../../components/SafeImage';
 import ProductCustomizer from '../../../components/ProductCustomizer';
 import { CustomerFacingError, friendlyApiError, friendlyThrown } from '../../../lib/customer-messages';
 
@@ -182,7 +183,7 @@ function CustomizeProductContent() {
             />
           ) : (
             <div style={{ background: '#F6F3F1', border: '1px solid #E6E0DE', aspectRatio: '1 / 1', overflow: 'hidden' }}>
-              <img
+              <SafeImage
                 src={resolveProductImageUrl(product.imageUrl, API_ORIGIN)}
                 alt={product.title}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}

@@ -9,6 +9,7 @@ import {
 } from '../lib/storefront-data';
 import { useStorefront } from '../components/StorefrontShell';
 import { ProductCard } from '../components/ProductCard';
+import { SafeImage } from '../components/SafeImage';
 
 const DIAMOND_SHAPES = [
   { name: 'Round', code: 'ROUND', image: THEME_IMAGES.shapeRound },
@@ -82,7 +83,7 @@ export default function HomePage() {
       )}
       {/* 3. HERO SLIDESHOW (sections/slideshow.liquid) */}
       <section className="mrs-hero" aria-label="Hero Banner">
-        <img
+        <SafeImage
           src={withShopifyImageWidth(THEME_IMAGES.heroSlide1, 2000)}
           srcSet={buildShopifyImageSrcSet(THEME_IMAGES.heroSlide1, [800, 1200, 1600, 2000])}
           sizes="100vw"
@@ -196,7 +197,7 @@ export default function HomePage() {
                   }}
                 >
                   {shape.image ? (
-                    <img
+                    <SafeImage
                       src={shape.image}
                       alt={shape.name}
                       style={{ width: '48px', height: '48px', objectFit: 'contain' }}
@@ -246,7 +247,7 @@ export default function HomePage() {
               className={`mrs-category-card ${cat.stagger ? 'mrs-category-card--stagger' : ''}`}
             >
               <div className="mrs-category-card__media">
-                <img src={cat.image} alt={cat.title} loading="lazy" />
+                <SafeImage src={cat.image} alt={cat.title} loading="lazy" />
               </div>
               <div className="mrs-category-card__footer">
                 <h3 className="mrs-category-card__title">{cat.title}</h3>
@@ -338,7 +339,7 @@ export default function HomePage() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-            <img
+            <SafeImage
               src={THEME_IMAGES.brandStoryTop}
               alt="Mangal Royal Studio Craftsmanship"
               style={{
@@ -348,12 +349,12 @@ export default function HomePage() {
                 objectFit: 'cover',
               }}
             />
-            <img
+            <SafeImage
               src={THEME_IMAGES.brandStoryLeft}
               alt="Royal Heritage Detail"
               style={{ width: '100%', height: '240px', objectFit: 'cover' }}
             />
-            <img
+            <SafeImage
               src={THEME_IMAGES.brandStoryRight}
               alt="Lab-Grown Diamond Brilliance"
               style={{ width: '100%', height: '240px', objectFit: 'cover' }}
@@ -447,7 +448,7 @@ export default function HomePage() {
               }}
             >
               <div style={{ position: 'relative', aspectRatio: '285 / 380', overflow: 'hidden' }}>
-                <img
+                <SafeImage
                   src={tier.image}
                   alt={tier.strip}
                   style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
@@ -499,7 +500,7 @@ export default function HomePage() {
           overflow: 'hidden',
         }}
       >
-        <img
+        <SafeImage
           src={THEME_IMAGES.quoteBanner}
           alt="Luxury today is not just about what you wear"
           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
@@ -550,7 +551,7 @@ export default function HomePage() {
           }}
         >
           <div>
-            <img
+            <SafeImage
               src={THEME_IMAGES.whyLabGrown}
               alt="Why Lab-Grown Diamonds"
               style={{ width: '100%', maxHeight: '640px', objectFit: 'cover', display: 'block' }}

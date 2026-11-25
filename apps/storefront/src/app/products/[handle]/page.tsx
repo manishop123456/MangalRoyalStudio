@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { SafeImage } from '../../../components/SafeImage';
 import {
   resolveProductImageUrl,
   type CustomizationProfileRecord,
@@ -296,7 +297,7 @@ export default function ProductDetailPage() {
                     marginBottom: '14px',
                   }}
                 >
-                  <img
+                  <SafeImage
                     src={withShopifyImageWidth(gallery[activeImageIdx] || gallery[0], 1600)}
                     srcSet={buildShopifyImageSrcSet(gallery[activeImageIdx] || gallery[0])}
                     sizes="(min-width: 1024px) 520px, 100vw"
@@ -334,7 +335,7 @@ export default function ProductDetailPage() {
                         overflow: 'hidden',
                       }}
                     >
-                      <img
+                      <SafeImage
                         src={withShopifyImageWidth(imgUrl, 400)}
                         srcSet={buildShopifyImageSrcSet(imgUrl, [200, 400, 800])}
                         sizes="120px"
@@ -924,7 +925,7 @@ export default function ProductDetailPage() {
             cursor: 'zoom-out',
           }}
         >
-          <img
+          <SafeImage
             src={gallery[activeImageIdx] || gallery[0]}
             alt={product.title}
             style={{ maxWidth: '90vw', maxHeight: '88vh', objectFit: 'contain' }}

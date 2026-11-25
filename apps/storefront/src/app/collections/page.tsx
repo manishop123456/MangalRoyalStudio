@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { THEME_IMAGES } from '../../lib/storefront-data';
+import { SafeImage } from '../../components/SafeImage';
 
 const COLLECTION_LIST = [
   { handle: 'best-sellers', title: 'Our Bestsellers', desc: 'Most coveted IGI-certified solitaire & fine jewellery creations.', image: THEME_IMAGES.catRings },
@@ -33,7 +34,7 @@ export default function CollectionsIndexPage() {
         {COLLECTION_LIST.map((col) => (
           <Link key={col.handle} href={`/collections/${col.handle}`} className="mrs-category-card">
             <div className="mrs-category-card__media">
-              <img src={col.image} alt={col.title} />
+              <SafeImage src={col.image} alt={col.title} />
             </div>
             <div className="mrs-category-card__footer">
               <h2 className="mrs-category-card__title">{col.title}</h2>
