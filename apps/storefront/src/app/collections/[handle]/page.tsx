@@ -10,7 +10,7 @@ function CollectionDetailContent() {
   const params = useParams<{ handle: string }>();
   const searchParams = useSearchParams();
   const handle = String(params?.handle || 'all').toLowerCase();
-  const { products } = useStorefront();
+  const { products, productsLoading } = useStorefront();
 
   const [selectedPurity, setSelectedPurity] = useState<string>('ALL');
   const [selectedShape, setSelectedShape] = useState<string>(
@@ -86,7 +86,7 @@ function CollectionDetailContent() {
   }, [products, handle, selectedPurity, selectedShape, sortBy]);
 
   return (
-    <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '44px 40px 80px' }}>
+    <div className="mrs-collection-page">
       <div style={{ marginBottom: '12px', fontSize: '12px', color: '#6B5B5B' }}>
         <Link href="/">Home</Link> / <Link href="/collections">Collections</Link> /{' '}
         <span style={{ color: '#190303' }}>{collectionTitle}</span>
@@ -174,7 +174,17 @@ function CollectionDetailContent() {
         </div>
       </div>
 
-      {filteredProducts.length === 0 ? (
+      {productsLoading && filteredProducts.length === 0 ? (
+        <div className="mrs-product-grid" aria-busy="true" aria-label="Loading collection">
+          {Array.from({ length: 8 }).map((_, idx) => (
+            <div key={idx} className="pc-skeleton">
+              <div className="pc-skeleton__media mrs-skeleton-box" />
+              <div className="pc-skeleton__line mrs-skeleton-box" />
+              <div className="pc-skeleton__line pc-skeleton__line--short mrs-skeleton-box" />
+            </div>
+          ))}
+        </div>
+      ) : filteredProducts.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '64px 20px' }}>
           <p style={{ fontSize: '16px', color: '#6B5B5B', marginBottom: '20px' }}>
             No jewellery pieces matched your selected filters.
@@ -185,29 +195,14 @@ function CollectionDetailContent() {
               setSelectedPurity('ALL');
               setSelectedShape('ALL');
             }}
-            style={{
-              padding: '12px 28px',
-              background: '#7D132A',
-              color: '#FFFFFF',
-              border: 0,
-              fontSize: '12px',
-              letterSpacing: '1.2px',
-              textTransform: 'uppercase',
-              cursor: 'pointer',
-            }}
+            className="mrs-btn-primary"
           >
             Reset Filters
           </button>
         </div>
       ) : (
         <>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(265px, 1fr))',
-              gap: '36px',
-            }}
-          >
+          <div className="mrs-product-grid">
             {filteredProducts
               .slice((page - 1) * pageSize, page * pageSize)
               .map((product) => (

@@ -116,44 +116,33 @@ export default function HomePage() {
           <h2 className="mrs-section-heading-serif">OUR BESTSELLERS</h2>
         </div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-            gap: '36px',
-          }}
-        >
-          {bestsellers.map((prod, idx) => (
-            <ProductCard key={prod.sku} product={prod} customBadge="BEST SELLER" priority={idx < 4} />
-          ))}
-        </div>
+        {productsLoading && bestsellers.length === 0 ? (
+          <div className="mrs-product-grid" aria-busy="true" aria-label="Loading bestsellers">
+            {Array.from({ length: 4 }).map((_, idx) => (
+              <div key={idx} className="pc-skeleton">
+                <div className="pc-skeleton__media mrs-skeleton-box" />
+                <div className="pc-skeleton__line mrs-skeleton-box" />
+                <div className="pc-skeleton__line pc-skeleton__line--short mrs-skeleton-box" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="mrs-product-grid">
+            {bestsellers.map((prod, idx) => (
+              <ProductCard key={prod.sku} product={prod} customBadge="BEST SELLER" priority={idx < 4} />
+            ))}
+          </div>
+        )}
 
         <div style={{ textAlign: 'center', marginTop: '42px' }}>
-          <Link
-            href="/collections/best-sellers"
-            style={{
-              display: 'inline-block',
-              padding: '12px 36px',
-              border: '1px solid #7D132A',
-              color: '#7D132A',
-              fontSize: '12px',
-              letterSpacing: '1.5px',
-              textTransform: 'uppercase',
-            }}
-          >
+          <Link href="/collections/best-sellers" className="mrs-btn-outline">
             Explore All Bestsellers
           </Link>
         </div>
       </section>
 
       {/* 5. SHOP BY SHAPE (sections/shop-by-shape.liquid) */}
-      <section
-        style={{
-          backgroundColor: '#86142C',
-          color: '#FFFFFF',
-          padding: '56px 40px',
-        }}
-      >
+      <section className="mrs-shape-section">
         <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '38px' }}>
             <p className="mrs-section-eyebrow-script" style={{ color: '#F8E1CF' }}>
@@ -164,27 +153,12 @@ export default function HomePage() {
             </h2>
           </div>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-              gap: '16px',
-            }}
-          >
+          <div className="mrs-shape-grid">
             {DIAMOND_SHAPES.map((shape) => (
               <Link
                 key={shape.code}
                 href={`/collections/all?shape=${shape.code}`}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '22px 12px',
-                  border: '1px solid rgba(248, 225, 207, 0.28)',
-                  background: 'rgba(255, 255, 255, 0.04)',
-                  transition: 'background 0.25s ease, transform 0.25s ease',
-                }}
+                className="mrs-shape-tile"
               >
                 <div
                   style={{
@@ -417,35 +391,18 @@ export default function HomePage() {
       </section>
 
       {/* 9. SHOP BY PRICE (sections/shop-by-price.liquid) */}
-      <section
-        style={{
-          maxWidth: '1440px',
-          margin: '0 auto',
-          padding: '64px 70px 90px',
-        }}
-      >
+      <section className="mrs-price-section">
         <div style={{ textAlign: 'center', marginBottom: '44px' }}>
           <p className="mrs-section-eyebrow-script">Luxury within reach</p>
           <h2 className="mrs-section-heading-serif">SHOP BY PRICES</h2>
         </div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: '32px',
-          }}
-        >
+        <div className="mrs-price-grid">
           {PRICE_TIERS.map((tier) => (
             <Link
               key={tier.handle}
               href={`/collections/${tier.handle}`}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                position: 'relative',
-                overflow: 'hidden',
-              }}
+              className="mrs-price-card"
             >
               <div style={{ position: 'relative', aspectRatio: '285 / 380', overflow: 'hidden' }}>
                 <SafeImage

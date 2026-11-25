@@ -610,7 +610,11 @@ textarea:focus-visible {
 .mrs-category-card {
   display: flex;
   flex-direction: column;
-  group: true;
+  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.mrs-category-card:hover {
+  transform: translateY(-3px);
 }
 
 .mrs-category-card--stagger {
@@ -629,11 +633,11 @@ textarea:focus-visible {
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.5s ease;
+  transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 .mrs-category-card:hover .mrs-category-card__media img {
-  transform: scale(1.04);
+  transform: scale(1.05);
 }
 
 .mrs-category-card__footer {
@@ -643,6 +647,20 @@ textarea:focus-visible {
   padding-top: 14px;
   border-bottom: 1px solid rgba(25, 3, 3, 0.2);
   padding-bottom: 8px;
+  transition: border-color 0.25s ease;
+}
+
+.mrs-category-card:hover .mrs-category-card__footer {
+  border-bottom-color: #7D132A;
+}
+
+.mrs-category-card__footer svg {
+  transition: transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1), stroke 0.25s ease;
+}
+
+.mrs-category-card:hover .mrs-category-card__footer svg {
+  transform: translate(3px, -3px);
+  stroke: #7D132A;
 }
 
 .mrs-category-card__title {
@@ -652,6 +670,11 @@ textarea:focus-visible {
   text-transform: uppercase;
   color: #190303;
   margin: 0;
+  transition: color 0.25s ease;
+}
+
+.mrs-category-card:hover .mrs-category-card__title {
+  color: #7D132A;
 }
 
 @media screen and (max-width: 989px) {
@@ -660,14 +683,17 @@ textarea:focus-visible {
   }
   .mrs-category-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
+    gap: 16px;
     margin-top: 32px;
   }
   .mrs-category-card--stagger {
     margin-top: 0;
   }
   .mrs-category-card__media {
-    height: 300px;
+    height: 220px;
+  }
+  .mrs-category-card__title {
+    font-size: 18px;
   }
 }
 
@@ -761,4 +787,203 @@ textarea:focus-visible {
     text-transform: uppercase;
     cursor: pointer;
   }
+}
+
+/* ============================================================================
+   8. CONSISTENT CTAs, HOMEPAGE GRIDS & SKELETON LOADERS
+   ============================================================================ */
+.mrs-btn-primary,
+.mrs-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 12px 32px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+}
+
+.mrs-btn-primary {
+  background: #7D132A;
+  color: #FFFFFF;
+  border: 1px solid #7D132A;
+}
+
+.mrs-btn-primary:hover {
+  background: #5E0E20;
+  border-color: #5E0E20;
+}
+
+.mrs-btn-outline {
+  background: transparent;
+  color: #7D132A;
+  border: 1px solid #7D132A;
+}
+
+.mrs-btn-outline:hover {
+  background: #7D132A;
+  color: #FFFFFF;
+}
+
+.mrs-product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 32px;
+}
+
+@media screen and (max-width: 1099px) {
+  .mrs-product-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .mrs-product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+}
+
+.mrs-shape-section {
+  background-color: #86142C;
+  color: #FFFFFF;
+  padding: 72px 70px;
+}
+
+.mrs-shape-grid {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.mrs-shape-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 22px 10px;
+  border: 1px solid rgba(248, 225, 207, 0.28);
+  background: rgba(255, 255, 255, 0.04);
+  transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+}
+
+.mrs-shape-tile:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(248, 225, 207, 0.65);
+  transform: translateY(-3px);
+}
+
+@media screen and (max-width: 1099px) {
+  .mrs-shape-section {
+    padding: 56px 24px;
+  }
+  .mrs-shape-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media screen and (max-width: 599px) {
+  .mrs-shape-section {
+    padding: 44px 16px;
+  }
+  .mrs-shape-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
+
+.mrs-price-section {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 72px 70px 84px;
+}
+
+.mrs-price-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.mrs-price-card {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.mrs-price-card img {
+  transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.mrs-price-card:hover {
+  transform: translateY(-3px);
+}
+
+.mrs-price-card:hover img {
+  transform: scale(1.05);
+}
+
+@media screen and (max-width: 989px) {
+  .mrs-price-section {
+    padding: 50px 16px 64px;
+  }
+  .mrs-price-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+.mrs-collection-page {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 44px 40px 80px;
+}
+
+@media screen and (max-width: 749px) {
+  .mrs-collection-page {
+    padding: 24px 16px 60px;
+  }
+}
+
+@keyframes mrs-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.mrs-skeleton-box {
+  background: linear-gradient(90deg, #F3ECE8 25%, #FAF6F3 50%, #F3ECE8 75%);
+  background-size: 200% 100%;
+  animation: mrs-shimmer 1.5s infinite linear;
+}
+
+.pc-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pc-skeleton__media {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+}
+
+.pc-skeleton__line {
+  height: 14px;
+  width: 82%;
+}
+
+.pc-skeleton__line--short {
+  width: 48%;
 }
